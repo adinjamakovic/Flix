@@ -1,3 +1,4 @@
+using Flix.Services.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,10 +7,6 @@ using System.Text;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// A request submitted by a user to add a movie that is not yet in the system.
-    /// The administrator reviews it, completes the cast, and approves or rejects it.
-    /// </summary>
     public class MovieRequest
     {
         [Key]

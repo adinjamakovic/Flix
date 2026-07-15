@@ -5,9 +5,6 @@ using System.Text;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// Spoken language of a movie. Used by the movie search filters.
-    /// </summary>
     public class Language
     {
         [Key]

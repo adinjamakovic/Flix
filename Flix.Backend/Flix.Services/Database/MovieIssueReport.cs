@@ -1,3 +1,4 @@
+using Flix.Services.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,10 +7,6 @@ using System.Text;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// A user-submitted "Report an issue" about a movie's details (wrong metadata,
-    /// missing cast, etc.) raised from the movie detail screen.
-    /// </summary>
     public class MovieIssueReport
     {
         [Key]

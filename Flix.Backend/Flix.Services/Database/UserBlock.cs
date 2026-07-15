@@ -6,9 +6,6 @@ using System.Text;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// A user blocking another user (the "Blocked" tab on the network screen).
-    /// </summary>
     public class UserBlock
     {
         [Key]

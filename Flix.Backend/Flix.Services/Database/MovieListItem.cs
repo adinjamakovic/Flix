@@ -21,7 +21,6 @@ namespace Flix.Services.Database
         [ForeignKey(nameof(MovieId))]
         public Movie Movie { get; set; } = null!;
 
-        /// <summary>Position of the movie within the list.</summary>
         public int Position { get; set; }
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;

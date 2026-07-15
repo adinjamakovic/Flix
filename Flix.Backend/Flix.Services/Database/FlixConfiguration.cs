@@ -5,11 +5,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// Entity Framework Core context for the Flix database. Exposes every entity
-    /// and configures the relationships, join tables and unique constraints that
-    /// cannot be expressed with data annotations alone.
-    /// </summary>
     public partial class FlixDbContext : DbContext
     {
         protected void CreateConfiguration(ModelBuilder modelBuilder)

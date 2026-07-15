@@ -1,9 +1,5 @@
-namespace Flix.Services.Database
+namespace Flix.Services.Enums
 {
-    /// <summary>
-    /// Type of activity recorded in a user's activity stream. Drives the
-    /// "Recent Activity" admin widget and the friends/following feed.
-    /// </summary>
     public enum ActivityType
     {
         JoinedPlatform = 0,

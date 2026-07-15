@@ -1,3 +1,4 @@
+using Flix.Services.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -5,10 +6,6 @@ using System.Text;
 
 namespace Flix.Services.Database
 {
-    /// <summary>
-    /// A themed movie competition ("clash") created by an administrator. Users
-    /// enter a themed list of watched movies and vote on each other's lists.
-    /// </summary>
     public class Clash
     {
         [Key]
