@@ -1,6 +1,8 @@
-﻿using Flix.Model.Responses;
+using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
+using Flix.Services.Database;
 using Flix.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Flix.Services.Implementations
@@ -9,52 +11,57 @@ namespace Flix.Services.Implementations
         where TEntity : class
         where TSearch : BaseSearchObject
     {
+        protected readonly FlixDbContext _context;
         protected readonly MapsterMapper.IMapper _mapper;
 
-        protected BaseReadService(MapsterMapper.IMapper mapper)
+        protected BaseReadService(FlixDbContext context, MapsterMapper.IMapper mapper)
         {
+            _context = context;
             _mapper = mapper;
         }
-        protected abstract IEnumerable<TEntity> GetDataSource();
 
-        protected abstract IEnumerable<TEntity> ApplyFilters(IEnumerable<TEntity> query, TSearch? search);
+        protected virtual IQueryable<TEntity> GetDataSource() => _context.Set<TEntity>();
+
+        protected abstract IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> query, TSearch? search);
+
+        // SQL Server rejects OFFSET/FETCH without an ORDER BY; every entity keys on Id.
+        protected virtual IQueryable<TEntity> ApplyOrdering(IQueryable<TEntity> query)
+            => query.OrderBy(e => EF.Property<int>(e, "Id"));
 
         public async Task<PageResult<TResponse>> GetAsync(TSearch? search = null)
         {
-            IEnumerable<TEntity> query = GetDataSource();
-            query = ApplyFilters(query, search);
+            IQueryable<TEntity> query = ApplyFilters(GetDataSource(), search);
 
             int? totalCount = null;
 
-            if(search.IncludeTotalCount ?? false)
+            if (search?.IncludeTotalCount ?? false)
+                totalCount = await query.CountAsync();
+
+            query = ApplyOrdering(query);
+
+            if (search?.Page is int page && search.PageSize is int size)
+                query = query.Skip((page - 1) * size);
+
+            if (search?.PageSize is int pageSize)
+                query = query.Take(pageSize);
+
+            var entities = await query.ToListAsync();
+
+            return new PageResult<TResponse>
             {
-                totalCount = query.Count();
-            }
-
-            if(search.Page.HasValue)
-                query = query.Skip((search.Page.Value - 1) * search.PageSize.Value);
-
-            if(search.PageSize.HasValue)
-                query = query.Take(search.PageSize.Value);
-
-            var list = query.Select(item => _mapper.Map<TResponse>(item)).ToList();
-
-            var pageResult = new PageResult<TResponse>
-            {
-                Items = list,
+                Items = entities.Select(entity => _mapper.Map<TResponse>(entity)).ToList(),
                 TotalCount = totalCount
             };
-
-            return await Task.FromResult(pageResult);
         }
 
         public async Task<TResponse> GetByIdAsync(int id)
         {
-            var entity = GetDataSource().FirstOrDefault(e => (int)e.GetType().GetProperty("Id")?.GetValue(e)! == id);
-            if (entity == null)
-                throw new KeyNotFoundException($"Entity with ID {id} not found.");
+            var entity = await _context.Set<TEntity>().FindAsync(id);
 
-            return await Task.FromResult(_mapper.Map<TResponse>(entity));
+            if (entity is null)
+                throw new KeyNotFoundException($"{typeof(TEntity).Name} with Id {id} not found.");
+
+            return _mapper.Map<TResponse>(entity);
         }
     }
 }
