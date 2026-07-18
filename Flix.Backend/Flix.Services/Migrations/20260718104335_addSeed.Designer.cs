@@ -4,6 +4,7 @@ using Flix.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flix.Services.Database.Migrations
 {
     [DbContext(typeof(FlixDbContext))]
-    partial class FlixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260718104335_addSeed")]
+    partial class addSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2344,32 +2347,6 @@ namespace Flix.Services.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Flix.Services.Database.RefreshToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("Flix.Services.Database.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -3465,17 +3442,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Studio");
                 });
 
-            modelBuilder.Entity("Flix.Services.Database.RefreshToken", b =>
-                {
-                    b.HasOne("Flix.Services.Database.User", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Flix.Services.Database.Review", b =>
                 {
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
@@ -3624,8 +3590,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Following");
 
                     b.Navigation("Lists");
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Reviews");
                 });

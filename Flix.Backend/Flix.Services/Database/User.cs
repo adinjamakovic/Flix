@@ -61,5 +61,7 @@ namespace Flix.Services.Database
 
         // Competitions
         public ICollection<ClashEntry> ClashEntries { get; set; } = new List<ClashEntry>();
+        // Refresh tokens for authentication
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

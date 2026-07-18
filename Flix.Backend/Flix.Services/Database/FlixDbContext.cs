@@ -30,6 +30,7 @@ namespace Flix.Services.Database
         public DbSet<MovieRequest> MovieRequests => Set<MovieRequest>();
         public DbSet<MovieIssueReport> MovieIssueReports => Set<MovieIssueReport>();
         public DbSet<UserReport> UserReports => Set<UserReport>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,7 +38,7 @@ namespace Flix.Services.Database
 
             CreateConfiguration(modelBuilder);
 
-
+            SeedData(modelBuilder);
         }
     }
 }

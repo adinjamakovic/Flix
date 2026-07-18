@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Flix.CommonServices/Flix.CommonServices.csproj" Id="7102a2c4-54f9-4095-b3fc-2fa1fb3ddb60" />
   <Project Path="Flix.Model/Flix.Model.csproj" />
   <Project Path="Flix.Services/Flix.Services.csproj" />
   <Project Path="Flix.WebApi/Flix.WebApi.csproj" />

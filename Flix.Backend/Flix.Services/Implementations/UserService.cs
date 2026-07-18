@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using Flix.CommonServices.CryptoService;
+using Flix.Model.Access;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -12,13 +14,16 @@ namespace Flix.Services.Implementations
     public class UserService
         : BaseCRUDService<User, UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>, IUserService
     {
+        private readonly ICryptoService _cryptoService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
+            ICryptoService cryptoService,
             IValidator<UserInsertRequest> insertValidator,
             IValidator<UserUpdateRequest> updateValidator)
             : base(context, mapper, insertValidator, updateValidator)
         {
+            _cryptoService = cryptoService;
         }
 
         protected override IQueryable<User> ApplyFilters(IQueryable<User> query, UserSearchObject? search)
@@ -52,25 +57,17 @@ namespace Flix.Services.Implementations
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
                 throw new InvalidOperationException($"Email '{request.Email}' is already registered.");
 
-            entity.PasswordSalt = GenerateSalt();
-            entity.PasswordHash = HashPassword(request.Password, entity.PasswordSalt);
+            entity.PasswordSalt = _cryptoService.GenerateSalt();
+            entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
         }
 
-        private static string GenerateSalt()
+        public async Task<UserSensitiveResponse> GetByUsernameAsync(string username)
         {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-        }
-
-        private static string HashPassword(string password, string salt)
-        {
-            byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
-                password,
-                Convert.FromBase64String(salt),
-                iterations: 100000,
-                HashAlgorithmName.SHA256,
-                outputLength: 32);
-
-            return Convert.ToBase64String(hash);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if(user is null)
+                throw new Exception($"User with username '{username}' not found.");
+            var response = _mapper.Map<UserSensitiveResponse>(user);
+            return response;
         }
     }
 }
