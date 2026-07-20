@@ -63,6 +63,8 @@ builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertRequestValid
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<CastMemberInsertRequest>, CastMemberInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<CastMemberUpdateRequest>, CastMemberUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ClashInsertRequest>, ClashInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<ClashUpdateRequest>, ClashUpdateRequestValidator>();
 
 //Services
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -70,6 +72,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
+builder.Services.AddScoped<IClashService, ClashService>();
+
 
 var app = builder.Build();
 
