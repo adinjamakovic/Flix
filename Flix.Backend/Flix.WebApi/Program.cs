@@ -1,5 +1,6 @@
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Requests;
+using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
 using Flix.Services.Interfaces;
@@ -48,15 +49,25 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Mapster configuration
 builder.Services.AddMapster();
+TypeAdapterConfig<User, UserResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig().IgnoreNullValues(true);
 
+// DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Validators
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<CastMemberInsertRequest>, CastMemberInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<CastMemberUpdateRequest>, CastMemberUpdateRequestValidator>();
+
+//Services
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
 

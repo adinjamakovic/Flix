@@ -22,22 +22,16 @@ namespace Flix.Services.Implementations
 
         protected virtual IQueryable<TEntity> GetDataSource() => _context.Set<TEntity>();
 
-        protected abstract IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> query, TSearch? search);
-
-        // SQL Server rejects OFFSET/FETCH without an ORDER BY; every entity keys on Id.
-        protected virtual IQueryable<TEntity> ApplyOrdering(IQueryable<TEntity> query)
-            => query.OrderBy(e => EF.Property<int>(e, "Id"));
+        protected abstract IEnumerable<TEntity> ApplyFilters(IQueryable<TEntity> query, TSearch? search);
 
         public async Task<PageResult<TResponse>> GetAsync(TSearch? search = null)
         {
-            IQueryable<TEntity> query = ApplyFilters(GetDataSource(), search);
+            IEnumerable<TEntity> query = ApplyFilters(GetDataSource(), search);
 
             int? totalCount = null;
 
             if (search?.IncludeTotalCount ?? false)
-                totalCount = await query.CountAsync();
-
-            query = ApplyOrdering(query);
+                totalCount = query.Count();
 
             if (search?.Page is int page && search.PageSize is int size)
                 query = query.Skip((page - 1) * size);
@@ -45,11 +39,11 @@ namespace Flix.Services.Implementations
             if (search?.PageSize is int pageSize)
                 query = query.Take(pageSize);
 
-            var entities = await query.ToListAsync();
+            var entities = query.Select(x => _mapper.Map<TResponse>(x)).ToList();
 
             return new PageResult<TResponse>
             {
-                Items = entities.Select(entity => _mapper.Map<TResponse>(entity)).ToList(),
+                Items = entities,
                 TotalCount = totalCount
             };
         }

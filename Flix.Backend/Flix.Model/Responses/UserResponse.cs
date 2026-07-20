@@ -1,5 +1,3 @@
-using System;
-
 namespace Flix.Model.Responses
 {
     public class UserResponse
