@@ -53,6 +53,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Country, CountryResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Genre, GenreResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Language, LanguageResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Studio, StudioResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
+    .Map(dest => dest.CountryName, src => src.Country != null ? src.Country.Name : null)
+    .Map(dest => dest.LanguageName, src => src.Language != null ? src.Language.Name : null);
 
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
@@ -65,6 +72,16 @@ builder.Services.AddScoped<IValidator<CastMemberInsertRequest>, CastMemberInsert
 builder.Services.AddScoped<IValidator<CastMemberUpdateRequest>, CastMemberUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<ClashInsertRequest>, ClashInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<ClashUpdateRequest>, ClashUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<CountryInsertRequest>, CountryInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<CountryUpdateRequest>, CountryUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<GenreInsertRequest>, GenreInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<GenreUpdateRequest>, GenreUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<LanguageInsertRequest>, LanguageInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<LanguageUpdateRequest>, LanguageUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
 //Services
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -73,6 +90,11 @@ builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
 builder.Services.AddScoped<IClashService, ClashService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IStudioService, StudioService>();
 
 
 var app = builder.Build();

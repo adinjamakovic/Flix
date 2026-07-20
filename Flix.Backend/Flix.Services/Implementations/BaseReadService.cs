@@ -48,7 +48,7 @@ namespace Flix.Services.Implementations
             };
         }
 
-        public async Task<TResponse> GetByIdAsync(int id)
+        public virtual async Task<TResponse> GetByIdAsync(int id)
         {
             var entity = await _context.Set<TEntity>().FindAsync(id);
 
