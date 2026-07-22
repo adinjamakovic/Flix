@@ -1,3 +1,4 @@
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -70,7 +71,7 @@ namespace Flix.Services.Implementations
             var entity = await GetDataSource().FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity is null)
-                throw new KeyNotFoundException($"{nameof(Movie)} with Id {id} not found.");
+                throw new ClientException($"{nameof(Movie)} with Id {id} not found.");
 
             return _mapper.Map<MovieResponse>(entity);
         }
@@ -107,7 +108,7 @@ namespace Flix.Services.Implementations
             var missing = ids.Except(genres.Select(g => g.Id)).ToList();
 
             if (missing.Count != 0)
-                throw new KeyNotFoundException($"Genre(s) with Id {string.Join(", ", missing)} not found.");
+                throw new ClientException($"Genre(s) with Id {string.Join(", ", missing)} not found.");
 
             return genres;
         }

@@ -1,3 +1,4 @@
+using Flix.Model.Exceptions;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
@@ -58,7 +59,7 @@ namespace Flix.Services.Implementations
             var entity = await _context.Set<TEntity>().FindAsync(id);
 
             if (entity is null)
-                throw new KeyNotFoundException($"{typeof(TEntity).Name} with Id {id} not found.");
+                throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
             MapUpdateRequestToEntity(request, entity);
             await BeforeUpdateAsync(entity, request);
@@ -73,7 +74,7 @@ namespace Flix.Services.Implementations
             var entity = await _context.Set<TEntity>().FindAsync(id);
 
             if (entity is null)
-                throw new KeyNotFoundException($"{typeof(TEntity).Name} with Id {id} not found.");
+                throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();

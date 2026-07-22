@@ -6,6 +6,7 @@ using Flix.Services.Implementations;
 using Flix.Services.Interfaces;
 using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
+using Flix.WebApi.Filters;
 using Flix.WebApi.Services.AccessManager;
 using FluentValidation;
 using Mapster;
@@ -20,7 +21,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(
+    options => options.Filters.Add<ExceptionFilter>()
+);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
 {

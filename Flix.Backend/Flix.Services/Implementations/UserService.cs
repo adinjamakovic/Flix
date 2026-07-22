@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Access;
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -52,10 +53,10 @@ namespace Flix.Services.Implementations
         protected override async Task BeforeInsertAsync(User entity, UserInsertRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username))
-                throw new InvalidOperationException($"Username '{request.Username}' is already taken.");
+                throw new ClientException($"Username '{request.Username}' is already taken.");
 
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-                throw new InvalidOperationException($"Email '{request.Email}' is already registered.");
+                throw new ClientException($"Email '{request.Email}' is already registered.");
 
             entity.PasswordSalt = _cryptoService.GenerateSalt();
             entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
@@ -65,7 +66,7 @@ namespace Flix.Services.Implementations
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             if(user is null)
-                throw new Exception($"User with username '{username}' not found.");
+                throw new ClientException($"User with username '{username}' not found.");
             var response = _mapper.Map<UserSensitiveResponse>(user);
             return response;
         }

@@ -1,5 +1,6 @@
 ﻿using Flix.CommonServices.CryptoService;
 using Flix.Model.Access;
+using Flix.Model.Exceptions;
 using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
@@ -33,11 +34,11 @@ namespace Flix.WebApi.Services.AccessManager
             var user = await _userService.GetByUsernameAsync(request.Username);
 
             if (user is null)
-                throw new Exception($"User with username '{request.Username}' not found.");
+                throw new ClientException($"User with username '{request.Username}' not found.");
 
             var isPasswordValid = _cryptoService.VerifyPassword(user.PasswordHash, user.PasswordSalt, request.Password);
             if (!isPasswordValid)
-                throw new Exception("Invalid credentials");
+                throw new ClientException("Invalid credentials");
 
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
@@ -61,23 +62,23 @@ namespace Flix.WebApi.Services.AccessManager
         public async Task<UserLoginResponse> LoginWithRefreshTokenAsync(RefreshAccessTokenRequest request)
         {
             if (string.IsNullOrEmpty(request.RefreshToken))
-                throw new ArgumentException("Refresh token is required.");
+                throw new ClientException("Refresh token is required.");
 
             var refreshToken = await _refreshTokenService.GetStoredTokenAsync(request.RefreshToken);
 
             if (refreshToken == null)
-                throw new Exception("Invalid refresh token.");
+                throw new ClientException("Invalid refresh token.");
 
             if (refreshToken.ExpiresAt < DateTime.UtcNow)
-                throw new Exception("Refresh token has expired.");
+                throw new ClientException("Refresh token has expired.");
 
             var user = await _userService.GetByIdAsync(refreshToken.UserId);
 
             if (user == null)
-                throw new Exception("User not found");
+                throw new ClientException("User not found");
 
             if (!user.IsActive)
-                throw new Exception("User is not active");
+                throw new ClientException("User is not active");
 
             await _refreshTokenService.DeleteAllUserRefreshTokensAsync(user.Id);
 
