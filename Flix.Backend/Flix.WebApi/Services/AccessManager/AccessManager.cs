@@ -34,7 +34,7 @@ namespace Flix.WebApi.Services.AccessManager
             var user = await _userService.GetByUsernameAsync(request.Username);
 
             if (user is null)
-                throw new ClientException($"User with username '{request.Username}' not found.");
+                throw new Exception($"User with username '{request.Username}' not found.");
 
             var isPasswordValid = _cryptoService.VerifyPassword(user.PasswordHash, user.PasswordSalt, request.Password);
             if (!isPasswordValid)
@@ -117,7 +117,8 @@ namespace Flix.WebApi.Services.AccessManager
                     new Claim(ClaimNames.Email, user.Email),
                     new Claim(ClaimNames.FirstName, user.FirstName),
                     new Claim(ClaimNames.LastName, user.LastName),
-                    new Claim(ClaimNames.IsActive, user.IsActive.ToString())
+                    new Claim(ClaimNames.IsActive, user.IsActive.ToString()),
+                    new Claim(ClaimNames.Role, user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(double.Parse(duration)),
                 Issuer = issuer,

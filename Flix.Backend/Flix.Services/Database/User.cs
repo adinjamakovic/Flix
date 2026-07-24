@@ -30,8 +30,6 @@ namespace Flix.Services.Database
         public string PasswordHash { get; set; } = string.Empty;
 
         public string PasswordSalt { get; set; } = string.Empty;
-        
-        public bool IsAdmin { get; set; }
 
         public bool IsActive { get; set; } = true;
 
@@ -51,6 +49,9 @@ namespace Flix.Services.Database
         public int? CountryId { get; set; }
         [ForeignKey(nameof(CountryId))]
         public Country? Country { get; set; }
+
+        // Authorization
+        public ICollection<UserRole> Roles { get; set; } = new List<UserRole>();
 
         // Content authored by the user
         public ICollection<Review> Reviews { get; set; } = new List<Review>();

@@ -22,7 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers(
-    options => options.Filters.Add<ExceptionFilter>()
+    options => { 
+        options.Filters.Add<ExceptionFilter>();
+    }
 );
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
@@ -54,7 +56,12 @@ builder.Services.AddAuthorization();
 
 // Mapster configuration
 builder.Services.AddMapster();
-TypeAdapterConfig<User, UserResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<User, UserResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault());
+TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault());
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Country, CountryResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Genre, GenreResponse>.NewConfig().IgnoreNullValues(true);

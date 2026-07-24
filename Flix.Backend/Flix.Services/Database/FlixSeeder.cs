@@ -22,7 +22,9 @@ namespace Flix.Services.Database
             SeedMovieGenres(modelBuilder);
             SeedMovieStudios(modelBuilder);
             SeedMovieCasts(modelBuilder);
+            SeedRoles(modelBuilder);
             SeedUsers(modelBuilder);
+            SeedUserRoles(modelBuilder);
             SeedUserFollows(modelBuilder);
             SeedUserBlocks(modelBuilder);
             SeedReviews(modelBuilder);
@@ -671,6 +673,30 @@ namespace Flix.Services.Database
                 new MovieCast { Id = 30, MovieId = 12, CastMemberId = 28, Role = CastRole.Actor, CharacterName = "Kikuchiyo", OrderOfAppearence = 1 });
         }
 
+        private static void SeedRoles(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Admin", Description = "Full access to platform administration and moderation.", IsActive = true, CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc) },
+                new Role { Id = 2, Name = "User", Description = "Standard member account.", IsActive = true,  CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc)});
+        }
+
+        private static void SeedUserRoles(ModelBuilder modelBuilder)
+        {
+            var assignedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc);
+
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole { Id = 1, UserId = 1, RoleId = 1, AssignedAt = assignedAt },
+                new UserRole { Id = 2, UserId = 2, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 3, UserId = 3, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 4, UserId = 4, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 5, UserId = 5, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 6, UserId = 6, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 7, UserId = 7, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 8, UserId = 8, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 9, UserId = 9, RoleId = 2, AssignedAt = assignedAt },
+                new UserRole { Id = 10, UserId = 10, RoleId = 2, AssignedAt = assignedAt });
+        }
+
         private static void SeedUsers(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
@@ -683,7 +709,6 @@ namespace Flix.Services.Database
                     Username = "adin.jamakovic",
                     PasswordSalt = "c2FsdF91c2VyXzAxMjM0NQ==",
                     PasswordHash = "rHD2Yh73AE02oeak4nQOAzToFyW1gjxDH1Z4lfv+ChI=", // password: Admin123!
-                    IsAdmin = true,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 1, 15, 9, 0, 0),
                     LastLoginAt = new DateTime(2026, 7, 16, 8, 42, 0),
@@ -700,7 +725,6 @@ namespace Flix.Services.Database
                     Username = "emmaclarke",
                     PasswordSalt = "c2FsdF91c2VyXzAyMzQ1Ng==",
                     PasswordHash = "0NKgFZKMHKecbrVPU9chw7ICV923UYEBgrszYQB/Auk=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 3, 2, 14, 25, 0),
                     LastLoginAt = new DateTime(2026, 7, 15, 20, 11, 0),
@@ -717,7 +741,6 @@ namespace Flix.Services.Database
                     Username = "liamnovak",
                     PasswordSalt = "c2FsdF91c2VyXzAzNDU2Nw==",
                     PasswordHash = "HG93pIZwDVehedrtudgmNqn5FXRmL6DTZl/Vbzh8V7Y=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 4, 18, 11, 5, 0),
                     LastLoginAt = new DateTime(2026, 7, 14, 19, 30, 0),
@@ -734,7 +757,6 @@ namespace Flix.Services.Database
                     Username = "sofiarossi",
                     PasswordSalt = "c2FsdF91c2VyXzA0NTY3OA==",
                     PasswordHash = "QMoCRAuTRA4kgSH7W2ifOLkdcsFuLYavdLC0z/TO3KU=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 6, 9, 17, 48, 0),
                     LastLoginAt = new DateTime(2026, 7, 17, 10, 3, 0),
@@ -751,7 +773,6 @@ namespace Flix.Services.Database
                     Username = "kenjitanaka",
                     PasswordSalt = "c2FsdF91c2VyXzA1Njc4OQ==",
                     PasswordHash = "l70pUC0q+1w9rcqVXxAk6ZQs1N6IaZAWw3KK5OLx+bE=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 8, 21, 6, 15, 0),
                     LastLoginAt = new DateTime(2026, 7, 17, 22, 55, 0),
@@ -768,7 +789,6 @@ namespace Flix.Services.Database
                     Username = "marcuswebb",
                     PasswordSalt = "c2FsdF91c2VyXzA2Nzg5MA==",
                     PasswordHash = "OavnspkOZwNRsdv1VTWmMq83+HJJeZ6z43huQXc8bnY=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2024, 10, 4, 13, 40, 0),
                     LastLoginAt = new DateTime(2026, 7, 12, 16, 20, 0),
@@ -785,7 +805,6 @@ namespace Flix.Services.Database
                     Username = "chloedubois",
                     PasswordSalt = "c2FsdF91c2VyXzA3ODkwMQ==",
                     PasswordHash = "7NSJsmuMeW7SwJXhQS3Lgmvj9srSZWke+pS1LSDzc84=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2025, 1, 12, 8, 55, 0),
                     LastLoginAt = new DateTime(2026, 7, 16, 12, 47, 0),
@@ -802,7 +821,6 @@ namespace Flix.Services.Database
                     Username = "danielkim",
                     PasswordSalt = "c2FsdF91c2VyXzA4OTAxMg==",
                     PasswordHash = "ibSjrpZ3IdWS5fZWW9sQcGffMXvrCQTWSqr1NT5vUFc=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2025, 2, 27, 21, 10, 0),
                     LastLoginAt = new DateTime(2026, 7, 17, 7, 5, 0),
@@ -819,7 +837,6 @@ namespace Flix.Services.Database
                     Username = "ameliahughes",
                     PasswordSalt = "c2FsdF91c2VyXzA5MDEyMw==",
                     PasswordHash = "M0+tSbxsqqz4MCSJ6BSAsS26awb3Z15PGfbr1UGCZOw=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = true,
                     CreatedAt = new DateTime(2025, 5, 6, 15, 30, 0),
                     LastLoginAt = new DateTime(2026, 7, 11, 18, 22, 0),
@@ -836,7 +853,6 @@ namespace Flix.Services.Database
                     Username = "noahfischer",
                     PasswordSalt = "c2FsdF91c2VyXzEwMTIzNA==",
                     PasswordHash = "B5YC1xf276jA12l+Nv+cGjo52IrXkCBl58sz/rIKOBo=", // password: Test123!
-                    IsAdmin = false,
                     IsActive = false,
                     CreatedAt = new DateTime(2025, 9, 19, 10, 12, 0),
                     LastLoginAt = new DateTime(2026, 3, 28, 9, 41, 0),

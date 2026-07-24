@@ -4,6 +4,7 @@ using Flix.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flix.Services.Database.Migrations
 {
     [DbContext(typeof(FlixDbContext))]
-    partial class FlixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260724123213_addRoles")]
+    partial class addRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2612,15 +2615,9 @@ namespace Flix.Services.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2638,17 +2635,13 @@ namespace Flix.Services.Database.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Full access to platform administration and moderation.",
-                            IsActive = true,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Standard member account.",
-                            IsActive = true,
                             Name = "User"
                         });
                 });
@@ -3251,9 +3244,6 @@ namespace Flix.Services.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -3273,70 +3263,60 @@ namespace Flix.Services.Database.Migrations
                         new
                         {
                             Id = 1,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 1,
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 2
                         },
                         new
                         {
                             Id = 3,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 3
                         },
                         new
                         {
                             Id = 4,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 4
                         },
                         new
                         {
                             Id = 5,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 5
                         },
                         new
                         {
                             Id = 6,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 6
                         },
                         new
                         {
                             Id = 7,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 7
                         },
                         new
                         {
                             Id = 8,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 8
                         },
                         new
                         {
                             Id = 9,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 9
                         },
                         new
                         {
                             Id = 10,
-                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 10
                         });
@@ -3707,13 +3687,13 @@ namespace Flix.Services.Database.Migrations
             modelBuilder.Entity("Flix.Services.Database.UserRole", b =>
                 {
                     b.HasOne("Flix.Services.Database.Role", "Role")
-                        .WithMany("UserRoles")
+                        .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "User")
-                        .WithMany("Roles")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3764,11 +3744,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Flix.Services.Database.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
-
             modelBuilder.Entity("Flix.Services.Database.Studio", b =>
                 {
                     b.Navigation("Movies");
@@ -3787,8 +3762,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }
