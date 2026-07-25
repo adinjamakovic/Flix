@@ -1,4 +1,5 @@
-﻿using Flix.Services.Database;
+﻿using Flix.Model.Exceptions;
+using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,7 +23,7 @@ namespace Flix.Services.Implementations
         {
             var token = await _refreshTokens.FirstOrDefaultAsync(rt => rt.Token == refreshToken);
             if (token == null) 
-                throw new Exception("Refresh token not found.");
+                throw new ClientException("Refresh token not found.");
             return token;
         }
 

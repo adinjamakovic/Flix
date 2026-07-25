@@ -18,6 +18,8 @@ namespace Flix.Services.Database
         public DbSet<CastMember> CastMembers => Set<CastMember>();
         public DbSet<MovieCast> MovieCasts => Set<MovieCast>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Role> Roles => Set<Role>();
+        public DbSet<UserRole> UserRoles => Set<UserRole>();
         public DbSet<UserFollow> UserFollows => Set<UserFollow>();
         public DbSet<UserBlock> UserBlocks => Set<UserBlock>();
         public DbSet<Review> Reviews => Set<Review>();

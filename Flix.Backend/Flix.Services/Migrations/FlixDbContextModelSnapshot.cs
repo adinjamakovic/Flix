@@ -2604,6 +2604,55 @@ namespace Flix.Services.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Full access to platform administration and moderation.",
+                            IsActive = true,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Standard member account.",
+                            IsActive = true,
+                            Name = "User"
+                        });
+                });
+
             modelBuilder.Entity("Flix.Services.Database.Studio", b =>
                 {
                     b.Property<int>("Id")
@@ -2721,9 +2770,6 @@ namespace Flix.Services.Database.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
 
@@ -2774,7 +2820,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "adin.jamakovic@flix.app",
                             FirstName = "Adin",
                             IsActive = true,
-                            IsAdmin = true,
                             LastLoginAt = new DateTime(2026, 7, 16, 8, 42, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Jamakovic",
                             PasswordHash = "rHD2Yh73AE02oeak4nQOAzToFyW1gjxDH1Z4lfv+ChI=",
@@ -2791,7 +2836,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "emma.clarke@gmail.com",
                             FirstName = "Emma",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 15, 20, 11, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Clarke",
                             PasswordHash = "0NKgFZKMHKecbrVPU9chw7ICV923UYEBgrszYQB/Auk=",
@@ -2808,7 +2852,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "liam.novak@outlook.com",
                             FirstName = "Liam",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 14, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Novak",
                             PasswordHash = "HG93pIZwDVehedrtudgmNqn5FXRmL6DTZl/Vbzh8V7Y=",
@@ -2825,7 +2868,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "sofia.rossi@libero.it",
                             FirstName = "Sofia",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 17, 10, 3, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Rossi",
                             PasswordHash = "QMoCRAuTRA4kgSH7W2ifOLkdcsFuLYavdLC0z/TO3KU=",
@@ -2842,7 +2884,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "kenji.tanaka@yahoo.co.jp",
                             FirstName = "Kenji",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 17, 22, 55, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Tanaka",
                             PasswordHash = "l70pUC0q+1w9rcqVXxAk6ZQs1N6IaZAWw3KK5OLx+bE=",
@@ -2859,7 +2900,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "marcus.webb@protonmail.com",
                             FirstName = "Marcus",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 12, 16, 20, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Webb",
                             PasswordHash = "OavnspkOZwNRsdv1VTWmMq83+HJJeZ6z43huQXc8bnY=",
@@ -2876,7 +2916,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "chloe.dubois@orange.fr",
                             FirstName = "Chloe",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 16, 12, 47, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Dubois",
                             PasswordHash = "7NSJsmuMeW7SwJXhQS3Lgmvj9srSZWke+pS1LSDzc84=",
@@ -2893,7 +2932,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "daniel.kim@naver.com",
                             FirstName = "Daniel",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 17, 7, 5, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Kim",
                             PasswordHash = "ibSjrpZ3IdWS5fZWW9sQcGffMXvrCQTWSqr1NT5vUFc=",
@@ -2910,7 +2948,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "amelia.hughes@gmail.com",
                             FirstName = "Amelia",
                             IsActive = true,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 7, 11, 18, 22, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Hughes",
                             PasswordHash = "M0+tSbxsqqz4MCSJ6BSAsS26awb3Z15PGfbr1UGCZOw=",
@@ -2927,7 +2964,6 @@ namespace Flix.Services.Database.Migrations
                             Email = "noah.fischer@web.de",
                             FirstName = "Noah",
                             IsActive = false,
-                            IsAdmin = false,
                             LastLoginAt = new DateTime(2026, 3, 28, 9, 41, 0, 0, DateTimeKind.Unspecified),
                             LastName = "Fischer",
                             PasswordHash = "B5YC1xf276jA12l+Nv+cGjo52IrXkCBl58sz/rIKOBo=",
@@ -3204,6 +3240,105 @@ namespace Flix.Services.Database.Migrations
                             ResolvedAt = new DateTime(2026, 4, 27, 9, 10, 0, 0, DateTimeKind.Unspecified),
                             ReviewedByUserId = 1,
                             Status = 2
+                        });
+                });
+
+            modelBuilder.Entity("Flix.Services.Database.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId", "RoleId")
+                        .IsUnique();
+
+                    b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 1,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 10
                         });
                 });
 
@@ -3569,6 +3704,25 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("ReviewedBy");
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.UserRole", b =>
+                {
+                    b.HasOne("Flix.Services.Database.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Flix.Services.Database.User", "User")
+                        .WithMany("Roles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Flix.Services.Database.CastMember", b =>
                 {
                     b.Navigation("MovieCredits");
@@ -3610,6 +3764,11 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("Flix.Services.Database.Studio", b =>
                 {
                     b.Navigation("Movies");
@@ -3628,6 +3787,8 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

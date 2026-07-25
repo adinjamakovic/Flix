@@ -16,6 +16,18 @@ namespace Flix.Services.Database
                     right => right.HasOne(mg => mg.Genre).WithMany().HasForeignKey(mg => mg.GenreId),
                     left => left.HasOne(mg => mg.Movie).WithMany().HasForeignKey(mg => mg.MovieId));
 
+            modelBuilder.Entity<UserRole>()
+                .HasOne(x => x.User)
+                .WithMany(x=>x.Roles)
+                .HasForeignKey(x=>x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(x => x.Role)
+                .WithMany(x=>x.UserRoles)
+                .HasForeignKey(x=>x.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);    
+
             modelBuilder.Entity<UserFollow>()
                 .HasOne(f => f.Follower)
                 .WithMany(u => u.Following)
@@ -36,6 +48,14 @@ namespace Flix.Services.Database
             
             modelBuilder.Entity<Genre>()
                 .HasIndex(g => g.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Role>()
+                .HasIndex(r => r.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<UserRole>()
+                .HasIndex(ur => new { ur.UserId, ur.RoleId })
                 .IsUnique();
 
             modelBuilder.Entity<MovieGenre>()

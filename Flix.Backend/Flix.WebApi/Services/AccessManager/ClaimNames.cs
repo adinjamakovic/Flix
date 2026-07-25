@@ -8,5 +8,6 @@
         public static readonly string FirstName = "FirstName";
         public static readonly string LastName = "LastName";
         public static readonly string IsActive = "IsActive";
+        public static readonly string Role = "Role";
     }
 }

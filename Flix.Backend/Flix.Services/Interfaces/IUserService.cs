@@ -9,6 +9,6 @@ namespace Flix.Services.Interfaces
     public interface IUserService
         : IBaseCRUDService<UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>
     {
-        Task<UserSensitiveResponse> GetByUsernameAsync(string username);
+        Task<UserSensitiveResponse?> GetByUsernameAsync(string username);
     }
 }

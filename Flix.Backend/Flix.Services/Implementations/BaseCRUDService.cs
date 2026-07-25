@@ -1,3 +1,4 @@
+using Flix.Model.Exceptions;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
@@ -10,8 +11,8 @@ namespace Flix.Services.Implementations
         where TEntity : class
         where TSearch : BaseSearchObject
     {
-        private readonly IValidator<TInsertRequest> _insertValidator;
-        private readonly IValidator<TUpdateRequest> _updateValidator;
+        protected readonly IValidator<TInsertRequest> _insertValidator;
+        protected readonly IValidator<TUpdateRequest> _updateValidator;
 
         protected BaseCRUDService(
             FlixDbContext context,
@@ -38,7 +39,7 @@ namespace Flix.Services.Implementations
 
         protected virtual Task BeforeUpdateAsync(TEntity entity, TUpdateRequest request) => Task.CompletedTask;
 
-        public async Task<TResponse> InsertAsync(TInsertRequest request)
+        public virtual async Task<TResponse> InsertAsync(TInsertRequest request)
         {
             await _insertValidator.ValidateAndThrowAsync(request);
 
@@ -51,14 +52,14 @@ namespace Flix.Services.Implementations
             return _mapper.Map<TResponse>(entity);
         }
 
-        public async Task<TResponse> UpdateAsync(int id, TUpdateRequest request)
+        public virtual async Task<TResponse> UpdateAsync(int id, TUpdateRequest request)
         {
             await _updateValidator.ValidateAndThrowAsync(request);
 
             var entity = await _context.Set<TEntity>().FindAsync(id);
 
             if (entity is null)
-                throw new KeyNotFoundException($"{typeof(TEntity).Name} with Id {id} not found.");
+                throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
             MapUpdateRequestToEntity(request, entity);
             await BeforeUpdateAsync(entity, request);
@@ -68,12 +69,12 @@ namespace Flix.Services.Implementations
             return _mapper.Map<TResponse>(entity);
         }
 
-        public async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(int id)
         {
             var entity = await _context.Set<TEntity>().FindAsync(id);
 
             if (entity is null)
-                throw new KeyNotFoundException($"{typeof(TEntity).Name} with Id {id} not found.");
+                throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();
