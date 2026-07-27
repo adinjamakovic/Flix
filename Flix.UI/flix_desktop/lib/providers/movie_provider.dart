@@ -39,6 +39,38 @@ class MovieProvider extends ChangeNotifier {
     }
   }
 
+  Future<Movie> insert(dynamic object) async {
+    var url = _baseUrl;
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var jsonRequest = jsonEncode(object);
+
+    http.Response response = await http.post(uri, headers: headers, body: jsonRequest);
+    if(isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      return fromJson(data);
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
+  Future<Movie> update(dynamic object) async {
+    var url = _baseUrl;
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var jsonRequest = jsonEncode(object);
+
+    http.Response response = await http.put(uri, headers: headers, body: jsonRequest);
+    if(isValidResponse(response)) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   Movie fromJson(dynamic e) {
     return Movie.fromJson(e);
   }
@@ -49,11 +81,11 @@ class MovieProvider extends ChangeNotifier {
       return true;
     }
     else if (response.statusCode == 401){
-      throw new Exception("Unauthorized");
+      throw Exception("Unauthorized");
     }
     else{
       print(response.body);
-      throw new Exception("Something bad happened please try again");
+      throw Exception("Something bad happened please try again");
     }
   }
 

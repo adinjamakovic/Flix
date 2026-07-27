@@ -1,20 +1,20 @@
-import 'package:flix_desktop/screens/cast_list.dart';
-import 'package:flix_desktop/screens/clash_list.dart';
-import 'package:flix_desktop/screens/review_list.dart';
+import 'package:flix_desktop/screens/lists/cast_list.dart';
+import 'package:flix_desktop/screens/lists/clash_list.dart';
+import 'package:flix_desktop/screens/lists/review_list.dart';
 import 'package:flix_desktop/screens/statistics.dart';
-import 'package:flix_desktop/screens/user_list.dart';
+import 'package:flix_desktop/screens/lists/user_list.dart';
 import 'package:flutter/material.dart';
-import '../screens/movie_list.dart';
+import '../screens/lists/movie_list.dart';
 
 enum DrawerDestination { movies, cast, users, reviews, clashes, statistics }
 
 class MasterScreen extends StatefulWidget {
   const MasterScreen({
-    Key? key,
+    super.key,
     required this.child,
     required this.title,
     required this.destination,
-  }) : super(key: key);
+  });
   final Widget child;
   final String title;
   final DrawerDestination destination;
@@ -123,13 +123,13 @@ class _DrawerItem {
 
 class _DrawerTile extends StatefulWidget {
   const _DrawerTile({
-    Key? key,
+    super.key,
     required this.item,
     required this.selected,
     required this.selectedColor,
     required this.foregroundColor,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final _DrawerItem item;
   final bool selected;

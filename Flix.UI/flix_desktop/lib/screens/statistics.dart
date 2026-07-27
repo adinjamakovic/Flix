@@ -2,7 +2,7 @@ import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flutter/material.dart';
 
 class Statistics extends StatefulWidget {
-  const Statistics({ Key? key, }) : super(key: key);
+  const Statistics({ super.key, });
 
   @override
   _StatisticsState createState() => _StatisticsState();

@@ -2,7 +2,7 @@ import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flutter/material.dart';
 
 class ReviewList extends StatefulWidget {
-  const ReviewList({ Key? key, }) : super(key: key);
+  const ReviewList({ super.key, });
 
   @override
   _ReviewListState createState() => _ReviewListState();

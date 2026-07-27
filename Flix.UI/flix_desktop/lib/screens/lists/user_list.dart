@@ -1,26 +1,26 @@
 import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flutter/material.dart';
 
-class ClashList extends StatefulWidget {
-  const ClashList({ Key? key, }) : super(key: key);
+class UserList extends StatefulWidget {
+  const UserList({ super.key, });
 
   @override
-  _ClashListState createState() => _ClashListState();
+  _UserListState createState() => _UserListState();
 }
 
-class _ClashListState extends State<ClashList> {
+class _UserListState extends State<UserList> {
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
-      title: "Clash list",
-      destination: DrawerDestination.clashes,
+      title: "User list",
+      destination: DrawerDestination.users,
       child: Center(
         child: Container(
           child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("TODO: Add Auth and Clash List :)")),
+              child: Text("TODO: Add Auth and User List :)")),
         ),
       ), );
   }

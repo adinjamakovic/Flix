@@ -15,3 +15,9 @@ void alertBox(BuildContext context, String title, String content) {
       ],
     ));
 }
+
+const String mField = "This field is mandatory";
+
+const String numericField = "This field is numeric";
+
+const String dateField = "This field is a date field";

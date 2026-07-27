@@ -1,26 +1,26 @@
 import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flutter/material.dart';
 
-class UserList extends StatefulWidget {
-  const UserList({ Key? key, }) : super(key: key);
+class CastList extends StatefulWidget {
+  const CastList({ super.key, });
 
   @override
-  _UserListState createState() => _UserListState();
+  _CastListState createState() => _CastListState();
 }
 
-class _UserListState extends State<UserList> {
+class _CastListState extends State<CastList> {
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
-      title: "User list",
-      destination: DrawerDestination.users,
+      title: "Cast list",
+      destination: DrawerDestination.cast,
       child: Center(
         child: Container(
           child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("TODO: Add Auth and User List :)")),
+              child: Text("TODO: Add Auth and Cast List :)")),
         ),
       ), );
   }
