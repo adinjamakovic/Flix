@@ -1,14 +1,12 @@
-import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flix_desktop/models/movie.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
-import 'package:flix_desktop/screens/lists/movie_list.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 
 class MovieDetails extends StatefulWidget {
-  const MovieDetails({ Key? key, this.movie }) : super(key: key);
+  const MovieDetails({ super.key, this.movie });
   
   final Movie? movie;
   

@@ -123,7 +123,6 @@ class _DrawerItem {
 
 class _DrawerTile extends StatefulWidget {
   const _DrawerTile({
-    super.key,
     required this.item,
     required this.selected,
     required this.selectedColor,

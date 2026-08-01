@@ -1,3 +1,4 @@
+import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/screens/login.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ void main() {
   runApp(
       MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => MovieProvider() )
+            ChangeNotifierProvider(create: (_) => AuthProvider() ),
+            ChangeNotifierProvider(create: (_) => MovieProvider() ),
           ],
         child: const MyApp()));
 }

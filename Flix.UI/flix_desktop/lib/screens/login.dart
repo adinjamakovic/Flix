@@ -1,8 +1,13 @@
+import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/screens/lists/movie_list.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-const LoginScreen({ super.key });
+  LoginScreen({ super.key });
+
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context){
@@ -30,6 +35,7 @@ const LoginScreen({ super.key });
                 ),
                 Container(
                   child: TextField(
+                    controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: "Username"
                     ),
@@ -37,14 +43,24 @@ const LoginScreen({ super.key });
                 ),
                 Container(
                   child: TextField(
+                    controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: "Password"
                     ),
                   )
                 ),
                 ElevatedButton( 
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MovieList()));
+                  onPressed: () async {
+
+                    AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    try{
+                      await authProvider.login(_usernameController.text, _passwordController.text);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MovieList()));
+                    } on Exception catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                    }
+
                   },
                   child: Text("Login")
                 ) 
