@@ -5,11 +5,11 @@ import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
-  String? _accessToken;
+  static String? _accessToken;
   String? _refreshToken;
 
 
-  String? get accessToken => _accessToken;
+  static String? get accessToken => _accessToken;
   String? get refreshToken => _refreshToken;
   bool get isAuthenticated => _isAuthenticated;
 

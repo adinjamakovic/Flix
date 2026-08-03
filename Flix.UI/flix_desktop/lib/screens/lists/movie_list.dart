@@ -1,6 +1,8 @@
 import 'package:flix_desktop/layouts/master_screen.dart';
+import 'package:flix_desktop/models/country.dart';
 import 'package:flix_desktop/models/movie.dart';
 import 'package:flix_desktop/models/search_result.dart';
+import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/screens/details/movie_details.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
@@ -17,6 +19,11 @@ class MovieList extends StatefulWidget {
 class _MovieListState extends State<MovieList> {
   static const int _pageSize = 6;
 
+  /// The country dropdown filters client-side, so it pulls the whole list once.
+  static const int _countryPageSize = 1000;
+
+  static const int _earliestYear = 1900;
+
   static const int _titleFlex = 26;
   static const int _directorFlex = 22;
   static const int _countryFlex = 10;
@@ -27,6 +34,7 @@ class _MovieListState extends State<MovieList> {
   static const int _actionsFlex = 14;
 
   late MovieProvider _movieProvider;
+  late CountryProvider _countryProvider;
   SearchResult<Movie>? result;
   bool isLoading = true;
   int _page = 1;
@@ -34,13 +42,30 @@ class _MovieListState extends State<MovieList> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _directorController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
-  final TextEditingController _yearController = TextEditingController();
+  final FocusNode _countryFocusNode = FocusNode();
+
+  static const String _anyCountryLabel = "Any country";
+
+  List<Country> _countries = List.empty();
+  bool _countriesLoading = true;
+  Country? _selectedCountry;
+
+  int? _selectedYear;
+  late final List<int> _years;
 
   @override
   void initState() {
     super.initState();
 
     _movieProvider = context.read<MovieProvider>();
+    _countryProvider = context.read<CountryProvider>();
+    _countryFocusNode.addListener(_syncCountryText);
+
+    final int currentYear = DateTime.now().year;
+    _years = List<int>.generate(
+      currentYear - _earliestYear + 1,
+      (index) => currentYear - index,
+    );
 
     initTable();
   }
@@ -50,12 +75,40 @@ class _MovieListState extends State<MovieList> {
     _titleController.dispose();
     _directorController.dispose();
     _countryController.dispose();
-    _yearController.dispose();
+    _countryFocusNode.removeListener(_syncCountryText);
+    _countryFocusNode.dispose();
     super.dispose();
   }
 
   Future<void> initTable() async {
-    await _search(page: 1);
+    await Future.wait([_loadCountries(), _search(page: 1)]);
+  }
+
+  Future<void> _loadCountries() async {
+    try {
+      final data = await _countryProvider.get(
+        filter: {"page": 1, "pageSize": _countryPageSize},
+      );
+
+      if (!mounted) return;
+
+      final List<Country> countries = data.items ?? List.empty();
+      countries.sort(
+        (a, b) => (a.name ?? "").toLowerCase().compareTo((b.name ?? "").toLowerCase()),
+      );
+
+      setState(() {
+        _countries = countries;
+        _countriesLoading = false;
+      });
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _countriesLoading = false;
+      });
+      alertBox(context, "Error", e.toString());
+    }
   }
 
   int get _totalPages {
@@ -69,16 +122,29 @@ class _MovieListState extends State<MovieList> {
       "page": page,
       "pageSize": _pageSize,
       "includeTotalCount": true,
+      // The DIRECTOR and RATING columns are projected from the credit/review
+      // collections, which the API only loads when these are set.
+      "includeCast": true,
+      "includeReviews": true,
     };
+
+    if(_directorController.text.trim().isNotEmpty) {
+      filter["directorName"] = _directorController.text.trim();
+    }
 
     if (_titleController.text.trim().isNotEmpty) {
       filter["title"] = _titleController.text.trim();
     }
 
-    final int? year = int.tryParse(_yearController.text.trim());
+    final int? countryId = _selectedCountry?.id;
+    if (countryId != null) {
+      filter["countryId"] = countryId;
+    }
+
+    final int? year = _selectedYear;
     if (year != null) {
       filter["releasedAfter"] = DateTime(year, 1, 1);
-      filter["releasedBefore"] = DateTime(year, 12, 31);
+      filter["releasedBefore"] = DateTime(year, 12, 31, 23, 59, 59);
     }
 
     return filter;
@@ -193,22 +259,12 @@ class _MovieListState extends State<MovieList> {
         const SizedBox(width: 16),
         Expanded(
           flex: 26,
-          child: _buildFilterField(
-            label: "Country of origin",
-            hint: "Search by country...",
-            controller: _countryController,
-            icon: Icons.filter_list,
-          ),
+          child: _buildCountryPicker(),
         ),
         const SizedBox(width: 16),
         Expanded(
-          flex: 18,
-          child: _buildFilterField(
-            label: "Year of release",
-            hint: "YYYY",
-            controller: _yearController,
-            keyboardType: TextInputType.number,
-          ),
+          flex: 26,
+          child: _buildYearPicker(),
         ),
         const SizedBox(width: 16),
         SizedBox(
@@ -228,6 +284,154 @@ class _MovieListState extends State<MovieList> {
     );
   }
 
+  Widget _buildFieldLabel(String label) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Text(
+      label,
+      style: TextStyle(
+        color: colors.onSurfaceVariant,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  Widget _buildYearPicker() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildFieldLabel("Year of release"),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 46,
+          child: InputDecorator(
+            isEmpty: _selectedYear == null,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int?>(
+                value: _selectedYear,
+                isExpanded: true,
+                isDense: true,
+                alignment: AlignmentDirectional.centerStart,
+                menuMaxHeight: 320,
+                borderRadius: BorderRadius.circular(10),
+                icon: Icon(Icons.expand_more, color: colors.onSurfaceVariant),
+                style: TextStyle(color: colors.onSurface, fontSize: 14),
+                items: [
+                  DropdownMenuItem<int?>(
+                    value: null,
+                    child: Text(
+                      "Any year",
+                      style: TextStyle(
+                        color: colors.onSurfaceVariant,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  ..._years.map(
+                    (year) => DropdownMenuItem<int?>(
+                      value: year,
+                      child: Text(year.toString()),
+                    ),
+                  ),
+                ],
+                onChanged: (year) {
+                  setState(() {
+                    _selectedYear = year;
+                  });
+                  _search(page: 1);
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCountryPicker() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildFieldLabel("Country of origin"),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 46,
+          child: DropdownMenu<Country?>(
+            controller: _countryController,
+            focusNode: _countryFocusNode,
+            enabled: !_countriesLoading,
+            expandedInsets: EdgeInsets.zero,
+            enableFilter: true,
+            requestFocusOnTap: true,
+            menuHeight: 320,
+            hintText: _countriesLoading
+                ? "Loading countries..."
+                : "Search by country...",
+            textStyle: TextStyle(color: colors.onSurface, fontSize: 14),
+            trailingIcon: Icon(Icons.expand_more, color: colors.onSurfaceVariant),
+            selectedTrailingIcon:
+                Icon(Icons.expand_less, color: colors.onSurfaceVariant),
+            inputDecorationTheme:
+                Theme.of(context).inputDecorationTheme.copyWith(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                    ),
+            menuStyle: MenuStyle(
+              backgroundColor:
+                  WidgetStatePropertyAll(colors.surfaceContainerLowest),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            dropdownMenuEntries: [
+              DropdownMenuEntry<Country?>(
+                value: null,
+                label: _anyCountryLabel,
+                style: MenuItemButton.styleFrom(
+                  foregroundColor: colors.onSurfaceVariant,
+                ),
+              ),
+              ..._countries.map(
+                (country) => DropdownMenuEntry<Country?>(
+                  value: country,
+                  label: country.name ?? "-",
+                ),
+              ),
+            ],
+            onSelected: (country) {
+              setState(() {
+                _selectedCountry = country;
+              });
+              _search(page: 1);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// The dropdown leaves whatever was typed in the field, so on focus loss the
+  /// text is snapped back to whatever is actually being filtered on.
+  void _syncCountryText() {
+    if (_countryFocusNode.hasFocus) return;
+
+    final String text = _selectedCountry == null
+        ? ""
+        : (_selectedCountry!.name ?? "-");
+
+    if (_countryController.text != text) {
+      _countryController.text = text;
+    }
+  }
+
   Widget _buildFilterField({
     required String label,
     required String hint,
@@ -240,14 +444,7 @@ class _MovieListState extends State<MovieList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: colors.onSurfaceVariant,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        _buildFieldLabel(label),
         const SizedBox(height: 6),
         SizedBox(
           height: 46,
@@ -361,11 +558,11 @@ class _MovieListState extends State<MovieList> {
       child: Row(
         children: [
           _buildCell(movie.title ?? "-", _titleFlex, bold: true),
-          _buildCell("-", _directorFlex, muted: true),
-          _buildCell(movie.countryId?.toString() ?? "-", _countryFlex),
+          _buildCell(movie.directorName ?? "-", _directorFlex, muted: true),
+          _buildCell(movie.country?.name ?? "-", _countryFlex),
           _buildCell(_formatDate(movie.releaseDate), _releaseDateFlex),
-          _buildCell("-", _genreFlex),
-          _buildCell("-", _ratingFlex),
+          _buildCell(movie.genreNames ?? "-", _genreFlex),
+          _buildCell("${movie.rating?.toStringAsFixed(1) ?? "-"}/5.0", _ratingFlex),
           _buildCell(movie.views?.toString() ?? "-", _viewsFlex),
           Expanded(
             flex: _actionsFlex,

@@ -29,6 +29,6 @@ namespace Flix.Services.Database
 
         public string? PhotoBase64 { get; set; }
 
-        public ICollection<MovieCast> MovieCredits { get; set; } = new List<MovieCast>();
+        public ICollection<MovieCast> Credits { get; set; } = new List<MovieCast>();
     }
 }

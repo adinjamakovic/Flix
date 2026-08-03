@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Flix.Model.Enums;
 using Flix.Services.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

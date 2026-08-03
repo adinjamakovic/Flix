@@ -1,3 +1,4 @@
+using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -35,7 +36,12 @@ namespace Flix.Services.Implementations
             => _context.Set<Movie>()
                 .Include(x => x.Country)
                 .Include(x => x.Language)
-                .Include(x => x.Genres);
+                .Include(x => x.Genres)
+                // Several collection includes on one query would otherwise be joined into a
+                // single result set (genres x credits x reviews rows per movie). Split queries
+                // need a unique ordering to page consistently, hence the OrderBy.
+                .OrderBy(x => x.Id)
+                .AsSplitQuery();
 
         protected override IEnumerable<Movie> ApplyFilters(IQueryable<Movie> query, MovieSearchObject? search)
         {
@@ -43,6 +49,14 @@ namespace Flix.Services.Implementations
             {
                 if (!string.IsNullOrWhiteSpace(search.Title?.Trim()))
                     query = query.Where(x => x.Title.ToLower().Contains(search.Title.Trim().ToLower()));
+
+                if (!string.IsNullOrWhiteSpace(search.DirectorName?.Trim()))
+                {
+                    var directorName = search.DirectorName.Trim().ToLower();
+                    query = query.Where(x => x.Credits.Any(c =>
+                        c.Role == CastRole.Director &&
+                         (c.CastMember.FirstName + " " + c.CastMember.LastName).ToLower().Contains(directorName)));
+                }
 
                 if (search.CountryId.HasValue)
                     query = query.Where(x => x.CountryId == search.CountryId.Value);
@@ -64,6 +78,15 @@ namespace Flix.Services.Implementations
             }
 
             return query;
+        }
+
+        protected override Task<IQueryable<Movie>> IncludeRelatedEntities(MovieSearchObject? search, IQueryable<Movie> query)
+        {
+            if(search?.IncludeCast == true)
+                query = query.Include(x => x.Credits).ThenInclude(c => c.CastMember);
+            if (search?.IncludeReviews == true)
+                query = query.Include(x => x.Reviews);
+            return base.IncludeRelatedEntities(search, query);
         }
 
         public override async Task<MovieResponse> GetByIdAsync(int id)

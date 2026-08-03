@@ -25,9 +25,16 @@ namespace Flix.Services.Implementations
 
         protected abstract IEnumerable<TEntity> ApplyFilters(IQueryable<TEntity> query, TSearch? search);
 
+        protected virtual async Task<IQueryable<TEntity>> IncludeRelatedEntities(TSearch? search, IQueryable<TEntity> query)
+        {
+            // Override this method in derived classes to include related entities based on the search object.
+            return query;
+        }
+
         public async Task<PageResult<TResponse>> GetAsync(TSearch? search = null)
         {
-            IEnumerable<TEntity> query = ApplyFilters(GetDataSource(), search);
+            var query = await IncludeRelatedEntities(search, GetDataSource());
+            query = ApplyFilters(query, search).AsQueryable();
 
             int? totalCount = null;
 
