@@ -374,7 +374,7 @@ class _UserListState extends State<UserList> {
         TableColumn<User>(
           label: "JOIN DATE",
           flex: _joinDateFlex,
-          value: (user) => _formatDate(user.createdAt),
+          value: (user) => formatDate(user.createdAt),
         ),
         TableColumn<User>(
           label: "MOVIES WATCHED",
@@ -427,13 +427,6 @@ class _UserListState extends State<UserList> {
         ),
       ),
     );
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return "$day/$month/${date.year}";
   }
 
   /// The dropdown leaves whatever was typed in the field, so on focus loss the

@@ -172,13 +172,6 @@ class _MovieListState extends State<MovieList> {
     }
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return "$day/$month/${date.year}";
-  }
-
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
@@ -493,7 +486,7 @@ class _MovieListState extends State<MovieList> {
         TableColumn<Movie>(
           label: "RELEASE DATE",
           flex: _releaseDateFlex,
-          value: (movie) => _formatDate(movie.releaseDate),
+          value: (movie) => formatDate(movie.releaseDate),
         ),
         TableColumn<Movie>(
           label: "GENRE",

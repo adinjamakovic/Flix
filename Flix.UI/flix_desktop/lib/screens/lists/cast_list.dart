@@ -267,7 +267,7 @@ class _CastListState extends State<CastList> {
         TableColumn<CastMember>(
           label: "BIRTH DATE",
           flex: _dateFlex,
-          value: (cast) => _formatDate(cast.birthDate),
+          value: (cast) => formatDate(cast.birthDate),
         ),
         TableColumn<CastMember>.actions(
           flex: _actionsFlex,
@@ -286,13 +286,6 @@ class _CastListState extends State<CastList> {
         .toList();
 
     return names.isEmpty ? "-" : names.join(", ");
-  }
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-    final String day = date.day.toString().padLeft(2, '0');
-    final String month = date.month.toString().padLeft(2, '0');
-    return "$day/$month/${date.year}";
   }
 
   Widget _buildFieldLabel(String label){

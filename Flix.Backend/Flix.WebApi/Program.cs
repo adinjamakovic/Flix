@@ -96,6 +96,9 @@ TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
                                                                 .Where(x => x.Role != CastRole.Director)
                                                                 .OrderBy(x => x.OrderOfAppearence)
                                                                 .ToList());
+TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
+    .Map(dest => dest.Participants, src => src.Entries.Count)
+    .IgnoreNullValues(true);
 
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
@@ -131,7 +134,7 @@ builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
-
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 

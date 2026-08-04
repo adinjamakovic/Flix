@@ -135,18 +135,18 @@ class PagedTable<T> extends StatelessWidget {
   final int totalCount;
   final ValueChanged<int> onPageChanged;
 
-  int get _totalPages {
-    final int pages = (totalCount / pageSize).ceil();
-    return pages < 1 ? 1 : pages;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(child: _buildTable(context)),
         const SizedBox(height: 12),
-        _buildPagination(context),
+        Pagination(
+          page: page,
+          pageSize: pageSize,
+          totalCount: totalCount,
+          onPageChanged: onPageChanged,
+        ),
       ],
     );
   }
@@ -214,8 +214,29 @@ class PagedTable<T> extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildPagination(BuildContext context) {
+class Pagination extends StatelessWidget {
+  const Pagination({
+    super.key,
+    required this.page,
+    required this.pageSize,
+    required this.totalCount,
+    required this.onPageChanged,
+  });
+
+  final int page;
+  final int pageSize;
+  final int totalCount;
+  final ValueChanged<int> onPageChanged;
+
+  int get _totalPages {
+    final int pages = (totalCount / pageSize).ceil();
+    return pages < 1 ? 1 : pages;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
     final int totalPages = _totalPages;
 

@@ -1,9 +1,11 @@
+import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/screens/lists/cast_list.dart';
 import 'package:flix_desktop/screens/lists/clash_list.dart';
 import 'package:flix_desktop/screens/lists/review_list.dart';
 import 'package:flix_desktop/screens/statistics.dart';
 import 'package:flix_desktop/screens/lists/user_list.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../screens/lists/movie_list.dart';
 
 enum DrawerDestination { movies, cast, users, reviews, clashes, statistics }
@@ -95,11 +97,14 @@ class _MasterScreenState extends State<MasterScreen> {
                   Icon(Icons.person_outline,
                       color: colors.onSecondaryContainer, size: 26),
                   const SizedBox(width: 16),
-                  Text(
-                    "Administrator",
-                    style: TextStyle(
-                      color: colors.onSecondaryContainer,
-                      fontSize: 17,
+                  Expanded(
+                    child: Text(
+                      context.watch<AuthProvider>().username ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.onSecondaryContainer,
+                        fontSize: 17,
+                      ),
                     ),
                   ),
                 ],
