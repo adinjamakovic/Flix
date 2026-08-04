@@ -1,5 +1,11 @@
+import 'package:flix_desktop/models/cast_member.dart';
+import 'package:flix_desktop/models/country.dart';
+import 'package:flix_desktop/models/genre.dart';
+import 'package:flix_desktop/models/language.dart';
+import 'package:flix_desktop/models/movie_credit.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+// To generate run command: "dart run build_runner build"
 part 'movie.g.dart';
 
 @JsonSerializable()
@@ -13,8 +19,13 @@ class Movie {
       this.durationMinutes,
       this.views,
       this.isEnabled,
-      this.countryId,
-      this.languageId
+      this.country,
+      this.language,
+      this.rating,
+      this.reviewCount,
+      this.directors,
+      this.cast,
+      this.genres
       );
 
 
@@ -26,8 +37,28 @@ class Movie {
   final int? durationMinutes;
   final int? views;
   final bool? isEnabled;
-  final int? countryId;
-  final int? languageId;
+  final double? rating;
+  final int? reviewCount;
+  final Country? country;
+  final Language? language;
+  final List<CastMember>? directors;
+  final List<MovieCredit>? cast;
+  final List<Genre>? genres;
+
+  /// A movie can have several directors, the UI only shows the first one.
+  CastMember? get director =>
+      (directors == null || directors!.isEmpty) ? null : directors!.first;
+
+  String? get directorName => director?.fullName;
+
+  String? get genreNames {
+    final List<String> names = (genres ?? [])
+        .where((genre) => genre.name != null && genre.name!.trim().isNotEmpty)
+        .map((genre) => genre.name!.trim())
+        .toList();
+
+    return names.isEmpty ? null : names.join(", ");
+  }
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
 

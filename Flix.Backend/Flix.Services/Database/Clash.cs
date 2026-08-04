@@ -1,8 +1,6 @@
-using Flix.Services.Enums;
-using System;
+using Flix.Model.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Flix.Services.Database
 {

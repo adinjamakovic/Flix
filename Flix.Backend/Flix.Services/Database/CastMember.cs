@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Flix.Services.Database
 {
@@ -29,6 +27,6 @@ namespace Flix.Services.Database
 
         public string? PhotoBase64 { get; set; }
 
-        public ICollection<MovieCast> MovieCredits { get; set; } = new List<MovieCast>();
+        public ICollection<MovieCast> Credits { get; set; } = new List<MovieCast>();
     }
 }

@@ -10,13 +10,12 @@ namespace Flix.Model.Responses
         public int? DurationMinutes { get; set; }
         public int Views { get; set; }
         public bool IsEnabled { get; set; }
-
-        public int? CountryId { get; set; }
-        public string? CountryName { get; set; }
-
-        public int? LanguageId { get; set; }
-        public string? LanguageName { get; set; }
-
+        public decimal? Rating { get; set; }
+        public int ReviewCount { get; set; }
+        public CountryResponse? Country { get; set; }
+        public LanguageResponse? Language { get; set; }
+        public List<CastMemberResponse> Directors { get; set; } = new List<CastMemberResponse>();
+        public List<MovieCreditResponse> Cast { get; set; } = new List<MovieCreditResponse>();
         public List<GenreResponse> Genres { get; set; } = new List<GenreResponse>();
     }
 }

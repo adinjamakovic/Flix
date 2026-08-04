@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
+using Flix.Model.Enums;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,18 +59,46 @@ builder.Services.AddAuthorization();
 builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
-    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault());
+    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
+    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
     .IgnoreNullValues(true)
-    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault());
-TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig().IgnoreNullValues(true);
+    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
+    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
+TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
+    .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())
+    .IgnoreNullValues(true);
 TypeAdapterConfig<Country, CountryResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Genre, GenreResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Language, LanguageResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Studio, StudioResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<MovieCast, MovieCreditResponse>.NewConfig()
+    .Map(dest => dest.Role, src => (int)src.Role);
 TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
-    .Map(dest => dest.CountryName, src => src.Country != null ? src.Country.Name : null)
-    .Map(dest => dest.LanguageName, src => src.Language != null ? src.Language.Name : null);
+    .Map(dest => dest.Country, src => src.Country)
+    .Map(dest => dest.Language, src => src.Language)
+    .Map(dest => dest.ReviewCount, src => src.Reviews.Count)
+    .Map(dest => dest.Rating, src => src.Reviews.Any(x => x.Rating != null)
+                                                                ? (decimal?)Math.Round(
+                                                                    src.Reviews.Where(x => x.Rating != null)
+                                                                               .Average(x => x.Rating!.Value),
+                                                                    1,
+                                                                    MidpointRounding.AwayFromZero)
+                                                                : null)
+    .Map(dest => dest.Directors, src => src.Credits
+                                                                .Where(x => x.Role == CastRole.Director)
+                                                                .OrderBy(x => x.OrderOfAppearence)
+                                                                .Select(x => x.CastMember)
+                                                                .ToList())
+    .Map(dest => dest.Cast, src => src.Credits
+                                                                .Where(x => x.Role != CastRole.Director)
+                                                                .OrderBy(x => x.OrderOfAppearence)
+                                                                .ToList());
+TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
+    .Map(dest => dest.Participants, src => src.Entries.Count)
+    .IgnoreNullValues(true);
 
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
@@ -105,7 +134,7 @@ builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
-
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 

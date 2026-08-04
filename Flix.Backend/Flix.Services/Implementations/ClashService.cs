@@ -2,13 +2,13 @@
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
-using Flix.Services.Enums;
+using Flix.Model.Enums;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
-using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Implementations
 {
@@ -23,6 +23,19 @@ namespace Flix.Services.Implementations
             IValidator<ClashUpdateRequest> updateValidator)
             : base(context, mapper, insertValidator, updateValidator)
         {            
+        }
+        protected override Task<IQueryable<Clash>> IncludeRelatedEntities(ClashSearchObject? search, IQueryable<Clash> query)
+        {
+            if (search?.IncludeEntries == true)
+                query = query
+                    .Include(c => c.Entries);
+
+            if(search?.IncludeLists == true)
+                query = query
+                    .Include(c => c.Entries)
+                    .ThenInclude(e => e.MovieList);
+
+            return Task.FromResult(query);
         }
 
         protected override IEnumerable<Clash> ApplyFilters(IQueryable<Clash> query, ClashSearchObject? search)

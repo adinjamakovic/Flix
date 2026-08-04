@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace Flix.Model.SearchObjects
@@ -8,5 +7,7 @@ namespace Flix.Model.SearchObjects
     {
         public string? Name { get; set; }
         public int? Status { get; set; }
+        public bool? IncludeEntries { get; set; }
+        public bool? IncludeLists { get; set; }
     }
 }

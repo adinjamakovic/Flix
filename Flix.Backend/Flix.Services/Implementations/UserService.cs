@@ -1,6 +1,4 @@
-using System.Security.Cryptography;
 using Flix.CommonServices.CryptoService;
-using Flix.Model.Access;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -28,9 +26,9 @@ namespace Flix.Services.Implementations
         }
 
         protected override IQueryable<User> GetDataSource()
-            => _context.Users
-                .Include(u => u.Roles)
-                    .ThenInclude(ur => ur.Role);
+            => _context.Set<User>()
+                .OrderBy(u => u.Id)
+                .AsSplitQuery();
 
         protected override IQueryable<User> ApplyFilters(IQueryable<User> query, UserSearchObject? search)
         {
@@ -49,10 +47,28 @@ namespace Flix.Services.Implementations
             if (!string.IsNullOrWhiteSpace(search.Username?.Trim()))
                 query = query.Where(u => u.Username.Contains(search.Username));
 
+            if(search?.CountryId is int countryId)
+                query = query.Where(u => u.CountryId == countryId);
+
             if (search.IsActive is bool isActive)
                 query = query.Where(u => u.IsActive == isActive);
 
             return query;
+        }
+
+        protected override Task<IQueryable<User>> IncludeRelatedEntities(UserSearchObject? search, IQueryable<User> query)
+        {
+            if(search?.IncludeCountry == true)
+                query = query.Include(u => u.Country);
+
+            if(search?.IncludeRole == true)
+                query = query.Include(u => u.Roles)
+                    .ThenInclude(ur => ur.Role);
+
+            if(search?.IncludeReviews == true)
+                query = query.Include(u => u.Reviews);
+
+            return base.IncludeRelatedEntities(search, query);
         }
 
         protected override async Task BeforeInsertAsync(User entity, UserInsertRequest request)
@@ -81,7 +97,11 @@ namespace Flix.Services.Implementations
 
         public override async Task<UserResponse> GetByIdAsync(int id)
         {
-            var entity = await GetDataSource().FirstOrDefaultAsync(u => u.Id == id);
+            var entity = await GetDataSource()
+                .Include(x => x.Country)
+                .Include(x => x.Roles)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (entity is null)
                 throw new ClientException($"{nameof(User)} with Id {id} not found.");
@@ -91,7 +111,10 @@ namespace Flix.Services.Implementations
 
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
         {
-            var user = await GetDataSource().FirstOrDefaultAsync(u => u.Username == username);
+            var user = await GetDataSource()
+                .Include(u => u.Roles)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Username == username);
             var response = user == null ? null : _mapper.Map<UserSensitiveResponse>(user);
             return response;
         }
