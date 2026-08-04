@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Flix.Services.Database;
 using Flix.WebApi.Services.AccessManager;
 using Microsoft.AspNetCore.Mvc;

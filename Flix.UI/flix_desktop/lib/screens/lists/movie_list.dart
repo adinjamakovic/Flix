@@ -6,6 +6,7 @@ import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/screens/details/movie_details.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
+import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,7 @@ class _MovieListState extends State<MovieList> {
   static const int _pageSize = 6;
 
   /// The country dropdown filters client-side, so it pulls the whole list once.
-  static const int _countryPageSize = 1000;
+  static const int _countryPageSize = 200;
 
   static const int _earliestYear = 1900;
 
@@ -111,12 +112,6 @@ class _MovieListState extends State<MovieList> {
     }
   }
 
-  int get _totalPages {
-    final int totalCount = result?.totalCount ?? 0;
-    final int pages = (totalCount / _pageSize).ceil();
-    return pages < 1 ? 1 : pages;
-  }
-
   Map<String, dynamic> _buildFilter(int page) {
     final Map<String, dynamic> filter = {
       "page": page,
@@ -198,9 +193,18 @@ class _MovieListState extends State<MovieList> {
             const SizedBox(height: 24),
             _buildFilters(),
             const SizedBox(height: 22),
-            Expanded(child: _buildTable()),
-            const SizedBox(height: 12),
-            _buildPagination(),
+            Expanded(
+              child: PagedTable<Movie>(
+                columns: _columns,
+                items: result?.items ?? List.empty(),
+                isLoading: isLoading,
+                emptyMessage: "No movies found",
+                page: _page,
+                pageSize: _pageSize,
+                totalCount: result?.totalCount ?? 0,
+                onPageChanged: (page) => _search(page: page),
+              ),
+            ),
           ],
         ),
       ),
@@ -468,239 +472,54 @@ class _MovieListState extends State<MovieList> {
       ],
     );
   }
-
-  Widget _buildTable() {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    final List<Movie> movies = result?.items ?? List.empty();
-
-    return Container(
-      width: double.infinity,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          _buildTableHeader(),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : movies.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No movies found",
-                          style: TextStyle(color: colors.onSurfaceVariant),
-                        ),
-                      )
-                    : ListView.separated(
-                        itemCount: movies.length,
-                        separatorBuilder: (context, index) => Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: colors.outlineVariant,
-                        ),
-                        itemBuilder: (context, index) => _buildRow(movies[index]),
-                      ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTableHeader() {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Container(
-      height: 46,
-      color: colors.tertiary,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: [
-          _buildHeaderCell("TITLE", _titleFlex),
-          _buildHeaderCell("DIRECTOR", _directorFlex),
-          _buildHeaderCell("COUNTRY", _countryFlex),
-          _buildHeaderCell("RELEASE DATE", _releaseDateFlex),
-          _buildHeaderCell("GENRE", _genreFlex),
-          _buildHeaderCell("RATING", _ratingFlex),
-          _buildHeaderCell("VIEWS", _viewsFlex),
-          _buildHeaderCell("ACTIONS", _actionsFlex),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderCell(String label, int flex) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Expanded(
-      flex: flex,
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: colors.onTertiary,
-          fontSize: 12.5,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.6,
+  List<TableColumn<Movie>> get _columns => [
+        TableColumn<Movie>(
+          label: "TITLE",
+          flex: _titleFlex,
+          value: (movie) => movie.title ?? "-",
+          bold: true,
         ),
-      ),
-    );
-  }
-
-  Widget _buildRow(Movie movie) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: [
-          _buildCell(movie.title ?? "-", _titleFlex, bold: true),
-          _buildCell(movie.directorName ?? "-", _directorFlex, muted: true),
-          _buildCell(movie.country?.name ?? "-", _countryFlex),
-          _buildCell(_formatDate(movie.releaseDate), _releaseDateFlex),
-          _buildCell(movie.genreNames ?? "-", _genreFlex),
-          _buildCell("${movie.rating?.toStringAsFixed(1) ?? "-"}/5.0", _ratingFlex),
-          _buildCell(movie.views?.toString() ?? "-", _viewsFlex),
-          Expanded(
-            flex: _actionsFlex,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MovieDetails(movie: movie,))
-                    );
-                  },
-                  icon: const Icon(Icons.edit_square, size: 20),
-                  color: colors.onSurface,
-                  tooltip: "Edit",
-                  splashRadius: 20,
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.delete_outline, size: 20),
-                  color: colors.onSurface,
-                  tooltip: "Delete",
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCell(String value, int flex,
-      {bool bold = false, bool muted = false}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Expanded(
-      flex: flex,
-      child: Text(
-        value,
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: muted ? colors.onSurfaceVariant : colors.onSurface,
-          fontSize: 13.5,
-          fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+        TableColumn<Movie>(
+          label: "DIRECTOR",
+          flex: _directorFlex,
+          value: (movie) => movie.directorName ?? "-",
+          muted: true,
         ),
-      ),
-    );
-  }
-
-  Widget _buildPagination() {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    final int totalPages = _totalPages;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton.icon(
-          onPressed: _page > 1 ? () => _search(page: _page - 1) : null,
-          icon: const Icon(Icons.arrow_back, size: 16),
-          label: const Text("Previous"),
-          style: TextButton.styleFrom(
-            foregroundColor: colors.onSurfaceVariant,
-          ),
+        TableColumn<Movie>(
+          label: "COUNTRY",
+          flex: _countryFlex,
+          value: (movie) => movie.country?.name ?? "-",
         ),
-        const SizedBox(width: 4),
-        ..._pageNumbers(totalPages).map((page) => page == null
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Text(
-                  "...",
-                  style: TextStyle(color: colors.onSurfaceVariant),
-                ),
-              )
-            : _buildPageButton(page)),
-        const SizedBox(width: 4),
-        TextButton.icon(
-          onPressed: _page < totalPages ? () => _search(page: _page + 1) : null,
-          icon: const Icon(Icons.arrow_forward, size: 16),
-          label: const Text("Next"),
-          iconAlignment: IconAlignment.end,
-          style: TextButton.styleFrom(
-            foregroundColor: colors.onSurfaceVariant,
-          ),
+        TableColumn<Movie>(
+          label: "RELEASE DATE",
+          flex: _releaseDateFlex,
+          value: (movie) => _formatDate(movie.releaseDate),
         ),
-      ],
-    );
-  }
-
-  Widget _buildPageButton(int page) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    final bool selected = page == _page;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: InkWell(
-        onTap: selected ? null : () => _search(page: page),
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          width: 30,
-          height: 30,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: selected ? colors.secondary : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            page.toString(),
-            style: TextStyle(
-              color: selected ? colors.onSecondary : colors.onSurfaceVariant,
-              fontSize: 13,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-            ),
-          ),
+        TableColumn<Movie>(
+          label: "GENRE",
+          flex: _genreFlex,
+          value: (movie) => movie.genreNames ?? "-",
         ),
-      ),
-    );
-  }
-
-  List<int?> _pageNumbers(int totalPages) {
-    if (totalPages <= 7) {
-      return List<int?>.generate(totalPages, (index) => index + 1);
-    }
-
-    final Set<int> pages = {1, 2, 3, totalPages - 1, totalPages};
-    for (int page = _page - 1; page <= _page + 1; page++) {
-      if (page >= 1 && page <= totalPages) pages.add(page);
-    }
-
-    final List<int> sorted = pages.toList()..sort();
-    final List<int?> withGaps = [];
-    for (int i = 0; i < sorted.length; i++) {
-      if (i > 0 && sorted[i] - sorted[i - 1] > 1) withGaps.add(null);
-      withGaps.add(sorted[i]);
-    }
-
-    return withGaps;
-  }
+        TableColumn<Movie>(
+          label: "RATING",
+          flex: _ratingFlex,
+          value: (movie) => "${movie.rating?.toStringAsFixed(1) ?? "-"}/5.0",
+        ),
+        TableColumn<Movie>(
+          label: "VIEWS",
+          flex: _viewsFlex,
+          value: (movie) => movie.views?.toString() ?? "-",
+        ),
+        TableColumn<Movie>.actions(
+          flex: _actionsFlex,
+          onEdit: (movie) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => MovieDetails(movie: movie),
+              ),
+            );
+          },
+          onDelete: (movie) {},
+        ),
+      ];
 }

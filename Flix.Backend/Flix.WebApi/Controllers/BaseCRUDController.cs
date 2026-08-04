@@ -1,7 +1,5 @@
-using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Interfaces;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flix.WebApi.Controllers

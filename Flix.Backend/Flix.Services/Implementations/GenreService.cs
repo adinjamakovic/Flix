@@ -5,7 +5,6 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
-using System;
 using System.Collections.Generic;
 using System.Text;
 

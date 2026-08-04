@@ -6,7 +6,6 @@ using Flix.Services.Enums;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
-using System;
 using System.Collections.Generic;
 using System.Text;
 

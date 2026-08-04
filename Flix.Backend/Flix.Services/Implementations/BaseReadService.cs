@@ -3,7 +3,6 @@ using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Flix.Services.Implementations

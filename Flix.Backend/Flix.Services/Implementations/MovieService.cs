@@ -8,7 +8,6 @@ using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,9 +36,6 @@ namespace Flix.Services.Implementations
                 .Include(x => x.Country)
                 .Include(x => x.Language)
                 .Include(x => x.Genres)
-                // Several collection includes on one query would otherwise be joined into a
-                // single result set (genres x credits x reviews rows per movie). Split queries
-                // need a unique ordering to page consistently, hence the OrderBy.
                 .OrderBy(x => x.Id)
                 .AsSplitQuery();
 

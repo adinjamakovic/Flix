@@ -14,6 +14,8 @@ namespace Flix.Model.Responses
         public string? PhoneNumber { get; set; }
         public string? ProfileImageBase64 { get; set; }
         public string? Bio { get; set; }
-        public int? CountryId { get; set; }
+        public int MoviesWatched { get; set; }
+        public int ReviewsWritten { get; set; }
+        public CountryResponse? Country {get; set;}
     }
 }

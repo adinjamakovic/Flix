@@ -1,8 +1,6 @@
-using Flix.Model.Access;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
-using Flix.Services.Database;
 
 namespace Flix.Services.Interfaces
 {
