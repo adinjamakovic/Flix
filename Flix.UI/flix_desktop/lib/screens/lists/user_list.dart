@@ -4,6 +4,7 @@ import 'package:flix_desktop/models/search_result.dart';
 import 'package:flix_desktop/models/user.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/user_provider.dart';
+import 'package:flix_desktop/screens/details/user_details.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
@@ -98,16 +99,53 @@ class _UserListState extends State<UserList> {
     }
   }
 
+  Future<void> _openDetails([User? user]) async {
+    final bool? saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => UserDetails(user: user)),
+    );
+
+    if (saved == true && mounted) await _search();
+  }
+
+  Future<void> _deleteUser(User user) async {
+    final int? id = user.id;
+    if (id == null) return;
+
+    final String name = user.username ?? user.fullName ?? "this user";
+
+    final bool confirmed = await confirmBox(
+      context,
+      "Delete user",
+      "Delete $name? This also removes everything they authored, and cannot be undone.",
+    );
+
+    if (!confirmed || !mounted) return;
+
+    try {
+      await _userProvider.delete(id);
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      alertBox(context, "Error", e.toString());
+      return;
+    }
+
+    if (!mounted) return;
+
+    final bool wasLastOnPage = (result?.items?.length ?? 0) == 1 && _page > 1;
+
+    await _search(page: wasLastOnPage ? _page - 1 : _page);
+  }
+
   Map<String, dynamic> _buildFilter(int page) {
     final Map<String, dynamic> filter = {
       "page": page,
       "pageSize": _pageSize,
       "includeTotalCount": true,
-      // COUNTRY reads the code off the country navigation property, and MOVIES
-      // WATCHED / REVIEWS are projected from the review collection, which the
-      // API only loads when these are set.
       "includeCountry": true,
       "includeReviews": true,
+      "includeRole": true,
     };
 
     if (_usernameController.text.trim().isNotEmpty) {
@@ -229,9 +267,7 @@ class _UserListState extends State<UserList> {
         SizedBox(
           height: 46,
           child: ElevatedButton(
-            onPressed: () {
-              print("TODO: implement user_details.dart");
-            },
+            onPressed: () => _openDetails(),
             child: const Text("Add a user"),
           ),
         ),
@@ -393,10 +429,8 @@ class _UserListState extends State<UserList> {
         ),
         TableColumn<User>.actions(
           flex: _actionsFlex,
-          onEdit: (user) {
-            print("TODO: implement user_details.dart");
-          },
-          onDelete: (user) {},
+          onEdit: (user) => _openDetails(user),
+          onDelete: _deleteUser,
         ),
       ];
 

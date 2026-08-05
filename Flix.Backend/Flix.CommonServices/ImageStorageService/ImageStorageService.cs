@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ namespace Flix.CommonServices.ImageStorageService
     public class ImageStorageService : IImageStorageService
     {
         private const string ContainerName = "uploads";
+
+        // How long a URL handed to a client stays valid. Clients re-read the entity
+        // (and so get a fresh URL) far more often than this.
+        private static readonly TimeSpan ReadUrlLifetime = TimeSpan.FromHours(1);
+
         private readonly BlobServiceClient _blobServiceClient;
         
         public ImageStorageService(BlobServiceClient blobServiceClient)
@@ -69,10 +75,20 @@ namespace Flix.CommonServices.ImageStorageService
         public string? ToPublicPath(ImageStorageCategory category, string? storedPath)
         {
             if (string.IsNullOrWhiteSpace(storedPath))
-                return string.Empty;
+                return null;
 
             var container = _blobServiceClient.GetBlobContainerClient(ContainerName);
-            return container.GetBlobClient(storedPath).Uri.ToString();
+            var blob = container.GetBlobClient(storedPath);
+
+            // The container is created without public access, so a bare blob URI would come
+            // back 404 for the client. A short-lived read-only SAS hands out the one blob
+            // instead of opening every upload to anonymous reads.
+            if (!blob.CanGenerateSasUri)
+                return blob.Uri.ToString();
+
+            return blob
+                .GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.Add(ReadUrlLifetime))
+                .ToString();
         }
     }
 }

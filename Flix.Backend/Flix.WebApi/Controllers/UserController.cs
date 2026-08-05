@@ -19,6 +19,7 @@ namespace Flix.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("multipart/form-data")]
+        [Authorization("Admin")]
         public override async Task<ActionResult<UserResponse>> Create([FromForm] UserInsertRequest request)
         {
             var result = await _service.InsertAsync(request);

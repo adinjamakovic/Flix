@@ -14,6 +14,8 @@ namespace Flix.Services.Implementations
     public class UserService
         : BaseCRUDService<User, UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>, IUserService
     {
+        private const int DefaultRoleId = 2;
+
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
         public UserService(
@@ -87,6 +89,12 @@ namespace Flix.Services.Implementations
             entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
 
             entity.ProfileImage = await _imageStorageService.SaveAsync(ImageStorageCategory.User, request.ProfileImage);
+
+            entity.Roles.Add(new UserRole
+            {
+                Role = await GetAssignableRoleAsync(request.RoleId ?? DefaultRoleId),
+                AssignedAt = DateTime.UtcNow
+            });
         }
 
         protected override async Task BeforeUpdateAsync(User entity, UserUpdateRequest request)
@@ -97,19 +105,75 @@ namespace Flix.Services.Implementations
             if (await _context.Users.AnyAsync(u => u.Email == request.Email && u.Id != entity.Id))
                 throw new ClientException($"Email '{request.Email}' is already registered.");
 
-            if(!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password!))
-                entity.PasswordHash = _cryptoService.GenerateHash(request.Password!, entity.PasswordSalt);
+            // An omitted password means "leave it alone" - only a supplied one that does not
+            // already match is rehashed.
+            if (!string.IsNullOrEmpty(request.Password)
+                && !_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password))
+                entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
 
             if (request.ProfileImage is not null)
                 entity.ProfileImage = await _imageStorageService.ReplaceIfUploadedAsync(
                     ImageStorageCategory.User,
                     entity.ProfileImage,
                     request.ProfileImage);
+
+            await AssignRoleAsync(entity, request.RoleId);
+        }
+
+        private async Task AssignRoleAsync(User entity, int? roleId)
+        {
+            if (roleId is not int id)
+                return;
+
+            var role = await GetAssignableRoleAsync(id);
+
+            await _context.Entry(entity)
+                .Collection(u => u.Roles)
+                .Query()
+                .Include(ur => ur.Role)
+                .LoadAsync();
+
+            if (entity.Roles.Any(ur => ur.RoleId == id))
+                return;
+
+            _context.UserRoles.RemoveRange(entity.Roles);
+            entity.Roles.Clear();
+            entity.Roles.Add(new UserRole { Role = role, AssignedAt = DateTime.UtcNow });
+        }
+
+        private async Task<Role> GetAssignableRoleAsync(int roleId)
+        {
+            return await _context.Roles.FirstOrDefaultAsync(r => r.Id == roleId && r.IsActive)
+                ?? throw new ClientException($"Role with Id {roleId} does not exist or is not active.");
+        }
+
+        protected override async Task BeforeDeleteAsync(User entity)
+        {
+            await _context.Entry(entity)
+                .Collection(u => u.Roles)
+                .LoadAsync();
+            _context.UserRoles.RemoveRange(entity.Roles);
+
+            await _context.Entry(entity)
+                .Collection(u => u.RefreshTokens)
+                .LoadAsync();
+            _context.RefreshTokens.RemoveRange(entity.RefreshTokens);
         }
 
         protected override async Task AfterDeleteAsync(User entity)
         {
             await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.User, entity.ProfileImage);
+        }
+
+        protected override UserResponse MapToResponse(User entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            response.ProfileImage = _imageStorageService.ToPublicPath(
+                ImageStorageCategory.User,
+                entity.ProfileImage);
+
+            return response;
         }
 
         public override async Task<UserResponse> GetByIdAsync(int id)
@@ -123,7 +187,7 @@ namespace Flix.Services.Implementations
             if (entity is null)
                 throw new ClientException($"{nameof(User)} with Id {id} not found.");
 
-            return _mapper.Map<UserResponse>(entity);
+            return MapToResponse(entity);
         }
 
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
@@ -136,27 +200,5 @@ namespace Flix.Services.Implementations
             return response;
         }
 
-        public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
-        {
-            await _insertValidator.ValidateAndThrowAsync(request);
-
-            var entity = MapInsertRequestToEntity(request);
-            await BeforeInsertAsync(entity, request);
-
-            await _context.Users.AddAsync(entity);
-
-            var role = new UserRole
-            {
-                User = entity,
-                RoleId = 2,
-                AssignedAt = DateTime.UtcNow
-            };
-
-            await _context.UserRoles.AddAsync(role);
-
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<UserResponse>(entity);
-        }
     }
 }

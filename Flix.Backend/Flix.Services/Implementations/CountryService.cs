@@ -54,6 +54,17 @@ namespace Flix.Services.Implementations
             await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Country, entity.FlagImage);
         }
 
+        protected override CountryResponse MapToResponse(Country entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            response.FlagImage = _imageStorageService.ToPublicPath(
+                ImageStorageCategory.Country,
+                entity.FlagImage);
+
+            return response;
+        }
+
         protected override IEnumerable<Country> ApplyFilters(IQueryable<Country> query, CountrySearchObject? search)
         {
             if (search != null)

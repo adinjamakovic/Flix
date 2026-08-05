@@ -69,13 +69,16 @@ builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
+TypeAdapterConfig<Role, RoleResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
     .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())
     .IgnoreNullValues(true);
@@ -161,6 +164,7 @@ builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 var app = builder.Build();
 
