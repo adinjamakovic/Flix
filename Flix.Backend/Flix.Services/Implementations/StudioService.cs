@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -19,13 +20,38 @@ namespace Flix.Services.Implementations
             StudioUpdateRequest>,
         IStudioService
     {
+        private readonly IImageStorageService _imageStorageService;
+
         public StudioService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<StudioInsertRequest> insertValidator,
-            IValidator<StudioUpdateRequest> updateValidator
+            IValidator<StudioUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+            _imageStorageService = imageStorageService;
+        }
+
+        protected override async Task BeforeInsertAsync(Studio entity, StudioInsertRequest request)
+        {
+            entity.Logo = await _imageStorageService.SaveAsync(ImageStorageCategory.Studio, request.Logo);
+        }
+
+        protected override async Task BeforeUpdateAsync(Studio entity, StudioUpdateRequest request)
+        {
+            if (request.Logo is null)
+                return;
+
+            entity.Logo = await _imageStorageService.ReplaceIfUploadedAsync(
+                ImageStorageCategory.Studio,
+                entity.Logo,
+                request.Logo);
+        }
+
+        protected override async Task AfterDeleteAsync(Studio entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Studio, entity.Logo);
         }
 
         protected override IEnumerable<Studio> ApplyFilters(IQueryable<Studio> query, StudioSearchObject? search)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Flix.Model.Requests
@@ -10,5 +11,6 @@ namespace Flix.Model.Requests
         public int? CountryId { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? Biography { get; set; }
+        public IFormFile? Photo { get; set; }
     }
 }

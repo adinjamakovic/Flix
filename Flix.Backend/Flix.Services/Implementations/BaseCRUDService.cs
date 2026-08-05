@@ -39,6 +39,8 @@ namespace Flix.Services.Implementations
 
         protected virtual Task BeforeUpdateAsync(TEntity entity, TUpdateRequest request) => Task.CompletedTask;
 
+        protected virtual Task AfterDeleteAsync(TEntity entity) => Task.CompletedTask;
+
         public virtual async Task<TResponse> InsertAsync(TInsertRequest request)
         {
             await _insertValidator.ValidateAndThrowAsync(request);
@@ -78,6 +80,8 @@ namespace Flix.Services.Implementations
 
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();
+
+            await AfterDeleteAsync(entity);
         }
     }
 }

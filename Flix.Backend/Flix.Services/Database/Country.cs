@@ -14,7 +14,7 @@ namespace Flix.Services.Database
 
         [MaxLength(5)]
         public string? Code { get; set; }
-        public string? FlagImageBase64 { get; set; }
+        public string? FlagImage { get; set; }
         public ICollection<Movie> Movies { get; set; } = new List<Movie>();
         public ICollection<User> Users { get; set; } = new List<User>();
     }

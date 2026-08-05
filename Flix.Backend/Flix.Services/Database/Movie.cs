@@ -12,8 +12,8 @@ namespace Flix.Services.Database
         [MaxLength(200)]
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
-        public string? PosterBase64 { get; set; }
-        public string? HeaderImageBase64 { get; set; }
+        public string? Poster { get; set; }
+        public string? HeaderImage { get; set; }
         public string? TrailerUrl { get; set; }
 
         public DateTime? ReleaseDate { get; set; }

@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
@@ -22,13 +23,16 @@ namespace Flix.Services.Implementations
             MovieUpdateRequest>,
         IMovieService
     {
+        private readonly IImageStorageService _imageStorageService;
         public MovieService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<MovieInsertRequest> insertValidator,
-            IValidator<MovieUpdateRequest> updateValidator
+            IValidator<MovieUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+            _imageStorageService = imageStorageService;
         }
 
         protected override IQueryable<Movie> GetDataSource()
@@ -99,10 +103,26 @@ namespace Flix.Services.Implementations
         {
             entity.Views = 0;
             entity.Genres = await LoadGenresAsync(request.GenreIds);
+            var moviePosterImagePath = await _imageStorageService.SaveAsync(ImageStorageCategory.Movie, request.MoviePoster);
+            var headerImagePath = await _imageStorageService.SaveAsync(ImageStorageCategory.Movie, request.HeaderImage);
+            entity.Poster = moviePosterImagePath;
+            entity.HeaderImage = headerImagePath;
         }
 
         protected override async Task BeforeUpdateAsync(Movie entity, MovieUpdateRequest request)
         {
+            if(request.HeaderImage is not null)
+            {
+                var headerImagePath = await _imageStorageService.ReplaceIfUploadedAsync(ImageStorageCategory.Movie, entity.HeaderImage, request.HeaderImage);
+                entity.HeaderImage = headerImagePath;
+            }
+
+            if(request.MoviePoster is not null)
+            {
+                var moviePosterImagePath = await _imageStorageService.ReplaceIfUploadedAsync(ImageStorageCategory.Movie, entity.Poster, request.MoviePoster);
+                entity.Poster = moviePosterImagePath;
+            }
+
             if (request.GenreIds is null)
                 return;
 
@@ -111,6 +131,12 @@ namespace Flix.Services.Implementations
             entity.Genres.Clear();
             foreach (var genre in await LoadGenresAsync(request.GenreIds))
                 entity.Genres.Add(genre);
+        }
+
+        protected override async Task AfterDeleteAsync(Movie entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Movie, entity.Poster);
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Movie, entity.HeaderImage);
         }
 
         private async Task<List<Genre>> LoadGenresAsync(List<int> genreIds)

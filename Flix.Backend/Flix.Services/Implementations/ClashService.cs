@@ -1,4 +1,5 @@
-﻿using Flix.Model.Requests;
+﻿using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
@@ -16,14 +17,40 @@ namespace Flix.Services.Implementations
         BaseCRUDService<Clash, ClashResponse, ClashSearchObject, ClashInsertRequest, ClashUpdateRequest>,
         IClashService
     {
+        private readonly IImageStorageService _imageStorageService;
+
         public ClashService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<ClashInsertRequest> insertValidator,
-            IValidator<ClashUpdateRequest> updateValidator)
+            IValidator<ClashUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService)
             : base(context, mapper, insertValidator, updateValidator)
-        {            
+        {
+            _imageStorageService = imageStorageService;
         }
+
+        protected override async Task BeforeInsertAsync(Clash entity, ClashInsertRequest request)
+        {
+            entity.BannerImage = await _imageStorageService.SaveAsync(ImageStorageCategory.Clash, request.BannerImage);
+        }
+
+        protected override async Task BeforeUpdateAsync(Clash entity, ClashUpdateRequest request)
+        {
+            if (request.BannerImage is null)
+                return;
+
+            entity.BannerImage = await _imageStorageService.ReplaceIfUploadedAsync(
+                ImageStorageCategory.Clash,
+                entity.BannerImage,
+                request.BannerImage);
+        }
+
+        protected override async Task AfterDeleteAsync(Clash entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Clash, entity.BannerImage);
+        }
+
         protected override Task<IQueryable<Clash>> IncludeRelatedEntities(ClashSearchObject? search, IQueryable<Clash> query)
         {
             if (search?.IncludeEntries == true)

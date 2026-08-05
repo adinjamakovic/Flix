@@ -1,5 +1,6 @@
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Requests;
+using DotNetEnv;
 using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
@@ -16,9 +17,14 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 using Flix.Model.Enums;
+using Azure.Storage.Blobs;
+using Flix.CommonServices.ImageStorageService;
 
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+var blobStorageConnectionString = builder.Configuration["BLOB_STORAGE_CONNECTION_STRING"];
 
 // Add services to the container.
 
@@ -32,6 +38,9 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 });
+
+builder.Services.AddSingleton(x =>
+    new BlobServiceClient(blobStorageConnectionString));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -100,6 +109,22 @@ TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
     .Map(dest => dest.Participants, src => src.Entries.Count)
     .IgnoreNullValues(true);
 
+// Image columns hold the blob path and are owned entirely by IImageStorageService inside the
+// services. Mapping the request's IFormFile onto them would stringify the upload on insert and
+// wipe the existing path on any update that does not include a new file.
+TypeAdapterConfig<CastMemberInsertRequest, CastMember>.NewConfig().Ignore(dest => dest.Photo!);
+TypeAdapterConfig<CastMemberUpdateRequest, CastMember>.NewConfig().Ignore(dest => dest.Photo!);
+TypeAdapterConfig<ClashInsertRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
+TypeAdapterConfig<ClashUpdateRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
+TypeAdapterConfig<CountryInsertRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
+TypeAdapterConfig<CountryUpdateRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
+TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!);
+TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!);
+TypeAdapterConfig<StudioInsertRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
+TypeAdapterConfig<StudioUpdateRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
+TypeAdapterConfig<UserInsertRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);
+TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);
+
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -123,6 +148,7 @@ builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestV
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
 //Services
+builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();

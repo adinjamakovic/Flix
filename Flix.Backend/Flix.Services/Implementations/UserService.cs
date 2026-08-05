@@ -1,4 +1,5 @@
 using Flix.CommonServices.CryptoService;
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -14,15 +15,18 @@ namespace Flix.Services.Implementations
         : BaseCRUDService<User, UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>, IUserService
     {
         private readonly ICryptoService _cryptoService;
+        private readonly IImageStorageService _imageStorageService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
             ICryptoService cryptoService,
             IValidator<UserInsertRequest> insertValidator,
-            IValidator<UserUpdateRequest> updateValidator)
+            IValidator<UserUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
+            _imageStorageService = imageStorageService;
         }
 
         protected override IQueryable<User> GetDataSource()
@@ -81,6 +85,8 @@ namespace Flix.Services.Implementations
 
             entity.PasswordSalt = _cryptoService.GenerateSalt();
             entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
+
+            entity.ProfileImage = await _imageStorageService.SaveAsync(ImageStorageCategory.User, request.ProfileImage);
         }
 
         protected override async Task BeforeUpdateAsync(User entity, UserUpdateRequest request)
@@ -93,6 +99,17 @@ namespace Flix.Services.Implementations
 
             if(!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password!))
                 entity.PasswordHash = _cryptoService.GenerateHash(request.Password!, entity.PasswordSalt);
+
+            if (request.ProfileImage is not null)
+                entity.ProfileImage = await _imageStorageService.ReplaceIfUploadedAsync(
+                    ImageStorageCategory.User,
+                    entity.ProfileImage,
+                    request.ProfileImage);
+        }
+
+        protected override async Task AfterDeleteAsync(User entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.User, entity.ProfileImage);
         }
 
         public override async Task<UserResponse> GetByIdAsync(int id)

@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using FluentValidation;
 using System.Collections.Generic;
@@ -28,6 +29,12 @@ namespace Flix.Services.Validators
             RuleForEach(x => x.GenreIds)
                 .GreaterThan(0)
                 .When(x => x.GenreIds != null);
+
+            RuleFor(x => x.MoviePoster)
+                .ValidImage();
+
+            RuleFor(x => x.HeaderImage)
+                .ValidImage();
         }
     }
 }

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Flix.Model.Requests
 {
     public class UserInsertRequest
@@ -10,5 +12,6 @@ namespace Flix.Model.Requests
         public string? PhoneNumber { get; set; }
         public string? Bio { get; set; }
         public int? CountryId { get; set; }
+        public IFormFile? ProfileImage { get; set; }
     }
 }

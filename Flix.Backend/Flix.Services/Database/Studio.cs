@@ -13,7 +13,7 @@ namespace Flix.Services.Database
         public string Name { get; set; } = string.Empty;
 
         public string? Description { get; set; }
-        public string? LogoBase64 { get; set; }
+        public string? Logo { get; set; }
 
         public ICollection<MovieStudio> Movies { get; set; } = new List<MovieStudio>();
     }

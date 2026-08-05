@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -19,13 +20,38 @@ namespace Flix.Services.Implementations
             CountryUpdateRequest>,
         ICountryService
     {
+        private readonly IImageStorageService _imageStorageService;
+
         public CountryService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<CountryInsertRequest> insertValidator,
-            IValidator<CountryUpdateRequest> updateValidator
+            IValidator<CountryUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+            _imageStorageService = imageStorageService;
+        }
+
+        protected override async Task BeforeInsertAsync(Country entity, CountryInsertRequest request)
+        {
+            entity.FlagImage = await _imageStorageService.SaveAsync(ImageStorageCategory.Country, request.FlagImage);
+        }
+
+        protected override async Task BeforeUpdateAsync(Country entity, CountryUpdateRequest request)
+        {
+            if (request.FlagImage is null)
+                return;
+
+            entity.FlagImage = await _imageStorageService.ReplaceIfUploadedAsync(
+                ImageStorageCategory.Country,
+                entity.FlagImage,
+                request.FlagImage);
+        }
+
+        protected override async Task AfterDeleteAsync(Country entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Country, entity.FlagImage);
         }
 
         protected override IEnumerable<Country> ApplyFilters(IQueryable<Country> query, CountrySearchObject? search)

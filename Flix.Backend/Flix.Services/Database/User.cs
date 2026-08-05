@@ -39,7 +39,7 @@ namespace Flix.Services.Database
         [MaxLength(25)]
         public string? PhoneNumber { get; set; }
 
-        public string? ProfileImageBase64 { get; set; }
+        public string? ProfileImage { get; set; }
         
         [MaxLength(500)]
         public string? Bio { get; set; }
