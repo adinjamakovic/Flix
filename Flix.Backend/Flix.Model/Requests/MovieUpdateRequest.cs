@@ -15,5 +15,6 @@ namespace Flix.Model.Requests
         public int? CountryId { get; set; }
         public int? LanguageId { get; set; }
         public List<int>? GenreIds { get; set; }
+        public List<MovieCreditRequest>? Credits { get; set; }
     }
 }

@@ -127,8 +127,8 @@ TypeAdapterConfig<ClashInsertRequest, Clash>.NewConfig().Ignore(dest => dest.Ban
 TypeAdapterConfig<ClashUpdateRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
 TypeAdapterConfig<CountryInsertRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
 TypeAdapterConfig<CountryUpdateRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
-TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!);
-TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!);
+TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
+TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
 TypeAdapterConfig<StudioInsertRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
 TypeAdapterConfig<StudioUpdateRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
 TypeAdapterConfig<UserInsertRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);

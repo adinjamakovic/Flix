@@ -3,6 +3,8 @@ import 'package:flix_desktop/providers/cast_provider.dart';
 import 'package:flix_desktop/providers/clash_entry_provider.dart';
 import 'package:flix_desktop/providers/clash_provider.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
+import 'package:flix_desktop/providers/genre_provider.dart';
+import 'package:flix_desktop/providers/language_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/providers/review_provider.dart';
 import 'package:flix_desktop/providers/role_provider.dart';
@@ -23,7 +25,9 @@ void main() {
             ChangeNotifierProvider(create: (_) => ReviewProvider()),
             ChangeNotifierProvider(create: (_) => ClashProvider()),
             ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
-            ChangeNotifierProvider(create: (_) => RoleProvider())
+            ChangeNotifierProvider(create: (_) => RoleProvider()),
+            ChangeNotifierProvider(create: (_) => GenreProvider()),
+            ChangeNotifierProvider(create: (_) => LanguageProvider())
           ],
         child: const MyApp()));
 }

@@ -81,12 +81,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   ) async {
     request.headers.addAll(createMultipartHeaders());
 
-    fields.forEach((key, value) {
-      if (value == null) return;
-      request.fields[key] = value is DateTime
-          ? value.toIso8601String()
-          : value.toString();
-    });
+    fields.forEach((key, value) => _addField(request.fields, key, value));
 
     files.forEach((key, image) {
       request.files.add(http.MultipartFile.fromBytes(
@@ -104,6 +99,26 @@ abstract class BaseProvider<T> with ChangeNotifier {
     } else {
       throw Exception("Unknown error");
     }
+  }
+
+  // `request.fields` is a flat map, so a collection or nested object is spelled
+  // out the way ASP.NET Core binds it: `genreIds[0]`, `credits[0].castMemberId`.
+  void _addField(Map<String, String> into, String key, dynamic value) {
+    if (value == null) return;
+
+    if (value is List) {
+      for (int i = 0; i < value.length; i++) {
+        _addField(into, "$key[$i]", value[i]);
+      }
+      return;
+    }
+
+    if (value is Map) {
+      value.forEach((name, nested) => _addField(into, "$key.$name", nested));
+      return;
+    }
+
+    into[key] = value is DateTime ? value.toIso8601String() : value.toString();
   }
 
   String getQueryString(Map params,

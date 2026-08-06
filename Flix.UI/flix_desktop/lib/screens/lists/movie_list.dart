@@ -172,6 +172,88 @@ class _MovieListState extends State<MovieList> {
     }
   }
 
+  Future<void> _openDetails([Movie? movie]) async {
+    final bool? saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => MovieDetails(movie: movie)),
+    );
+
+    if (saved == true && mounted) await _search();
+  }
+
+  /// A new movie can either come from a user submission or be typed in from
+  /// scratch, so the button asks which before opening anything.
+  Future<void> _showAddMovieDialog() async {
+    final _AddMovieChoice? choice = await showDialog<_AddMovieChoice>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Add a movie"),
+        content: const Text(
+          "Review the movies users have submitted, or fill in a blank form "
+          "yourself.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                Navigator.pop(context, _AddMovieChoice.reviewSubmissions),
+            child: const Text("Review submissions"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, _AddMovieChoice.blankForm),
+            child: const Text("Create from scratch"),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == null || !mounted) return;
+
+    switch (choice) {
+      // Submissions are not built yet; the button is here so the flow reads
+      // the way it will once they are.
+      case _AddMovieChoice.reviewSubmissions:
+        alertBox(
+          context,
+          "Submissions",
+          "Reviewing user submissions is not available yet.",
+        );
+      case _AddMovieChoice.blankForm:
+        await _openDetails();
+    }
+  }
+
+  Future<void> _deleteMovie(Movie movie) async {
+    final int? id = movie.id;
+    if (id == null) return;
+
+    final String title = movie.title ?? "this movie";
+
+    final bool confirmed = await confirmBox(
+      context,
+      "Delete movie",
+      "Delete $title? This also removes its cast and genres, and cannot be undone.",
+    );
+
+    if (!confirmed || !mounted) return;
+
+    try {
+      await _movieProvider.delete(id);
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      alertBox(context, "Error", e.toString());
+      return;
+    }
+
+    if (!mounted) return;
+
+    // Deleting the only row on the last page would otherwise leave the table
+    // sitting on a page that no longer exists.
+    final bool wasLastOnPage = (result?.items?.length ?? 0) == 1 && _page > 1;
+
+    await _search(page: wasLastOnPage ? _page - 1 : _page);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
@@ -267,13 +349,7 @@ class _MovieListState extends State<MovieList> {
         SizedBox(
           height: 46,
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const MovieDetails(movie: null,),
-                  )
-              );
-            },
+            onPressed: _showAddMovieDialog,
             child: const Text("Add a movie"),
           ),
         ),
@@ -505,14 +581,10 @@ class _MovieListState extends State<MovieList> {
         ),
         TableColumn<Movie>.actions(
           flex: _actionsFlex,
-          onEdit: (movie) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => MovieDetails(movie: movie),
-              ),
-            );
-          },
-          onDelete: (movie) {},
+          onEdit: (movie) => _openDetails(movie),
+          onDelete: _deleteMovie,
         ),
       ];
 }
+
+enum _AddMovieChoice { reviewSubmissions, blankForm }
