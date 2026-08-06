@@ -13,7 +13,8 @@ class Clash {
     this.participants,
     this.startDate,
     this.endDate,
-    this.createdAt
+    this.createdAt,
+    this.bannerImage
   );
   
   
@@ -25,6 +26,7 @@ class Clash {
   final DateTime? startDate;
   final DateTime? endDate;
   final DateTime? createdAt;
+  final String? bannerImage;
 
   factory Clash.fromJson(Map<String, dynamic> json) => _$ClashFromJson(json);
 

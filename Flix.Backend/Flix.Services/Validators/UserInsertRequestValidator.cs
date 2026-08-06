@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using FluentValidation;
 
@@ -37,6 +38,13 @@ namespace Flix.Services.Validators
 
             RuleFor(x => x.Bio)
                 .MaximumLength(500);
+
+            RuleFor(x => x.RoleId)
+                .GreaterThan(0)
+                .When(x => x.RoleId.HasValue);
+
+            RuleFor(x => x.ProfileImage)
+                .ValidImage();
         }
     }
 }

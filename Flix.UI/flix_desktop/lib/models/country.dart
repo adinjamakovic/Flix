@@ -8,13 +8,14 @@ class Country {
      this.id,
      this.name, 
      this.code, 
-     this.flagImageBase64
+     this.flagImage
     );
-  
+
   final int? id;
   final String? name;
   final String? code;
-  final String? flagImageBase64;
+  // `CountryResponse.FlagImage` — the stored blob path/URL, not base64.
+  final String? flagImage;
 
   factory Country.fromJson(Map<String, dynamic> json) => _$CountryFromJson(json);
 

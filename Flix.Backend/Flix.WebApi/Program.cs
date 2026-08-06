@@ -1,5 +1,6 @@
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Requests;
+using DotNetEnv;
 using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
@@ -16,9 +17,14 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 using Flix.Model.Enums;
+using Azure.Storage.Blobs;
+using Flix.CommonServices.ImageStorageService;
 
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+var blobStorageConnectionString = builder.Configuration["BLOB_STORAGE_CONNECTION_STRING"];
 
 // Add services to the container.
 
@@ -32,6 +38,9 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 });
+
+builder.Services.AddSingleton(x =>
+    new BlobServiceClient(blobStorageConnectionString));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -60,13 +69,16 @@ builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
+TypeAdapterConfig<Role, RoleResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
     .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())
     .IgnoreNullValues(true);
@@ -99,6 +111,28 @@ TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
 TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
     .Map(dest => dest.Participants, src => src.Entries.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
+    .Map(dest => dest.Votes, src => src.Votes.Count)
+    .IgnoreNullValues(true);
+TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
+    .Map(dest => dest.MovieCount, src => src.Items.Count)
+    .IgnoreNullValues(true);
+
+// Image columns hold the blob path and are owned entirely by IImageStorageService inside the
+// services. Mapping the request's IFormFile onto them would stringify the upload on insert and
+// wipe the existing path on any update that does not include a new file.
+TypeAdapterConfig<CastMemberInsertRequest, CastMember>.NewConfig().Ignore(dest => dest.Photo!);
+TypeAdapterConfig<CastMemberUpdateRequest, CastMember>.NewConfig().Ignore(dest => dest.Photo!);
+TypeAdapterConfig<ClashInsertRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
+TypeAdapterConfig<ClashUpdateRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
+TypeAdapterConfig<CountryInsertRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
+TypeAdapterConfig<CountryUpdateRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
+TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
+TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
+TypeAdapterConfig<StudioInsertRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
+TypeAdapterConfig<StudioUpdateRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
+TypeAdapterConfig<UserInsertRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);
+TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);
 
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
@@ -123,18 +157,22 @@ builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestV
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
 //Services
+builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
+builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
 builder.Services.AddScoped<IClashService, ClashService>();
+builder.Services.AddScoped<IClashEntryService, ClashEntryService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 var app = builder.Build();
 

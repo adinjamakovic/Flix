@@ -25,7 +25,9 @@ class Movie {
       this.reviewCount,
       this.directors,
       this.cast,
-      this.genres
+      this.genres,
+      this.poster,
+      this.headerImage
       );
 
 
@@ -44,6 +46,8 @@ class Movie {
   final List<CastMember>? directors;
   final List<MovieCredit>? cast;
   final List<Genre>? genres;
+  final String? poster;
+  final String? headerImage;
 
   /// A movie can have several directors, the UI only shows the first one.
   CastMember? get director =>

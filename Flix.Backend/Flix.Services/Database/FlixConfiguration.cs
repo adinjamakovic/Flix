@@ -19,13 +19,13 @@ namespace Flix.Services.Database
                 .HasOne(x => x.User)
                 .WithMany(x=>x.Roles)
                 .HasForeignKey(x=>x.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserRole>()
                 .HasOne(x => x.Role)
                 .WithMany(x=>x.UserRoles)
                 .HasForeignKey(x=>x.RoleId)
-                .OnDelete(DeleteBehavior.Cascade);    
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<UserFollow>()
                 .HasOne(f => f.Follower)

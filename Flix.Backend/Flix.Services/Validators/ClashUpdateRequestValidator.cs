@@ -1,4 +1,5 @@
-﻿using Flix.Model.Requests;
+﻿using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Requests;
 using FluentValidation;
 using System.Collections.Generic;
 using System.Text;
@@ -25,6 +26,9 @@ namespace Flix.Services.Validators
                 .GreaterThan(x => x.StartDate)
                 .GreaterThan(DateTime.UtcNow)
                 .WithMessage("End date must be after start date.");
+
+            RuleFor(x => x.BannerImage)
+                .ValidImage();
         }
     }
 }

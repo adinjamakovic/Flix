@@ -39,6 +39,10 @@ namespace Flix.Services.Implementations
 
         protected virtual Task BeforeUpdateAsync(TEntity entity, TUpdateRequest request) => Task.CompletedTask;
 
+        protected virtual Task BeforeDeleteAsync(TEntity entity) => Task.CompletedTask;
+
+        protected virtual Task AfterDeleteAsync(TEntity entity) => Task.CompletedTask;
+
         public virtual async Task<TResponse> InsertAsync(TInsertRequest request)
         {
             await _insertValidator.ValidateAndThrowAsync(request);
@@ -49,7 +53,7 @@ namespace Flix.Services.Implementations
             await _context.Set<TEntity>().AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<TResponse>(entity);
+            return MapToResponse(entity);
         }
 
         public virtual async Task<TResponse> UpdateAsync(int id, TUpdateRequest request)
@@ -66,7 +70,7 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<TResponse>(entity);
+            return MapToResponse(entity);
         }
 
         public virtual async Task DeleteAsync(int id)
@@ -76,8 +80,12 @@ namespace Flix.Services.Implementations
             if (entity is null)
                 throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
+            await BeforeDeleteAsync(entity);
+
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();
+
+            await AfterDeleteAsync(entity);
         }
     }
 }

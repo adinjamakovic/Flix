@@ -30,6 +30,12 @@ namespace Flix.Services.Implementations
             return query;
         }
 
+        // Every response leaves the service through here. Override it for anything Mapster
+        // cannot work out on its own - the image columns hold a blob path, so any service
+        // whose response carries an image (its own or a nested one) hands the response to
+        // IResponseImageUrlResolver for a URL the client can actually load.
+        protected virtual TResponse MapToResponse(TEntity entity) => _mapper.Map<TResponse>(entity);
+
         public async Task<PageResult<TResponse>> GetAsync(TSearch? search = null)
         {
             var query = await IncludeRelatedEntities(search, GetDataSource());
@@ -46,7 +52,7 @@ namespace Flix.Services.Implementations
             if (search?.PageSize is int pageSize)
                 query = query.Take(pageSize);
 
-            var entities = query.Select(x => _mapper.Map<TResponse>(x)).ToList();
+            var entities = query.AsEnumerable().Select(MapToResponse).ToList();
 
             return new PageResult<TResponse>
             {
@@ -62,7 +68,7 @@ namespace Flix.Services.Implementations
             if (entity is null)
                 throw new ClientException($"{typeof(TEntity).Name} with Id {id} not found.");
 
-            return _mapper.Map<TResponse>(entity);
+            return MapToResponse(entity);
         }
     }
 }

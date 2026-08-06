@@ -3,6 +3,7 @@ import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flix_desktop/models/cast_member.dart';
 import 'package:flix_desktop/models/search_result.dart';
 import 'package:flix_desktop/providers/cast_provider.dart';
+import 'package:flix_desktop/screens/details/cast_details.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,45 @@ class _CastListState extends State<CastList> {
 
   Future<void> initTable() async {
     await Future.wait([_search(page: 1)]);
+  }
+
+  Future<void> _openDetails([CastMember? cast]) async {
+    final bool? saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => CastDetails(cast: cast)),
+    );
+
+    if (saved == true && mounted) await _search();
+  }
+
+  Future<void> _deleteCastMember(CastMember cast) async {
+    final int? id = cast.id;
+    if (id == null) return;
+
+    final String name = cast.fullName ?? "this cast member";
+
+    final bool confirmed = await confirmBox(
+      context,
+      "Delete cast member",
+      "Delete $name? This also removes their credits on every movie, and cannot be undone.",
+    );
+
+    if (!confirmed || !mounted) return;
+
+    try {
+      await _castProvider.delete(id);
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      alertBox(context, "Error", e.toString());
+      return;
+    }
+
+    if (!mounted) return;
+
+    final bool wasLastOnPage = (result?.items?.length ?? 0) == 1 && _page > 1;
+
+    await _search(page: wasLastOnPage ? _page - 1 : _page);
   }
 
   Map<String, dynamic> _buildFilter(int page) {
@@ -180,9 +220,7 @@ class _CastListState extends State<CastList> {
         SizedBox(
           height: 46,
           child: ElevatedButton(
-            onPressed: () {
-              print("TODO: implement cast_details.dart");
-            },
+            onPressed: () => _openDetails(),
             child: const Text("Add a cast member")),
         )
       ],
@@ -271,10 +309,8 @@ class _CastListState extends State<CastList> {
         ),
         TableColumn<CastMember>.actions(
           flex: _actionsFlex,
-          onEdit: (cast) {
-            print("TODO: implement cast_details.dart");
-          },
-          onDelete: (cast) {},
+          onEdit: (cast) => _openDetails(cast),
+          onDelete: _deleteCastMember,
         ),
       ];
 

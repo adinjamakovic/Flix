@@ -1,3 +1,4 @@
+using Azure;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -13,6 +14,27 @@ namespace Flix.WebApi.Controllers
 
         public MovieController(IMovieService movieService) : base(movieService)
         {
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("multipart/form-data")]
+        public override async Task<ActionResult<MovieResponse>> Create([FromForm] MovieInsertRequest request)
+        {
+            var result = await _service.InsertAsync(request);
+            return result;
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes("multipart/form-data")]
+        public override async Task<ActionResult<MovieResponse>> Update(int id, [FromForm] MovieUpdateRequest request)
+        {
+            var result = await _service.UpdateAsync(id, request);
+            return result;
         }
 
         [HttpGet]

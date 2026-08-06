@@ -8,11 +8,12 @@ namespace Flix.Model.Responses
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
+        public int? RoleId { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public string? PhoneNumber { get; set; }
-        public string? ProfileImageBase64 { get; set; }
+        public string? ProfileImage { get; set; }
         public string? Bio { get; set; }
         public int MoviesWatched { get; set; }
         public int ReviewsWritten { get; set; }

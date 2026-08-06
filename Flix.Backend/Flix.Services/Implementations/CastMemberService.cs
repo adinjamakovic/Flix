@@ -1,4 +1,5 @@
-﻿using Flix.Model.Enums;
+﻿using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -22,13 +23,50 @@ namespace Flix.Services.Implementations
             CastMemberUpdateRequest>, 
         ICastMemberService
     {
+        private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
+
         public CastMemberService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<CastMemberInsertRequest> insertValidator,
-            IValidator<CastMemberUpdateRequest> updateValidator
+            IValidator<CastMemberUpdateRequest> updateValidator,
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver
             ) : base(context, mapper, insertValidator, updateValidator)
-        { 
+        {
+            _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
+        }
+
+        protected override CastMemberResponse MapToResponse(CastMember entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            _imageUrlResolver.Resolve(response);
+
+            return response;
+        }
+
+        protected override async Task BeforeInsertAsync(CastMember entity, CastMemberInsertRequest request)
+        {
+            entity.Photo = await _imageStorageService.SaveAsync(ImageStorageCategory.CastMember, request.Photo);
+        }
+
+        protected override async Task BeforeUpdateAsync(CastMember entity, CastMemberUpdateRequest request)
+        {
+            if (request.Photo is null)
+                return;
+
+            entity.Photo = await _imageStorageService.ReplaceIfUploadedAsync(
+                ImageStorageCategory.CastMember,
+                entity.Photo,
+                request.Photo);
+        }
+
+        protected override async Task AfterDeleteAsync(CastMember entity)
+        {
+            await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.CastMember, entity.Photo);
         }
 
         // Skip/Take run on the server, so paging needs a stable ordering to avoid

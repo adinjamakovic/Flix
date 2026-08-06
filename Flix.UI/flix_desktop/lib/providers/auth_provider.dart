@@ -33,15 +33,15 @@ class AuthProvider extends ChangeNotifier {
       });
 
     http.Response response = await http.post(uri, headers: headers, body: body);
-    if(isValidResponse(response)) {
-      var data = jsonDecode(response.body);
+    var data = jsonDecode(response.body);
+    if(isValidResponse(response) && _readClaim(data['accessToken'], "Role") == "Admin") {
       _isAuthenticated = true;
       _accessToken = data['accessToken'];
       _refreshToken = data['refreshToken'];
       _username = _readClaim(_accessToken, "Username");
       notifyListeners();
     } else {
-      throw Exception("Unknown error");
+      throw Exception("Only an admin can log in");
     }
 
   }

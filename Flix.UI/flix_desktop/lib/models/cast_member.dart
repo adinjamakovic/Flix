@@ -14,6 +14,7 @@ class CastMember {
       this.country,
       this.birthDate,
       this.biography,
+      this.photo,
       this.roles
       );
 
@@ -23,6 +24,7 @@ class CastMember {
   final Country? country;
   final DateTime? birthDate;
   final String? biography;
+  final String? photo;
   final List<CastRole?> roles;
 
   String? get fullName {

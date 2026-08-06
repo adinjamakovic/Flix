@@ -9,6 +9,8 @@ namespace Flix.Model.Responses
         public DateTime? ReleaseDate { get; set; }
         public int? DurationMinutes { get; set; }
         public int Views { get; set; }
+        public string? Poster { get; set; }
+        public string? HeaderImage { get; set; }
         public bool IsEnabled { get; set; }
         public decimal? Rating { get; set; }
         public int ReviewCount { get; set; }

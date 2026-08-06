@@ -9,6 +9,7 @@ namespace Flix.Model.Responses
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public string? BannerImage { get; set; }
         public ClashStatus? Status { get; set; }
         public int? Participants { get; set; }
         public DateTime? StartDate { get; set; } = DateTime.UtcNow;

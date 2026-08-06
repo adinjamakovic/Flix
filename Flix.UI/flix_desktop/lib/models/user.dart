@@ -13,11 +13,12 @@ class User {
       this.email,
       this.username,
       this.role,
+      this.roleId,
       this.isActive,
       this.createdAt,
       this.lastLoginAt,
       this.phoneNumber,
-      this.profileImageBase64,
+      this.profileImage,
       this.bio,
       this.moviesWatched,
       this.reviewsWritten,
@@ -30,11 +31,12 @@ class User {
   final String? email;
   final String? username;
   final String? role;
+  final int? roleId;
   final bool? isActive;
   final DateTime? createdAt;
   final DateTime? lastLoginAt;
   final String? phoneNumber;
-  final String? profileImageBase64;
+  final String? profileImage;
   final String? bio;
   final int? moviesWatched;
   final int? reviewsWritten;

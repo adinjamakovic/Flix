@@ -1,3 +1,4 @@
+using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using FluentValidation;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace Flix.Services.Validators
 
             RuleFor(x => x.Code)
                 .MaximumLength(5);
+
+            RuleFor(x => x.FlagImage)
+                .ValidImage();
         }
     }
 }

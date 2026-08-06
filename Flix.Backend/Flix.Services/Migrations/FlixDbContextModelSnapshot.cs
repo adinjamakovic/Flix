@@ -268,7 +268,7 @@ namespace Flix.Services.Database.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("PhotoBase64")
+                    b.Property<string>("Photo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -540,7 +540,7 @@ namespace Flix.Services.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BannerImageBase64")
+                    b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -777,7 +777,7 @@ namespace Flix.Services.Database.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
-                    b.Property<string>("FlagImageBase64")
+                    b.Property<string>("FlagImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -1042,7 +1042,7 @@ namespace Flix.Services.Database.Migrations
                     b.Property<int?>("DurationMinutes")
                         .HasColumnType("int");
 
-                    b.Property<string>("HeaderImageBase64")
+                    b.Property<string>("HeaderImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsEnabled")
@@ -1051,7 +1051,7 @@ namespace Flix.Services.Database.Migrations
                     b.Property<int?>("LanguageId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PosterBase64")
+                    b.Property<string>("Poster")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ReleaseDate")
@@ -2664,7 +2664,7 @@ namespace Flix.Services.Database.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LogoBase64")
+                    b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -2790,7 +2790,7 @@ namespace Flix.Services.Database.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
-                    b.Property<string>("ProfileImageBase64")
+                    b.Property<string>("ProfileImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
@@ -3465,7 +3465,7 @@ namespace Flix.Services.Database.Migrations
             modelBuilder.Entity("Flix.Services.Database.MovieCast", b =>
                 {
                     b.HasOne("Flix.Services.Database.CastMember", "CastMember")
-                        .WithMany("MovieCredits")
+                        .WithMany("Credits")
                         .HasForeignKey("CastMemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -3725,7 +3725,7 @@ namespace Flix.Services.Database.Migrations
 
             modelBuilder.Entity("Flix.Services.Database.CastMember", b =>
                 {
-                    b.Navigation("MovieCredits");
+                    b.Navigation("Credits");
                 });
 
             modelBuilder.Entity("Flix.Services.Database.Clash", b =>

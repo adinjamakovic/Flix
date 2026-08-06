@@ -34,9 +34,15 @@ namespace Flix.WebApi.Controllers
             var result = await _accessManager.LoginWithRefreshTokenAsync(request);
             return Ok(result);
         }
+        // UserInsertRequest carries the profile image as an IFormFile, so registration is
+        // multipart rather than JSON.
+        [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] UserInsertRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Register([FromForm] UserInsertRequest request)
         {
+            request.RoleId = null;
+
             await _userService.InsertAsync(request);
             return Ok("You have succesfully registered your user account on Flix");
         }

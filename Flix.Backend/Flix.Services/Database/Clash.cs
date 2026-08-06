@@ -22,7 +22,7 @@ namespace Flix.Services.Database
 
         public DateTime EndDate { get; set; }
 
-        public string? BannerImageBase64 { get; set; }
+        public string? BannerImage { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
