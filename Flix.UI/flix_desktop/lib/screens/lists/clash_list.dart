@@ -3,9 +3,12 @@ import 'package:flix_desktop/layouts/master_screen.dart';
 import 'package:flix_desktop/models/clash.dart';
 import 'package:flix_desktop/models/search_result.dart';
 import 'package:flix_desktop/providers/clash_provider.dart';
+import 'package:flix_desktop/screens/details/clash_details.dart';
+import 'package:flix_desktop/screens/lists/clash_participant_list.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class ClashList extends StatefulWidget {
@@ -62,6 +65,32 @@ class _ClashListState extends State<ClashList> {
     await _search(page: 1);
   }
 
+  Future<void> _openForm([Clash? clash]) async {
+    final bool? saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => ClashDetails(clash: clash))
+      );
+
+      if(saved == true && mounted) await _search();
+  }
+
+  // "Details" means two different things depending on the status: an upcoming
+  // clash is still the admin's to edit, while an active or completed one is
+  // only there to be looked at - who is currently placing where.
+  Future<void> _openDetails(Clash clash) async {
+    if (clash.status == ClashStatus.upcoming) {
+      await _openForm(clash);
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClashParticipantList(clash: clash),
+      ),
+    );
+  }
+
   Map<String, dynamic> _buildFilter(int page) {
     final Map<String, dynamic> filter = {
       "page": page,
@@ -107,6 +136,35 @@ class _ClashListState extends State<ClashList> {
       });
       alertBox(context, "Error", e.toString());
     }
+  }
+
+  Future<void> _deleteClash(Clash clash) async {
+    final int? id = clash.id;
+    if(id == null) return;
+
+    final String name = clash.name ?? "this clash";
+
+    final bool confirmed = await confirmBox(
+      context,
+      "Delete clash",
+      "Delete $name? This will delete all the related lists aswell.");
+
+      if(!confirmed || !mounted) return;
+
+      try {
+        await _clashProvider.delete(id);
+      } on Exception catch (e) {
+        if(!mounted) return;
+
+        alertBox(context, "Error", e.toString());
+        return;
+      }
+
+      if (!mounted) return;
+
+    final bool wasLastOnPage = (result?.items?.length ?? 0) == 1 && _page > 1;
+
+    await _search(page: wasLastOnPage ? _page - 1 : _page);
   }
 
   @override
@@ -169,9 +227,7 @@ class _ClashListState extends State<ClashList> {
         SizedBox(
           height: 46,
           child: ElevatedButton(
-            onPressed: () {
-              debugPrint("TODO: implement clash_details.dart (create a clash)");
-            },
+            onPressed: () => _openForm(),
             child: const Text("Create a new clash"),
           ),
         ),
@@ -420,7 +476,9 @@ class _ClashListState extends State<ClashList> {
       children: [
         Expanded(
           child: _buildCardButton(
-            icon: Icons.edit_square,
+            icon: clash.status == ClashStatus.upcoming
+                ? Icons.edit_square
+                : Icons.leaderboard_outlined,
             label: "Details",
             foreground: _detailsForeground,
             background: _detailsBackground,
@@ -434,29 +492,18 @@ class _ClashListState extends State<ClashList> {
             label: "Delete",
             foreground: colors.error,
             background: colors.error.withValues(alpha: 0.22),
-            onPressed: () {
-              debugPrint("TODO: delete clash '${clash.name}'");
+            onPressed: () => {
+              if(clash.status == ClashStatus.completed){
+                alertBox(
+                  context, "User Error", "You cant delete this clash!")
+              } else {
+              _deleteClash(clash)
+              }
             },
           ),
         ),
       ],
     );
-  }
-
-  void _openDetails(Clash clash) {
-    switch (clash.status) {
-      case ClashStatus.upcoming:
-        debugPrint(
-          "TODO: implement clash_details.dart (edit clash '${clash.name}')",
-        );
-      case ClashStatus.active:
-      case ClashStatus.completed:
-      case null:
-        debugPrint(
-          "TODO: implement clash_details.dart "
-          "(top rated lists for clash '${clash.name}')",
-        );
-    }
   }
 
   Widget _buildCardButton({

@@ -24,16 +24,28 @@ namespace Flix.Services.Implementations
         ICastMemberService
     {
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public CastMemberService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<CastMemberInsertRequest> insertValidator,
             IValidator<CastMemberUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver
             ) : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
+        }
+
+        protected override CastMemberResponse MapToResponse(CastMember entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            _imageUrlResolver.Resolve(response);
+
+            return response;
         }
 
         protected override async Task BeforeInsertAsync(CastMember entity, CastMemberInsertRequest request)

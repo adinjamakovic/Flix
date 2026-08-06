@@ -40,6 +40,7 @@ dependencies:
   flutter_form_builder: ^10.3.0+2
   file_picker: ^11.0.3
   http_parser: ^4.1.2
+  date_picker_plus: ^7.0.1
 
 dev_dependencies:
   flutter_test:

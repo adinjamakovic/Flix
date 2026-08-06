@@ -21,16 +21,19 @@ namespace Flix.Services.Implementations
         ICountryService
     {
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public CountryService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<CountryInsertRequest> insertValidator,
             IValidator<CountryUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver
             ) : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
         }
 
         protected override async Task BeforeInsertAsync(Country entity, CountryInsertRequest request)
@@ -58,9 +61,7 @@ namespace Flix.Services.Implementations
         {
             var response = base.MapToResponse(entity);
 
-            response.FlagImage = _imageStorageService.ToPublicPath(
-                ImageStorageCategory.Country,
-                entity.FlagImage);
+            _imageUrlResolver.Resolve(response);
 
             return response;
         }

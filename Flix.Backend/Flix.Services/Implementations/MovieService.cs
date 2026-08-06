@@ -24,15 +24,29 @@ namespace Flix.Services.Implementations
         IMovieService
     {
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
         public MovieService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<MovieInsertRequest> insertValidator,
             IValidator<MovieUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver
             ) : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
+        }
+
+        // The poster and header sit alongside the flag of the movie's country and a photo per
+        // cast member, so the whole graph goes through the resolver.
+        protected override MovieResponse MapToResponse(Movie entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            _imageUrlResolver.Resolve(response);
+
+            return response;
         }
 
         protected override IQueryable<Movie> GetDataSource()
@@ -96,7 +110,7 @@ namespace Flix.Services.Implementations
             if (entity is null)
                 throw new ClientException($"{nameof(Movie)} with Id {id} not found.");
 
-            return _mapper.Map<MovieResponse>(entity);
+            return MapToResponse(entity);
         }
 
         protected override async Task BeforeInsertAsync(Movie entity, MovieInsertRequest request)

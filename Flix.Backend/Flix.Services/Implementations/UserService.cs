@@ -18,17 +18,20 @@ namespace Flix.Services.Implementations
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
             ICryptoService cryptoService,
             IValidator<UserInsertRequest> insertValidator,
             IValidator<UserUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService)
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
         }
 
         protected override IQueryable<User> GetDataSource()
@@ -169,9 +172,7 @@ namespace Flix.Services.Implementations
         {
             var response = base.MapToResponse(entity);
 
-            response.ProfileImage = _imageStorageService.ToPublicPath(
-                ImageStorageCategory.User,
-                entity.ProfileImage);
+            _imageUrlResolver.Resolve(response);
 
             return response;
         }

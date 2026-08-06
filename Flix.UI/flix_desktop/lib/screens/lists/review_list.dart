@@ -32,7 +32,6 @@ class _ReviewListState extends State<ReviewList> {
   final ScrollController _scrollController = ScrollController();
   final List<Review> _reviews = [];
 
-  int _page = 1;
   int _totalCount = 0;
   bool _isLoading = true;
   bool _isLoadingMore = false;
@@ -115,7 +114,11 @@ class _ReviewListState extends State<ReviewList> {
       _isLoadingMore = true;
     });
 
-    await _fetch(page: _page + 1, reset: false);
+    // The page to ask for is derived from what is actually on screen rather than
+    // from the last page number requested: deleting a review shifts every later
+    // review up a slot on the server, and "the page after the last one" would skip
+    // whatever moved across the page boundary.
+    await _fetch(page: (_reviews.length ~/ _pageSize) + 1, reset: false);
   }
 
   Future<void> _fetch({required int page, required bool reset}) async {
@@ -128,9 +131,12 @@ class _ReviewListState extends State<ReviewList> {
 
       setState(() {
         if (reset) _reviews.clear();
-        _reviews.addAll(items);
 
-        _page = page;
+        // After a deletion the next page can overlap what is already on screen, so
+        // reviews the feed is already showing are dropped from the incoming page.
+        final Set<int?> loaded = _reviews.map((review) => review.id).toSet();
+        _reviews.addAll(items.where((review) => !loaded.contains(review.id)));
+
         _totalCount = data.totalCount ?? _reviews.length;
         _hasMore = items.length == _pageSize && _reviews.length < _totalCount;
         _isLoading = false;
@@ -148,6 +154,43 @@ class _ReviewListState extends State<ReviewList> {
       });
       alertBox(context, "Error", e.toString());
     }
+  }
+
+  Future<void> _deleteReview(Review review) async {
+    final int? id = review.id;
+    if (id == null) return;
+
+    final String author = review.user?.username ?? "this user";
+    final String title = review.movie?.title ?? "this movie";
+
+    final bool confirmed = await confirmBox(
+      context,
+      "Delete review",
+      "Delete $author's review of $title? This cannot be undone.",
+    );
+
+    if (!confirmed || !mounted) return;
+
+    try {
+      await _reviewProvider.delete(id);
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      alertBox(context, "Error", e.toString());
+      return;
+    }
+
+    if (!mounted) return;
+
+    // The feed is one long scroll rather than a page of a table, so the deleted
+    // card is dropped where it stands - reloading from page 1 would throw the
+    // admin back to the top of the list they were reading.
+    setState(() {
+      _reviews.removeWhere((item) => item.id == id);
+      if (_totalCount > 0) _totalCount--;
+    });
+
+    _loadMoreIfFeedDoesNotScroll();
   }
 
   void _loadMoreIfFeedDoesNotScroll() {
@@ -508,8 +551,7 @@ class _ReviewListState extends State<ReviewList> {
     return Tooltip(
       message: "Delete review",
       child: InkWell(
-        // TODO: wire up review deletion.
-        onTap: () {},
+        onTap: () => _deleteReview(review),
         borderRadius: BorderRadius.circular(8),
         child: Container(
           width: 40,

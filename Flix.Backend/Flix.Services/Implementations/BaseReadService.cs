@@ -31,8 +31,9 @@ namespace Flix.Services.Implementations
         }
 
         // Every response leaves the service through here. Override it for anything Mapster
-        // cannot work out on its own - the image columns hold a blob path, so the services
-        // that own an image swap it for a URL the client can actually load.
+        // cannot work out on its own - the image columns hold a blob path, so any service
+        // whose response carries an image (its own or a nested one) hands the response to
+        // IResponseImageUrlResolver for a URL the client can actually load.
         protected virtual TResponse MapToResponse(TEntity entity) => _mapper.Map<TResponse>(entity);
 
         public async Task<PageResult<TResponse>> GetAsync(TSearch? search = null)

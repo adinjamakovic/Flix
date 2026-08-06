@@ -4,6 +4,7 @@ using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Model.Enums;
+using Flix.Model.Exceptions;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
@@ -18,16 +19,19 @@ namespace Flix.Services.Implementations
         IClashService
     {
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public ClashService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<ClashInsertRequest> insertValidator,
             IValidator<ClashUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService)
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
         }
 
         protected override async Task BeforeInsertAsync(Clash entity, ClashInsertRequest request)
@@ -46,9 +50,26 @@ namespace Flix.Services.Implementations
                 request.BannerImage);
         }
 
+        protected override Task BeforeDeleteAsync(Clash entity)
+        {
+            if (entity.Status == ClashStatus.Completed)
+                throw new ClientException("Completed clashes cannot be deleted.");
+
+            return Task.CompletedTask;
+        }
+
         protected override async Task AfterDeleteAsync(Clash entity)
         {
             await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Clash, entity.BannerImage);
+        }
+
+        protected override ClashResponse MapToResponse(Clash entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            _imageUrlResolver.Resolve(response);
+
+            return response;
         }
 
         protected override Task<IQueryable<Clash>> IncludeRelatedEntities(ClashSearchObject? search, IQueryable<Clash> query)

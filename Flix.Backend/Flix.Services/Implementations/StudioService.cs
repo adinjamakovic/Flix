@@ -21,16 +21,28 @@ namespace Flix.Services.Implementations
         IStudioService
     {
         private readonly IImageStorageService _imageStorageService;
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public StudioService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<StudioInsertRequest> insertValidator,
             IValidator<StudioUpdateRequest> updateValidator,
-            IImageStorageService imageStorageService
+            IImageStorageService imageStorageService,
+            IResponseImageUrlResolver imageUrlResolver
             ) : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
+            _imageUrlResolver = imageUrlResolver;
+        }
+
+        protected override StudioResponse MapToResponse(Studio entity)
+        {
+            var response = base.MapToResponse(entity);
+
+            _imageUrlResolver.Resolve(response);
+
+            return response;
         }
 
         protected override async Task BeforeInsertAsync(Studio entity, StudioInsertRequest request)

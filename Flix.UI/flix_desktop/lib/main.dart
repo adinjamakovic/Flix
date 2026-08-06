@@ -1,5 +1,6 @@
 import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/providers/cast_provider.dart';
+import 'package:flix_desktop/providers/clash_entry_provider.dart';
 import 'package:flix_desktop/providers/clash_provider.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
@@ -21,6 +22,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => UserProvider()),
             ChangeNotifierProvider(create: (_) => ReviewProvider()),
             ChangeNotifierProvider(create: (_) => ClashProvider()),
+            ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
             ChangeNotifierProvider(create: (_) => RoleProvider())
           ],
         child: const MyApp()));

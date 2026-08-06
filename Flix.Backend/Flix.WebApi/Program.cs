@@ -111,6 +111,12 @@ TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
 TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
     .Map(dest => dest.Participants, src => src.Entries.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
+    .Map(dest => dest.Votes, src => src.Votes.Count)
+    .IgnoreNullValues(true);
+TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
+    .Map(dest => dest.MovieCount, src => src.Items.Count)
+    .IgnoreNullValues(true);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -152,12 +158,14 @@ builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestV
 
 //Services
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
+builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
 builder.Services.AddScoped<IClashService, ClashService>();
+builder.Services.AddScoped<IClashEntryService, ClashEntryService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
