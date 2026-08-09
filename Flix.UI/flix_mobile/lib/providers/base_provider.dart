@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flix_desktop/models/picked_image.dart';
-import 'package:flix_desktop/models/search_result.dart';
-import 'package:flix_desktop/providers/auth_provider.dart';
+import 'package:flix_mobile/models/picked_image.dart';
+import 'package:flix_mobile/models/search_result.dart';
+import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';

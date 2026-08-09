@@ -2,6 +2,7 @@ import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/screens/lists/cast_list.dart';
 import 'package:flix_desktop/screens/lists/clash_list.dart';
 import 'package:flix_desktop/screens/lists/review_list.dart';
+import 'package:flix_desktop/screens/login.dart';
 import 'package:flix_desktop/screens/statistics.dart';
 import 'package:flix_desktop/screens/lists/user_list.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +107,20 @@ class _MasterScreenState extends State<MasterScreen> {
                         fontSize: 17,
                       ),
                     ),
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    tooltip: "Log out",
+                    icon: Icon(Icons.logout,
+                        color: colors.onSecondaryContainer, size: 24),
+                    onPressed: () {
+                      context.read<AuthProvider>().logout();
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (route) => false, // drop every screen behind us
+                      );
+                    },
                   ),
                 ],
               ),
