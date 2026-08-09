@@ -24,6 +24,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Flix uses the camera so you can take a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Flix needs access to your photos so you can choose a profile photo.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
