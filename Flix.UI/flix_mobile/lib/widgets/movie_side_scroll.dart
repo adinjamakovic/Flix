@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MovieSideScroll extends StatefulWidget {
-  const MovieSideScroll({ Key? key }) : super(key: key);
+  const MovieSideScroll({ super.key });
 
   @override
   _MovieSideScrollState createState() => _MovieSideScrollState();

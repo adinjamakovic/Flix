@@ -1,6 +1,5 @@
 import 'package:flix_mobile/layouts/container_screen.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
-import 'package:flix_mobile/screens/home/movie_list.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

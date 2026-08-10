@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AddMovie extends StatelessWidget {
-const AddMovie({ Key? key }) : super(key: key);
+const AddMovie({ super.key });
 
   @override
   Widget build(BuildContext context){

@@ -6,7 +6,7 @@ import 'package:flix_mobile/screens/user_profile.dart';
 import 'package:flutter/material.dart';
 
 class ContainerScreen extends StatefulWidget {
-  const ContainerScreen({ Key? key }) : super(key: key);
+  const ContainerScreen({ super.key });
 
   @override
   _ContainerScreenState createState() => _ContainerScreenState();

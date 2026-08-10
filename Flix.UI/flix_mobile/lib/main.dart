@@ -1,4 +1,8 @@
 import 'package:flix_mobile/providers/auth_provider.dart';
+import 'package:flix_mobile/providers/country_provider.dart';
+import 'package:flix_mobile/providers/genre_provider.dart';
+import 'package:flix_mobile/providers/language_provider.dart';
+import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flix_mobile/theme/flix_theme.dart';
@@ -10,6 +14,10 @@ void main() {
       MultiProvider(
         providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MovieProvider()),
+        ChangeNotifierProvider(create: (_) => GenreProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => CountryProvider()),
         ],
       child: const MyApp(),));
 }

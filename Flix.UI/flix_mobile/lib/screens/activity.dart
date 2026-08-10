@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Activity extends StatefulWidget {
-  const Activity({ Key? key }) : super(key: key);
+  const Activity({ super.key });
 
   @override
   _ActivityState createState() => _ActivityState();
