@@ -1,5 +1,6 @@
+import 'package:flix_mobile/layouts/container_screen.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
-import 'package:flix_mobile/screens/home.dart';
+import 'package:flix_mobile/screens/home/movie_list.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ class _LoginBoxState extends State<LoginBox> {
       // an authenticated-past screen — it exits the app instead.
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Home()),
+        MaterialPageRoute(builder: (context) => const ContainerScreen()),
         (route) => false,
       );
     } on Exception catch (e) {
