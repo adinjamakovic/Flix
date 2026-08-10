@@ -8,7 +8,6 @@ import 'package:flix_desktop/screens/lists/clash_participant_list.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class ClashList extends StatefulWidget {

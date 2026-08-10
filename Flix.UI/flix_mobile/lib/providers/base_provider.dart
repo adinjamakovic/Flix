@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flix_desktop/models/picked_image.dart';
-import 'package:flix_desktop/models/search_result.dart';
-import 'package:flix_desktop/providers/auth_provider.dart';
+import 'package:flix_mobile/models/picked_image.dart';
+import 'package:flix_mobile/models/search_result.dart';
+import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -11,10 +11,12 @@ abstract class BaseProvider<T> with ChangeNotifier {
   static String? _baseUrl;
   String _endpoint = "";
 
+  static const String defaultBaseUrl = "http://10.0.2.2:5071/";
+
   BaseProvider(String endpoint) {
     _endpoint = endpoint;
-    _baseUrl = const String.fromEnvironment("BASE_URL", 
-        defaultValue: "https://localhost:7140/");
+    _baseUrl = const String.fromEnvironment("BASE_URL",
+        defaultValue: defaultBaseUrl);
   }
 
   Future<SearchResult<T>> get({dynamic filter}) async {
