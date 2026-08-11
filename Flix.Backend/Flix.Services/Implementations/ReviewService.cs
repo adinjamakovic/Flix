@@ -18,6 +18,12 @@ namespace Flix.Services.Implementations
             _imageUrlResolver = imageUrlResolver;
         }
 
+        protected override IQueryable<Review> GetDataSource()
+        {
+            return _context.Reviews
+                .OrderByDescending(x=> x.CreatedAt);
+        }
+
         // A review owns no image of its own, but it carries the author and the movie, and both
         // of those do.
         protected override ReviewResponse MapToResponse(Review entity)
@@ -53,6 +59,15 @@ namespace Flix.Services.Implementations
 
             if(search.ReviewRating != null)
                 query = query.Where(r => r.Rating == search.ReviewRating);
+
+            if(search.UserId != null)
+                query = query.Where(x=>x.UserId == search.UserId);
+
+            if(search.MovieId != null)
+                query = query.Where(x => x.MovieId == search.MovieId);
+
+            if(search.FollowedByUserId != null)
+                query = query.Where(r => r.User.Followers.Any(x=> x.Follower.Id == search.FollowedByUserId));
 
             return query;
         }

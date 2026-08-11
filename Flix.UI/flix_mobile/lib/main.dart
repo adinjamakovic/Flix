@@ -1,8 +1,11 @@
 import 'package:flix_mobile/providers/auth_provider.dart';
+import 'package:flix_mobile/providers/clash_entry_provider.dart';
+import 'package:flix_mobile/providers/clash_provider.dart';
 import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
+import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flix_mobile/theme/flix_theme.dart';
@@ -18,6 +21,9 @@ void main() {
         ChangeNotifierProvider(create: (_) => GenreProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => CountryProvider()),
+        ChangeNotifierProvider(create: (_) => ClashProvider()),
+        ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ],
       child: const MyApp(),));
 }
