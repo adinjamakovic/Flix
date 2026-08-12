@@ -59,7 +59,7 @@ namespace Flix.Services.Implementations
             if(search?.CountryId is int countryId)
                 query = query.Where(u => u.CountryId == countryId);
 
-            if (search.IsActive is bool isActive)
+            if (search?.IsActive is bool isActive)
                 query = query.Where(u => u.IsActive == isActive);
 
             return query;

@@ -15,6 +15,18 @@ namespace Flix.Services.Database
                     right => right.HasOne(mg => mg.Genre).WithMany().HasForeignKey(mg => mg.GenreId),
                     left => left.HasOne(mg => mg.Movie).WithMany().HasForeignKey(mg => mg.MovieId));
 
+            modelBuilder.Entity<MovieRecommendation>()
+                .HasOne(x=>x.Movie)
+                .WithMany()
+                .HasForeignKey(x=>x.MovieId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<MovieRecommendation>()
+                .HasOne(x=>x.RecommendedMovie)
+                .WithMany()
+                .HasForeignKey(x=>x.RecommendedMovieId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<UserRole>()
                 .HasOne(x => x.User)
                 .WithMany(x=>x.Roles)

@@ -117,6 +117,10 @@ TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
 TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
     .Map(dest => dest.MovieCount, src => src.Items.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.Movie, src => src.Movie)
+    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -173,6 +177,7 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
 
 var app = builder.Build();
 

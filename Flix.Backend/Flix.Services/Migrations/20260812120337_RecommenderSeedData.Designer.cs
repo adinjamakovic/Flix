@@ -4,6 +4,7 @@ using Flix.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flix.Services.Database.Migrations
 {
     [DbContext(typeof(FlixDbContext))]
-    partial class FlixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812120337_RecommenderSeedData")]
+    partial class RecommenderSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3350,32 +3353,6 @@ namespace Flix.Services.Database.Migrations
                             MovieListId = 56,
                             Position = 2
                         });
-                });
-
-            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecommendedMovieId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Score")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("RecommendedMovieId");
-
-                    b.ToTable("MovieRecommendations");
                 });
 
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>
@@ -11164,25 +11141,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Movie");
 
                     b.Navigation("MovieList");
-                });
-
-            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
-                {
-                    b.HasOne("Flix.Services.Database.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Flix.Services.Database.Movie", "RecommendedMovie")
-                        .WithMany()
-                        .HasForeignKey("RecommendedMovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("RecommendedMovie");
                 });
 
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>

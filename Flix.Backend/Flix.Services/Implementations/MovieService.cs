@@ -184,6 +184,14 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             _context.Set<MovieGenre>().RemoveRange(genreLinks);
+
+            // A movie sits on both ends of a recommendation, so rows pointing at it either way have
+            // to go before the delete - both foreign keys are NoAction and would block it otherwise.
+            var recommendations = await _context.MovieRecommendations
+                .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
+                .ToListAsync();
+
+            _context.MovieRecommendations.RemoveRange(recommendations);
         }
 
         protected override async Task AfterDeleteAsync(Movie entity)
