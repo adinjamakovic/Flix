@@ -1,6 +1,8 @@
+using Flix.Model.Enums;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
+using Flix.Services.Enums;
 using Flix.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;
@@ -13,6 +15,9 @@ namespace Flix.Services.Implementations
     {
         private const decimal MinimumPositiveRating = 3.0m;
         private const int RecommendationsPerMovie = 10;
+        private const int SeedMoviesPerUser = 3;
+        private const int RecommendationsPerSeed = 6;
+        private const int PopularFallbackCount = 10;
 
         private readonly FlixDbContext _context;
         protected readonly MapsterMapper.IMapper _mapper;
@@ -30,11 +35,20 @@ namespace Flix.Services.Implementations
 
         private async Task<List<MovieEntry>> BuildTrainingData(IReadOnlyDictionary<int, uint> matrixIndexByMovieId)
         {
-            var positiveSignals = await _context.Reviews
-                .Where(r => r.IsLiked || (r.Rating != null && r.Rating >= MinimumPositiveRating))
+            var reviewSignals = await _context.Reviews
+                .Where(r => r.IsLiked ||
+                    (r.Rating != null && r.Rating >= MinimumPositiveRating))
                 .Select(r => new { r.UserId, r.MovieId })
                 .Distinct()
                 .ToListAsync();
+
+            var watchlistSignals = await _context.MovieListItems
+                .Where(i => i.MovieList.Type == ListType.Watchlist)
+                .Select(i => new { i.MovieList.UserId, i.MovieId })
+                .Distinct()
+                .ToListAsync();
+
+            var positiveSignals = reviewSignals.Concat(watchlistSignals);
 
             var moviesPerUser = positiveSignals
                 .GroupBy(s => s.UserId)
@@ -204,7 +218,162 @@ namespace Flix.Services.Implementations
 
             return recommendations;
         }
+
+        public async Task<List<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId)
+        {
+            var excludedMovieIds = await GetMoviesAlreadySeenByUser(userId);
+
+            // The seeds are the user's most recently reviewed movies that they actually liked -
+            // rated at least MinimumPositiveRating, or liked outright. Grouping first keeps a
+            // rewatched movie from taking two of the three slots.
+            var seedMovieIds = await _context.Reviews
+                .Where(x => x.UserId == userId &&
+                (
+                    (x.Rating != null && x.Rating >= MinimumPositiveRating)
+                    || x.IsLiked
+                ))
+                .GroupBy(x => x.MovieId)
+                .OrderByDescending(g => g.Max(x => x.CreatedAt))
+                .Select(g => g.Key)
+                .Take(SeedMoviesPerUser)
+                .ToListAsync();
+
+            if (seedMovieIds.Count == 0)
+                return await GetPopularRecommendationsAsync(excludedMovieIds);
+
+            var recommendations = new List<MovieRecommendationResponse>();
+            var addedMovieIds = new HashSet<int>();
+
+            foreach (var seedMovieId in seedMovieIds)
+            {
+                // Everything stored for the seed rather than the handful that survive: the
+                // exclusions knock out most of a seed's set, because the movies sitting closest
+                // to one the user liked are the ones they are most likely to have seen already.
+                var set = await GetRecommendationsForMovieAsync(new MovieRecommendationSearchObject
+                {
+                    MovieId = seedMovieId,
+                    NumberOfRecommendations = RecommendationsPerMovie
+                });
+
+                var keptForSeed = 0;
+
+                foreach (var recommendation in set)
+                {
+                    if (keptForSeed == RecommendationsPerSeed)
+                        break;
+
+                    if (excludedMovieIds.Contains(recommendation.RecommendedMovieId))
+                        continue;
+
+                    // Two seeds routinely point at the same movie, and the responses are separate
+                    // objects, so the de-duplication has to go by recommended movie id.
+                    if (!addedMovieIds.Add(recommendation.RecommendedMovieId))
+                        continue;
+
+                    recommendations.Add(recommendation);
+                    keptForSeed++;
+                }
+            }
+
+            if (recommendations.Count == 0)
+                return await GetPopularRecommendationsAsync(excludedMovieIds);
+
+            return recommendations;
+        }
+
+        private async Task<List<MovieRecommendationResponse>> GetPopularRecommendationsAsync(HashSet<int> excludedMovieIds)
+        {
+            var reviewSignals = _context.Reviews
+                .Where(r => r.Movie.IsEnabled && !excludedMovieIds.Contains(r.MovieId))
+                .Select(r => new { r.UserId, r.MovieId });
+
+            var watchlistSignals = _context.MovieListItems
+                .Where(i => i.MovieList.Type == ListType.Watchlist
+                    && i.Movie.IsEnabled
+                    && !excludedMovieIds.Contains(i.MovieId))
+                .Select(i => new { i.MovieList.UserId, i.MovieId });
+
+            var rankedMovieIds = await reviewSignals
+                .Concat(watchlistSignals)
+                .Distinct()
+                .GroupBy(s => s.MovieId)
+                .Select(g => new { MovieId = g.Key, UserCount = g.Count() })
+                .OrderByDescending(x => x.UserCount)
+                .ThenBy(x => x.MovieId)
+                .Take(PopularFallbackCount)
+                .Select(x => x.MovieId)
+                .ToListAsync();
+
+            // A movie nobody has touched yet has no signal to rank on, but it is still unseen and
+            // still worth offering - and to a user who has been through the rest of the catalog it
+            // is the only thing left. 
+            if (rankedMovieIds.Count < PopularFallbackCount)
+            {
+                var untouchedMovieIds = await _context.Movies
+                    .Where(m => m.IsEnabled
+                        && !excludedMovieIds.Contains(m.Id)
+                        && !rankedMovieIds.Contains(m.Id))
+                    .OrderByDescending(m => m.Views)
+                    .ThenBy(m => m.Id)
+                    .Select(m => m.Id)
+                    .Take(PopularFallbackCount - rankedMovieIds.Count)
+                    .ToListAsync();
+
+                rankedMovieIds.AddRange(untouchedMovieIds);
+            }
+
+            if (rankedMovieIds.Count == 0)
+                return new List<MovieRecommendationResponse>();
+
+            var moviesById = await _context.Movies
+                .Where(m => rankedMovieIds.Contains(m.Id))
+                .ToDictionaryAsync(m => m.Id);
+
+            return rankedMovieIds
+                .Where(moviesById.ContainsKey)
+                .Select(movieId =>
+                {
+                    var movie = _mapper.Map<MovieResponse>(moviesById[movieId]);
+
+                    _imageUrlResolver.Resolve(movie);
+
+                    return new MovieRecommendationResponse
+                    {
+                        RecommendedMovieId = movieId,
+                        RecommendedMovie = movie,
+                        Source = RecommendationSource.Popular
+                    };
+                })
+                .ToList();
+        }
+
+        // A recommendation is only useful if it is a discovery, so anything the user has already
+        // reviewed, put on their watchlist or marked watched is off the table - the seeds
+        // included, since the recommender links co-reviewed movies in both directions.
+        private async Task<HashSet<int>> GetMoviesAlreadySeenByUser(int userId)
+        {
+            var reviewed = _context.Reviews
+                .Where(x => x.UserId == userId)
+                .Select(x => x.MovieId);
+
+            var watchlisted = _context.MovieListItems
+                .Where(x => x.MovieList.UserId == userId && x.MovieList.Type == ListType.Watchlist)
+                .Select(x => x.MovieId);
+
+            var watched = _context.Activities
+                .Where(x => x.UserId == userId && x.Type == ActivityType.WatchedMovie && x.MovieId != null)
+                .Select(x => x.MovieId!.Value);
+
+            var movieIds = await reviewed
+                .Union(watchlisted)
+                .Union(watched)
+                .ToListAsync();
+
+            return movieIds.ToHashSet();
+        }
     }
+
+    
 }
 
 public class CoReviewPrediction

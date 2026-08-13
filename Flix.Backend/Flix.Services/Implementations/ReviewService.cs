@@ -10,6 +10,8 @@ namespace Flix.Services.Implementations
 {
     public class ReviewService : BaseReadService<Review, ReviewResponse, ReviewSearchObject>, IReviewService
     {
+        private const int LatestFromFriendsCount = 10;
+
         private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public ReviewService(FlixDbContext context, IMapper mapper, IResponseImageUrlResolver imageUrlResolver)
@@ -70,6 +72,36 @@ namespace Flix.Services.Implementations
                 query = query.Where(r => r.User.Followers.Any(x=> x.Follower.Id == search.FollowedByUserId));
 
             return query;
+        }
+
+        public async Task<List<ReviewResponse>> GetLatestReviewsFromFriendsAsync(int userId)
+        {
+            var friendIds = await _context.UserFollows
+                .Where(f => f.FollowerId == userId
+                    && _context.UserFollows.Any(back =>
+                        back.FollowerId == f.FollowingId && back.FollowingId == userId))
+                .Select(f => f.FollowingId)
+                .Distinct()
+                .ToListAsync();
+
+            if (friendIds.Count == 0)
+                return new List<ReviewResponse>();
+
+            var latest = await _context.Reviews
+                .Include(r => r.User)
+                .Include(r => r.Movie)
+                .Where(r => friendIds.Contains(r.UserId) && r.Movie.IsEnabled)
+                .Where(r => !_context.Reviews.Any(newer =>
+                    newer.UserId == r.UserId
+                    && newer.Movie.IsEnabled
+                    && (newer.CreatedAt > r.CreatedAt
+                        || (newer.CreatedAt == r.CreatedAt && newer.Id > r.Id))))
+                .OrderByDescending(r => r.CreatedAt)
+                .ThenByDescending(r => r.Id)
+                .Take(LatestFromFriendsCount)
+                .ToListAsync();
+
+            return latest.Select(MapToResponse).ToList();
         }
 
         public async Task DeleteAsync(int id)

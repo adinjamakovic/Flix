@@ -46,6 +46,30 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  // Endpoints outside the generic CRUD stack hang off a named action rather
+  // than the controller root and answer with a bare JSON array instead of the
+  // `{ items, totalCount }` shape `get` unpacks.
+  Future<List<T>> getList(String action, {dynamic filter}) async {
+    var url = "$_baseUrl$_endpoint/$action";
+    if (filter != null) {
+      var queryString = getQueryString(filter);
+      url = "$url?$queryString";
+    }
+
+    var uri = Uri.parse(url);
+    var headers = createHeaders();
+
+    var response = await http.get(uri, headers: headers);
+
+    if (isValidResponse(response)) {
+      var data = jsonDecode(response.body) as List;
+
+      return List<T>.from(data.map((e) => fromJson(e)));
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
   // because the insert/update requests carry an `IFormFile`, so writes are
   // sent as form fields rather than as a JSON body.

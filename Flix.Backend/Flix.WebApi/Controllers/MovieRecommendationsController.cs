@@ -15,12 +15,15 @@ namespace Flix.WebApi.Controllers
     public class MovieRecommendationsController : ControllerBase
     {
         private readonly IMovieRecommendationService _movieRecommendationService;
-
+        private readonly ICurrentUserService _currentUserService;
+        
         public MovieRecommendationsController(
-            IMovieRecommendationService movieRecommendationService
+            IMovieRecommendationService movieRecommendationService,
+            ICurrentUserService currentUserService
             )
         {
             _movieRecommendationService = movieRecommendationService;
+            _currentUserService = currentUserService;
         }
 
         [HttpPost("GenerateRecommendations")]
@@ -35,6 +38,12 @@ namespace Flix.WebApi.Controllers
         public async Task<IActionResult> GetRecommendationsForMovie([FromQuery] MovieRecommendationSearchObject search)
         {
             var result = await _movieRecommendationService.GetRecommendationsForMovieAsync(search);
+            return Ok(result);
+        }
+        [HttpGet("GetRecommendationsForUser")]
+        public async Task<IActionResult> GetRecommendationsForCurrentUser()
+        {
+            var result = await _movieRecommendationService.GetRecommendationsForUserAsync(_currentUserService.GetUserId());
             return Ok(result);
         }
         [HttpDelete("DeleteRecommendations")]

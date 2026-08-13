@@ -5,6 +5,7 @@ import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
+import 'package:flix_mobile/providers/movie_recommender_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/register.dart';
@@ -24,6 +25,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ClashProvider()),
         ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => MovieRecommenderProvider()),
         ],
       child: const MyApp(),));
 }

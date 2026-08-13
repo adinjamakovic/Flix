@@ -1798,7 +1798,34 @@ namespace Flix.Services.Database
                 }
             }
 
+            ApplyPopularThisWeekDates(reviews);
+
             modelBuilder.Entity<Review>().HasData(reviews);
+        }
+
+        // Once PopularWeekAnchor is more than a week in the past the endpoint
+        // starts coming back empty - bump the anchor and add a migration.
+        private static readonly DateTime PopularWeekAnchor = new DateTime(2026, 8, 13, 0, 0, 0);
+
+        private static readonly (int MovieId, int ReviewCount)[] PopularThisWeekCounts =
+        {
+            (6, 9), (9, 7), (4, 6), (3, 5), (12, 4), (10, 3), (2, 2), (7, 2), (1, 1)
+        };
+
+        private static void ApplyPopularThisWeekDates(List<Review> reviews)
+        {
+            foreach (var (movieId, reviewCount) in PopularThisWeekCounts)
+            {
+                var recent = reviews.Where(r => r.MovieId == movieId).Take(reviewCount).ToList();
+
+                for (var i = 0; i < recent.Count; i++)
+                {
+                    recent[i].CreatedAt = PopularWeekAnchor
+                        .AddDays(-(i % 6))
+                        .AddHours(-(1 + (i * 5 + movieId * 3) % 20))
+                        .AddMinutes(-((i * 7 + movieId * 11) % 60));
+                }
+            }
         }
 
         private static void SeedRecommenderWatchlists(ModelBuilder modelBuilder)

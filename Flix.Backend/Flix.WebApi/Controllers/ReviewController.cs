@@ -9,8 +9,19 @@ namespace Flix.WebApi.Controllers
 {
     public class ReviewController : BaseReadController<ReviewResponse, ReviewSearchObject, IReviewService>
     {
-        public ReviewController(IReviewService service) : base(service)
+        private readonly ICurrentUserService _currentUserService;
+
+        public ReviewController(IReviewService service, ICurrentUserService currentUserService) : base(service)
         {
+            _currentUserService = currentUserService;
+        }
+
+        [HttpGet("LatestFromFriends")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ReviewResponse>>> GetLatestFromFriends()
+        {
+            var result = await _service.GetLatestReviewsFromFriendsAsync(_currentUserService.GetUserId());
+            return Ok(result);
         }
 
         // Read-only base, so delete is declared here rather than inherited. Moderating

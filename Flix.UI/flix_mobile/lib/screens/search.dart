@@ -9,9 +9,9 @@ import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
+import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -32,6 +32,9 @@ class _SearchState extends State<Search> {
   static const double _loadMoreThreshold = 300;
 
   static const int _maxPreviousSearches = 5;
+
+  static const double _posterWidth = 72;
+  static const double _posterHeight = 108;
 
   // `ContainerScreen` swaps the whole tab body out, so this state is disposed
   // every time the user leaves the tab. Nothing local is persisted yet, so
@@ -130,14 +133,19 @@ class _SearchState extends State<Search> {
     }
   }
 
-  Map<String, dynamic> get _lookupFilter =>
-      {"page": 1, "pageSize": _lookupPageSize};
+  Map<String, dynamic> get _lookupFilter => {
+    "page": 1,
+    "pageSize": _lookupPageSize,
+  };
 
   List<T> _sorted<T>(SearchResult<T> result, String? Function(T) nameOf) {
-    final List<T> items = result.items ?? List.empty();
+    final List<T> items = itemsOf(result);
 
-    items.sort((a, b) =>
-        (nameOf(a) ?? "").toLowerCase().compareTo((nameOf(b) ?? "").toLowerCase()));
+    items.sort(
+      (a, b) => (nameOf(a) ?? "").toLowerCase().compareTo(
+        (nameOf(b) ?? "").toLowerCase(),
+      ),
+    );
 
     return items;
   }
@@ -182,14 +190,15 @@ class _SearchState extends State<Search> {
     });
 
     try {
-      final SearchResult<Movie> data =
-          await _movieProvider.get(filter: _buildFilter(page));
+      final SearchResult<Movie> data = await _movieProvider.get(
+        filter: _buildFilter(page),
+      );
 
       if (!mounted || token != _requestToken) return;
 
       setState(() {
         if (!loadMore) _movies.clear();
-        _movies.addAll(data.items ?? List.empty());
+        _movies.addAll(itemsOf(data));
         _totalCount = data.totalCount ?? _movies.length;
         _page = page;
         _isLoading = false;
@@ -201,7 +210,7 @@ class _SearchState extends State<Search> {
       setState(() {
         _isLoading = false;
         _isLoadingMore = false;
-        _error = e.toString().replaceFirst("Exception: ", "");
+        _error = errorText(e);
       });
     }
   }
@@ -256,7 +265,8 @@ class _SearchState extends State<Search> {
   void _onScroll() {
     if (_isLoading || _isLoadingMore || !_hasMorePages) return;
 
-    final double remaining = _scrollController.position.maxScrollExtent -
+    final double remaining =
+        _scrollController.position.maxScrollExtent -
         _scrollController.position.pixels;
 
     if (remaining <= _loadMoreThreshold) _search(loadMore: true);
@@ -268,13 +278,16 @@ class _SearchState extends State<Search> {
     if (title.isEmpty) return;
 
     setState(() {
-      _previousSearches
-          .removeWhere((entry) => entry.toLowerCase() == title.toLowerCase());
+      _previousSearches.removeWhere(
+        (entry) => entry.toLowerCase() == title.toLowerCase(),
+      );
       _previousSearches.insert(0, title);
 
       if (_previousSearches.length > _maxPreviousSearches) {
         _previousSearches.removeRange(
-            _maxPreviousSearches, _previousSearches.length);
+          _maxPreviousSearches,
+          _previousSearches.length,
+        );
       }
     });
   }
@@ -283,8 +296,7 @@ class _SearchState extends State<Search> {
     _debounceTimer?.cancel();
 
     _titleController.text = title;
-    _titleController.selection =
-        TextSelection.collapsed(offset: title.length);
+    _titleController.selection = TextSelection.collapsed(offset: title.length);
 
     _rememberSearch(title);
     _search();
@@ -308,18 +320,12 @@ class _SearchState extends State<Search> {
     }
   }
 
-  void _showError(Exception e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
-    );
-  }
+  void _showError(Exception e) => showSnack(context, errorText(e));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("FLIX"),
-      ),
+      appBar: AppBar(title: const Text("FLIX")),
       body: SafeArea(
         top: false,
         child: Column(
@@ -378,8 +384,7 @@ class _SearchState extends State<Search> {
     return Align(
       alignment: Alignment.centerLeft,
       child: OutlinedButton.icon(
-        onPressed: () =>
-            setState(() => _filtersExpanded = !_filtersExpanded),
+        onPressed: () => setState(() => _filtersExpanded = !_filtersExpanded),
         icon: Icon(
           Icons.filter_alt_outlined,
           size: 20,
@@ -477,7 +482,10 @@ class _SearchState extends State<Search> {
                 value: null,
                 child: Text(
                   allLabel,
-                  style: TextStyle(color: colors.onSurfaceVariant, fontSize: 15),
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 15,
+                  ),
                 ),
               ),
               ...items.map(
@@ -531,8 +539,10 @@ class _SearchState extends State<Search> {
                 return InkWell(
                   onTap: () => _onPreviousSearchTapped(title),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     child: Text(
                       title,
                       style: TextStyle(
@@ -557,7 +567,8 @@ class _SearchState extends State<Search> {
     }
 
     if (_error != null) {
-      return _buildMessage(
+      return buildMessage(
+        context,
         _error!,
         action: TextButton(
           onPressed: () => _search(),
@@ -567,7 +578,7 @@ class _SearchState extends State<Search> {
     }
 
     if (_movies.isEmpty) {
-      return _buildMessage("No movies match your search.");
+      return buildMessage(context, "No movies match your search.");
     }
 
     return Column(
@@ -619,7 +630,13 @@ class _SearchState extends State<Search> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPoster(movie),
+            buildPoster(
+              context,
+              movie.poster,
+              width: _posterWidth,
+              height: _posterHeight,
+              iconSize: 28,
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -642,93 +659,15 @@ class _SearchState extends State<Search> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  _buildRating(movie.rating),
+                  buildRating(
+                    context,
+                    movie.rating,
+                    size: 18,
+                    emptyLabel: "Not rated yet",
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// `Movie.poster` is the read-only SAS URL the API hands back, not a path.
-  Widget _buildPoster(Movie movie) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    final Uri? uri = Uri.tryParse(movie.poster ?? "");
-    final bool isNetworkImage =
-        uri != null && (uri.scheme == "http" || uri.scheme == "https");
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: SizedBox(
-        width: 72,
-        height: 108,
-        child: isNetworkImage
-            ? Image.network(
-                uri.toString(),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildPosterPlaceholder(colors),
-              )
-            : _buildPosterPlaceholder(colors),
-      ),
-    );
-  }
-
-  Widget _buildPosterPlaceholder(ColorScheme colors) {
-    return ColoredBox(
-      color: colors.surfaceContainer,
-      child: Icon(
-        Icons.movie_outlined,
-        color: colors.onSurfaceVariant,
-        size: 28,
-      ),
-    );
-  }
-
-  Widget _buildRating(double? rating) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    final int halfStars = (((rating ?? 0).clamp(0, 5)) * 2).round();
-
-    if (halfStars == 0) {
-      return Text(
-        "Not rated yet",
-        style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
-      );
-    }
-
-    final int fullStars = halfStars ~/ 2;
-    final bool hasHalfStar = halfStars.isOdd;
-
-    return Row(
-      children: [
-        ...List.generate(
-          fullStars,
-          (index) => Icon(Icons.star, size: 18, color: colors.onSurface),
-        ),
-        if (hasHalfStar)
-          Icon(Icons.star_half, size: 18, color: colors.onSurface),
-      ],
-    );
-  }
-
-  Widget _buildMessage(String message, {Widget? action}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
-            ),
-            ?action,
           ],
         ),
       ),

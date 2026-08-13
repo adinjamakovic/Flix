@@ -8,5 +8,6 @@ namespace Flix.Services.Interfaces
         Task GenerateRecommendationAsync();
         Task<List<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search);
         Task DeleteOldRecommendations();
+        Task<List<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId);
     }
 }

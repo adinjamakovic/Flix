@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
@@ -9,8 +11,6 @@ using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.Services.Implementations
 {
@@ -23,6 +23,10 @@ namespace Flix.Services.Implementations
             MovieUpdateRequest>,
         IMovieService
     {
+        // The friends list feeds a single home-screen row, so it is capped the same way
+        // the weekly popular row is rather than taking a count from the caller.
+        private const int PopularWithFriendsCount = 7;
+
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         public MovieService(
@@ -257,6 +261,83 @@ namespace Flix.Services.Implementations
                 throw new ClientException($"Genre(s) with Id {string.Join(", ", missing)} not found.");
 
             return genres;
+        }
+        public async Task<List<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies = 7)
+        {
+            if (numberOfMovies <= 0)
+                throw new ClientException("Number of movies must be greater than zero.");
+
+            var since = DateTime.UtcNow.AddDays(-7);
+
+            var popular = await _context.Reviews
+                .Where(r => r.CreatedAt >= since && r.Movie.IsEnabled)
+                .GroupBy(r => r.MovieId)
+                .Select(g => new { MovieId = g.Key, ReviewCount = g.Count() })
+                .OrderByDescending(x => x.ReviewCount)
+                .ThenBy(x => x.MovieId)
+                .Take(numberOfMovies)
+                .ToListAsync();
+
+            if (popular.Count == 0)
+                return new List<MovieResponse>();
+
+            var ids = popular.Select(x => x.MovieId).ToList();
+
+            var moviesById = await GetDataSource()
+                .Where(m => ids.Contains(m.Id))
+                .ToDictionaryAsync(m => m.Id);
+
+            return popular
+                .Where(p => moviesById.ContainsKey(p.MovieId))
+                .Select(p => MapToResponse(moviesById[p.MovieId]))
+                .ToList();
+        }
+
+        public async Task<List<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId)
+        {
+            // A friend is a mutual follow - we follow them and they follow us back
+            var friendIds = await _context.UserFollows
+                .Where(f => f.FollowerId == userId
+                    && _context.UserFollows.Any(back =>
+                        back.FollowerId == f.FollowingId && back.FollowingId == userId))
+                .Select(f => f.FollowingId)
+                .Distinct()
+                .ToListAsync();
+
+            if (friendIds.Count == 0)
+                return new List<MovieResponse>();
+                
+            var listSignals = _context.MovieListItems
+                .Where(i => friendIds.Contains(i.MovieList.UserId) && i.Movie.IsEnabled)
+                .Select(i => new { UserId = i.MovieList.UserId, i.MovieId });
+
+            var reviewSignals = _context.Reviews
+                .Where(r => friendIds.Contains(r.UserId) && r.Movie.IsEnabled)
+                .Select(r => new { r.UserId, r.MovieId });
+
+            var popular = await listSignals
+                .Concat(reviewSignals)
+                .Distinct()
+                .GroupBy(s => s.MovieId)
+                .Select(g => new { MovieId = g.Key, FriendCount = g.Count() })
+                .OrderByDescending(x => x.FriendCount)
+                .ThenBy(x => x.MovieId)
+                .Take(PopularWithFriendsCount)
+                .ToListAsync();
+
+            if (popular.Count == 0)
+                return new List<MovieResponse>();
+
+            var ids = popular.Select(x => x.MovieId).ToList();
+
+            var moviesById = await GetDataSource()
+                .Where(m => ids.Contains(m.Id))
+                .ToDictionaryAsync(m => m.Id);
+
+            return popular
+                .Where(p => moviesById.ContainsKey(p.MovieId))
+                .Select(p => MapToResponse(moviesById[p.MovieId]))
+                .ToList();
         }
     }
 }

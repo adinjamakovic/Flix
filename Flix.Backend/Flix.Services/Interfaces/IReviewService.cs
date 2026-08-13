@@ -11,5 +11,6 @@ namespace Flix.Services.Interfaces
         // Reviews are written by users, never by an admin, so this is read + delete
         // rather than the full CRUD contract.
         Task DeleteAsync(int id);
+        Task<List<ReviewResponse>> GetLatestReviewsFromFriendsAsync(int userId);
     }
 }

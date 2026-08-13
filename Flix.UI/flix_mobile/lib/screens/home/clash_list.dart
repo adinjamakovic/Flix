@@ -5,6 +5,7 @@ import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
 import 'package:flix_mobile/providers/clash_provider.dart';
+import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -77,10 +78,12 @@ class _ClashListState extends State<ClashList> {
       if (!mounted) return;
 
       setState(() {
-        _currentClash = _soonest(_itemsOf(clashes[0]), (clash) => clash.endDate);
-        _upcomingClash =
-            _soonest(_itemsOf(clashes[1]), (clash) => clash.startDate);
-        _previousClashes = _participatedIn(_itemsOf(clashes[2]), entries);
+        _currentClash = _soonest(itemsOf(clashes[0]), (clash) => clash.endDate);
+        _upcomingClash = _soonest(
+          itemsOf(clashes[1]),
+          (clash) => clash.startDate,
+        );
+        _previousClashes = _participatedIn(itemsOf(clashes[2]), entries);
         _entriesByClashId = entries;
         _isLoading = false;
       });
@@ -89,16 +92,16 @@ class _ClashListState extends State<ClashList> {
 
       setState(() {
         _isLoading = false;
-        _error = e.toString().replaceFirst("Exception: ", "");
+        _error = errorText(e);
       });
     }
   }
 
   Map<String, dynamic> _clashFilter(ClashStatus status) => {
-        "page": 1,
-        "pageSize": _pageSize,
-        "status": status.index,
-      };
+    "page": 1,
+    "pageSize": _pageSize,
+    "status": status.index,
+  };
 
   Future<Map<int, ClashEntry>> _loadEntries() async {
     final String username = _authProvider.username?.trim() ?? "";
@@ -118,9 +121,6 @@ class _ClashListState extends State<ClashList> {
     return byClashId;
   }
 
-  List<Clash> _itemsOf(SearchResult<Clash> result) =>
-      result.items ?? List<Clash>.empty();
-
   /// Nothing orders clashes on the API side, so the one that matters is picked
   /// here: the active clash closing first, the upcoming one starting soonest.
   Clash? _soonest(List<Clash> clashes, DateTime? Function(Clash) dateOf) {
@@ -137,9 +137,7 @@ class _ClashListState extends State<ClashList> {
     List<Clash> completed,
     Map<int, ClashEntry> entries,
   ) {
-    return completed
-        .where((clash) => entries.containsKey(clash.id))
-        .toList()
+    return completed.where((clash) => entries.containsKey(clash.id)).toList()
       ..sort((a, b) => _compareDates(b.endDate, a.endDate));
   }
 
@@ -154,26 +152,12 @@ class _ClashListState extends State<ClashList> {
 
   bool _hasWon(Clash clash) => _entriesByClashId[clash.id]?.isWinner == true;
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-
-    final DateTime local = date.toLocal();
-    final String day = local.day.toString().padLeft(2, '0');
-    final String month = local.month.toString().padLeft(2, '0');
-
-    return "$day/$month/${local.year}";
-  }
-
   // Neither voting nor entering a clash has an endpoint on the API yet, so the
   // buttons the design calls for are here but say so when tapped.
-  void _onVote() => _showSnack("Voting isn't available yet.");
+  void _onVote() => showSnack(context, "Voting isn't available yet.");
 
-  void _onParticipate() => _showSnack("Entering a clash isn't available yet.");
-
-  void _showSnack(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
+  void _onParticipate() =>
+      showSnack(context, "Entering a clash isn't available yet.");
 
   @override
   Widget build(BuildContext context) {
@@ -182,12 +166,10 @@ class _ClashListState extends State<ClashList> {
     }
 
     if (_error != null) {
-      return _buildMessage(
+      return buildMessage(
+        context,
         _error!,
-        action: TextButton(
-          onPressed: _load,
-          child: const Text("Try again"),
-        ),
+        action: TextButton(onPressed: _load, child: const Text("Try again")),
       );
     }
 
@@ -196,15 +178,18 @@ class _ClashListState extends State<ClashList> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          _buildSection(
+          buildSection(
+            context,
             label: "Current Clash",
             child: _buildCurrentClash(),
           ),
-          _buildSection(
+          buildSection(
+            context,
             label: "Upcoming Clash",
             child: _buildUpcomingClash(),
           ),
-          _buildSection(
+          buildSection(
+            context,
             label: "Previous clashes",
             child: _buildPreviousClashes(),
           ),
@@ -213,43 +198,17 @@ class _ClashListState extends State<ClashList> {
     );
   }
 
-  Widget _buildSection({required String label, required Widget child}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
-          child: child,
-        ),
-      ],
-    );
-  }
-
   Widget _buildCurrentClash() {
     final Clash? clash = _currentClash;
 
     if (clash == null) {
-      return _buildEmpty("No clash is running right now.");
+      return buildEmpty(context, "No clash is running right now.");
     }
 
     return _buildClashCard(
       clash: clash,
       accent: Theme.of(context).colorScheme.primary,
-      footer: "Closes: ${_formatDate(clash.endDate)}",
+      footer: "Closes: ${formatDate(clash.endDate)}",
       actions: _buildActions(),
     );
   }
@@ -258,19 +217,20 @@ class _ClashListState extends State<ClashList> {
     final Clash? clash = _upcomingClash;
 
     if (clash == null) {
-      return _buildEmpty("Nothing lined up yet.");
+      return buildEmpty(context, "Nothing lined up yet.");
     }
 
     return _buildClashCard(
       clash: clash,
       accent: Theme.of(context).colorScheme.primary,
-      footer: "Starts: ${_formatDate(clash.startDate)}",
+      footer: "Starts: ${formatDate(clash.startDate)}",
     );
   }
 
   Widget _buildPreviousClashes() {
     if (_previousClashes.isEmpty) {
-      return _buildEmpty(
+      return buildEmpty(
+        context,
         _authProvider.username == null
             ? "Sign in to see the clashes you took part in."
             : "You haven't taken part in a clash yet.",
@@ -368,10 +328,7 @@ class _ClashListState extends State<ClashList> {
                 ],
               ),
             ),
-            if (actions != null) ...[
-              const SizedBox(width: 12),
-              actions,
-            ],
+            if (actions != null) ...[const SizedBox(width: 12), actions],
           ],
         ),
       ),
@@ -387,10 +344,7 @@ class _ClashListState extends State<ClashList> {
           onPressed: _onVote,
         ),
         const SizedBox(height: 10),
-        _buildActionButton(
-          label: "Participate",
-          onPressed: _onParticipate,
-        ),
+        _buildActionButton(label: "Participate", onPressed: _onParticipate),
       ],
     );
   }
@@ -411,9 +365,7 @@ class _ClashListState extends State<ClashList> {
           backgroundColor: colors.surfaceContainerHigh,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           minimumSize: const Size(0, 46),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -425,44 +377,8 @@ class _ClashListState extends State<ClashList> {
             if (caption != null)
               Text(
                 caption,
-                style: TextStyle(
-                  color: colors.onSurfaceVariant,
-                  fontSize: 10,
-                ),
+                style: TextStyle(color: colors.onSurfaceVariant, fontSize: 10),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmpty(String message) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        message,
-        style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
-      ),
-    );
-  }
-
-  Widget _buildMessage(String message, {Widget? action}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
-            ),
-            ?action,
           ],
         ),
       ),

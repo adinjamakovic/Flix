@@ -9,6 +9,7 @@ using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
 using Flix.WebApi.Filters;
 using Flix.WebApi.Services.AccessManager;
+using Flix.WebApi.Services.CurrentUser;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -120,7 +121,8 @@ TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
 TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Movie, src => src.Movie)
-    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie);
+    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie)
+    .Map(dest => dest.Source, src => RecommendationSource.Similar);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -161,6 +163,8 @@ builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestV
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
 //Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -188,7 +192,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection is disabled because of the Flutter mobile development environment
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

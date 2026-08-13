@@ -3,6 +3,7 @@ import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -77,17 +78,21 @@ class _ReviewListState extends State<ReviewList> {
       // The followed feed and the user's own reviews are independent, so both
       // go out together; the second section's movie is only known once the
       // user's own reviews have landed.
-      final Future<SearchResult<Review>> followingRequest =
-          _reviewProvider.get(filter: _followingFilter(userId));
-      final Future<SearchResult<Review>> ownRequest =
-          _reviewProvider.get(filter: _ownReviewsFilter(userId));
+      final Future<SearchResult<Review>> followingRequest = _reviewProvider.get(
+        filter: _followingFilter(userId),
+      );
+      final Future<SearchResult<Review>> ownRequest = _reviewProvider.get(
+        filter: _ownReviewsFilter(userId),
+      );
 
-      final List<Review> following = _itemsOf(await followingRequest);
-      final List<Review> own = _itemsOf(await ownRequest);
+      final List<Review> following = itemsOf(await followingRequest);
+      final List<Review> own = itemsOf(await ownRequest);
 
       final Movie? latestMovie = own.isEmpty ? null : own.first.movie;
-      final List<Review> latestMovieReviews =
-          await _loadReviewsOf(latestMovie, userId);
+      final List<Review> latestMovieReviews = await _loadReviewsOf(
+        latestMovie,
+        userId,
+      );
 
       if (!mounted) return;
 
@@ -102,63 +107,51 @@ class _ReviewListState extends State<ReviewList> {
 
       setState(() {
         _isLoading = false;
-        _error = e.toString().replaceFirst("Exception: ", "");
+        _error = errorText(e);
       });
     }
   }
 
   Map<String, dynamic> _followingFilter(int userId) => {
-        "page": 1,
-        "pageSize": _feedPageSize,
-        "includeUser": true,
-        "includeMovie": true,
-        "followedByUserId": userId,
-      };
+    "page": 1,
+    "pageSize": _feedPageSize,
+    "includeUser": true,
+    "includeMovie": true,
+    "followedByUserId": userId,
+  };
 
   Map<String, dynamic> _ownReviewsFilter(int userId) => {
-        "page": 1,
-        "pageSize": 1,
-        "includeMovie": true,
-        "userId": userId,
-      };
+    "page": 1,
+    "pageSize": 1,
+    "includeMovie": true,
+    "userId": userId,
+  };
 
   Future<List<Review>> _loadReviewsOf(Movie? movie, int userId) async {
     final int? movieId = movie?.id;
     if (movieId == null) return List.empty();
 
-    final SearchResult<Review> result = await _reviewProvider.get(filter: {
-      "page": 1,
-      // Nothing stops a user reviewing the same movie twice - a rewatch is
-      // exactly that - so a spare slot keeps the section full once their own
-      // reviews are dropped below.
-      "pageSize": _feedPageSize + 1,
-      "includeUser": true,
-      "includeMovie": true,
-      "movieId": movieId,
-    });
+    final SearchResult<Review> result = await _reviewProvider.get(
+      filter: {
+        "page": 1,
+        // Nothing stops a user reviewing the same movie twice - a rewatch is
+        // exactly that - so a spare slot keeps the section full once their own
+        // reviews are dropped below.
+        "pageSize": _feedPageSize + 1,
+        "includeUser": true,
+        "includeMovie": true,
+        "movieId": movieId,
+      },
+    );
 
-    return _itemsOf(result)
-        .where((r) => !_isBy(r, userId))
-        .take(_feedPageSize)
-        .toList();
+    return itemsOf(
+      result,
+    ).where((r) => !_isBy(r, userId)).take(_feedPageSize).toList();
   }
 
   bool get _isSignedIn => _authProvider.userId != null;
 
-  List<Review> _itemsOf(SearchResult<Review> result) =>
-      result.items ?? List<Review>.empty();
-
   bool _isBy(Review review, int userId) => review.user?.id == userId;
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return "-";
-
-    final DateTime local = date.toLocal();
-    final String day = local.day.toString().padLeft(2, '0');
-    final String month = local.month.toString().padLeft(2, '0');
-
-    return "$day/$month/${local.year}";
-  }
 
   void _onReviewTapped(Review review) {
     // TODO: open the review details screen once it exists.
@@ -181,12 +174,10 @@ class _ReviewListState extends State<ReviewList> {
     }
 
     if (_error != null) {
-      return _buildMessage(
+      return buildMessage(
+        context,
         _error!,
-        action: TextButton(
-          onPressed: _load,
-          child: const Text("Try again"),
-        ),
+        action: TextButton(onPressed: _load, child: const Text("Try again")),
       );
     }
 
@@ -195,11 +186,13 @@ class _ReviewListState extends State<ReviewList> {
       child: ListView(
         padding: const EdgeInsets.only(bottom: 24),
         children: [
-          _buildSection(
+          buildSection(
+            context,
             label: "From people you follow",
             child: _buildFollowingReviews(),
           ),
-          _buildSection(
+          buildSection(
+            context,
             label: _latestMovie?.title == null
                 ? "From your last review"
                 : "More on ${_latestMovie!.title}",
@@ -210,37 +203,10 @@ class _ReviewListState extends State<ReviewList> {
     );
   }
 
-  Widget _buildSection({required String label, required Widget child}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
-          child: child,
-        ),
-      ],
-    );
-  }
-
   Widget _buildFollowingReviews() {
     if (_followingReviews.isEmpty) {
-      return _buildEmpty(
+      return buildEmpty(
+        context,
         !_isSignedIn
             ? "Sign in to see what the people you follow are watching."
             : "Nobody you follow has written a review yet.",
@@ -252,17 +218,22 @@ class _ReviewListState extends State<ReviewList> {
 
   Widget _buildLatestMovieReviews() {
     if (!_isSignedIn) {
-      return _buildEmpty("Sign in to see reviews of the movies you watch.");
+      return buildEmpty(
+        context,
+        "Sign in to see reviews of the movies you watch.",
+      );
     }
 
     if (_latestMovie == null) {
-      return _buildEmpty(
+      return buildEmpty(
+        context,
         "Review a movie and you'll see what everybody else made of it here.",
       );
     }
 
     if (_latestMovieReviews.isEmpty) {
-      return _buildEmpty(
+      return buildEmpty(
+        context,
         "You're the only one who has reviewed ${_latestMovie!.title ?? "it"} so far.",
       );
     }
@@ -298,7 +269,12 @@ class _ReviewListState extends State<ReviewList> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildPoster(review.movie),
+            buildPoster(
+              context,
+              review.movie?.poster,
+              width: _posterWidth,
+              height: _posterHeight,
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -318,7 +294,12 @@ class _ReviewListState extends State<ReviewList> {
                   const SizedBox(height: 8),
                   _buildByline(review),
                   const SizedBox(height: 8),
-                  _buildRating(review),
+                  buildRating(
+                    context,
+                    review.rating,
+                    isLiked: review.isLiked == true,
+                    isRewatch: review.isRewatch == true,
+                  ),
                   const SizedBox(height: 10),
                   _buildContent(review),
                 ],
@@ -330,47 +311,17 @@ class _ReviewListState extends State<ReviewList> {
     );
   }
 
-  // `Movie.poster` is the read-only SAS URL the API hands back, not a path.
-  Widget _buildPoster(Movie? movie) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-    final Uri? uri = Uri.tryParse(movie?.poster ?? "");
-    final bool isNetworkImage =
-        uri != null && (uri.scheme == "http" || uri.scheme == "https");
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: SizedBox(
-        width: _posterWidth,
-        height: _posterHeight,
-        child: isNetworkImage
-            ? Image.network(
-                uri.toString(),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    _buildPosterPlaceholder(colors),
-              )
-            : _buildPosterPlaceholder(colors),
-      ),
-    );
-  }
-
-  Widget _buildPosterPlaceholder(ColorScheme colors) {
-    return ColoredBox(
-      color: colors.surfaceContainer,
-      child: Icon(
-        Icons.movie_outlined,
-        color: colors.onSurfaceVariant,
-        size: 26,
-      ),
-    );
-  }
-
   Widget _buildByline(Review review) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
-        _buildAvatar(review),
+        buildAvatar(
+          context,
+          review.user?.profileImage,
+          review.user?.username,
+          radius: _avatarRadius,
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -386,68 +337,9 @@ class _ReviewListState extends State<ReviewList> {
         ),
         const SizedBox(width: 8),
         Text(
-          _formatDate(review.createdAt),
+          formatDate(review.createdAt),
           style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
         ),
-      ],
-    );
-  }
-
-  // `User.profileImage` is a SAS URL like the poster; the initial stands in
-  // while it is missing or fails to load.
-  Widget _buildAvatar(Review review) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    final String username = review.user?.username ?? "";
-    final Uri? uri = Uri.tryParse(review.user?.profileImage ?? "");
-    final bool isNetworkImage =
-        uri != null && (uri.scheme == "http" || uri.scheme == "https");
-
-    return CircleAvatar(
-      radius: _avatarRadius,
-      backgroundColor: colors.surfaceContainerHigh,
-      foregroundImage: isNetworkImage ? NetworkImage(uri.toString()) : null,
-      child: Text(
-        username.isEmpty ? "?" : username.characters.first.toUpperCase(),
-        style: TextStyle(
-          color: colors.onSurfaceVariant,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-
-  // Half-star steps, plus the marks a review can carry: liked, and rewatched.
-  Widget _buildRating(Review review) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    final int halfStars = (((review.rating ?? 0).clamp(0, 5)) * 2).round();
-    final int fullStars = halfStars ~/ 2;
-
-    return Row(
-      children: [
-        if (halfStars == 0)
-          Text(
-            "Not rated",
-            style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
-          )
-        else ...[
-          ...List.generate(
-            fullStars,
-            (index) => Icon(Icons.star, size: 16, color: colors.onSurface),
-          ),
-          if (halfStars.isOdd)
-            Icon(Icons.star_half, size: 16, color: colors.onSurface),
-        ],
-        if (review.isLiked == true) ...[
-          const SizedBox(width: 8),
-          Icon(Icons.favorite, size: 14, color: colors.primary),
-        ],
-        if (review.isRewatch == true) ...[
-          const SizedBox(width: 8),
-          Icon(Icons.replay, size: 14, color: colors.onSurfaceVariant),
-        ],
       ],
     );
   }
@@ -503,39 +395,6 @@ class _ReviewListState extends State<ReviewList> {
                 style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmpty(String message) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        message,
-        style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
-      ),
-    );
-  }
-
-  Widget _buildMessage(String message, {Widget? action}) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
-            ),
-            ?action,
           ],
         ),
       ),
