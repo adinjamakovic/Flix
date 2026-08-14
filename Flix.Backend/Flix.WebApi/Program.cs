@@ -118,6 +118,10 @@ TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
 TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
     .Map(dest => dest.MovieCount, src => src.Items.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
+    .Map(dest => dest.Movie, src => src.CreatedMovie);
 TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Movie, src => src.Movie)
@@ -159,6 +163,8 @@ builder.Services.AddScoped<IValidator<LanguageInsertRequest>, LanguageInsertRequ
 builder.Services.AddScoped<IValidator<LanguageUpdateRequest>, LanguageUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieRequestInsertRequest>, MovieRequestInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieRequestUpdateRequest>, MovieRequestUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
@@ -182,6 +188,7 @@ builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
+builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 
 var app = builder.Build();
 

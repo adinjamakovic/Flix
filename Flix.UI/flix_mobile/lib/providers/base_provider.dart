@@ -73,11 +73,15 @@ abstract class BaseProvider<T> with ChangeNotifier {
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
   // because the insert/update requests carry an `IFormFile`, so writes are
   // sent as form fields rather than as a JSON body.
+  //
+  // A write can also hang off a named action rather than the controller root -
+  // `POST /MovieRequest/UserRequest` does - which is what `action` is for.
   Future<T> insert(
     Map<String, dynamic> fields, {
     Map<String, PickedImage> files = const {},
+    String? action,
   }) async {
-    var uri = Uri.parse("$_baseUrl$_endpoint");
+    var uri = Uri.parse("$_baseUrl$_endpoint${action == null ? "" : "/$action"}");
 
     return _send(http.MultipartRequest("POST", uri), fields, files);
   }

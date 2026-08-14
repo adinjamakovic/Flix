@@ -1,4 +1,4 @@
-namespace Flix.Services.Enums
+namespace Flix.Model.Enums
 {
     public enum MovieRequestStatus
     {
