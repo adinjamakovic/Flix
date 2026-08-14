@@ -57,7 +57,7 @@ class _ContainerScreenState extends State<ContainerScreen> {
         HomeScreen(),
         Search(),
         MovieRequests(),
-        Activity(),
+        ActivityScreen(),
         UserProfile(),
         ][currentPageIndex],
     );

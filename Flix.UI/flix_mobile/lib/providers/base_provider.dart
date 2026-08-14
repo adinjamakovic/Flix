@@ -19,8 +19,8 @@ abstract class BaseProvider<T> with ChangeNotifier {
         defaultValue: defaultBaseUrl);
   }
 
-  Future<SearchResult<T>> get({dynamic filter}) async {
-    var url = "$_baseUrl$_endpoint";
+  Future<SearchResult<T>> get({dynamic filter, String? action}) async {
+    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
     if(filter != null)
     {
       var queryString = getQueryString(filter);

@@ -122,6 +122,7 @@ TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
     .Map(dest => dest.Movie, src => src.CreatedMovie);
+TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Movie, src => src.Movie)
@@ -149,6 +150,7 @@ builder.Services.AddDbContext<FlixDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Validators
+builder.Services.AddScoped<IValidator<ActivityInsertRequest>, ActivityInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<CastMemberInsertRequest>, CastMemberInsertRequestValidator>();
@@ -189,6 +191,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
+builder.Services.AddScoped<IActivityService, ActivityService>();
 
 var app = builder.Build();
 

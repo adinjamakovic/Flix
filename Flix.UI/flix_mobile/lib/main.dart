@@ -1,3 +1,4 @@
+import 'package:flix_mobile/providers/activity_provider.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/cast_member_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
@@ -30,6 +31,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => MovieRecommenderProvider()),
         ChangeNotifierProvider(create: (_) => MovieRequestProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ],
       child: const MyApp(),));
 }

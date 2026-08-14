@@ -1,5 +1,6 @@
 using Flix.CommonServices.CryptoService;
 using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -19,6 +20,7 @@ namespace Flix.Services.Implementations
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly IActivityService _activityService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
@@ -26,12 +28,26 @@ namespace Flix.Services.Implementations
             IValidator<UserInsertRequest> insertValidator,
             IValidator<UserUpdateRequest> updateValidator,
             IImageStorageService imageStorageService,
-            IResponseImageUrlResolver imageUrlResolver)
+            IResponseImageUrlResolver imageUrlResolver,
+            IActivityService activityService)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageStorageService = imageStorageService;
             _imageUrlResolver = imageUrlResolver;
+            _activityService = activityService;
+        }
+
+        public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
+        {
+            var response = await base.InsertAsync(request);
+
+            await _activityService.InsertAsync(response.Id, new ActivityInsertRequest
+            {
+                Type = ActivityType.JoinedPlatform
+            });
+
+            return response;
         }
 
         protected override IQueryable<User> GetDataSource()
@@ -199,6 +215,13 @@ namespace Flix.Services.Implementations
                 .FirstOrDefaultAsync(u => u.Username == username);
             var response = user == null ? null : _mapper.Map<UserSensitiveResponse>(user);
             return response;
+        }
+
+        public async Task UpdateLastLoginAsync(int userId)
+        {
+            await _context.Users
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastLoginAt, DateTime.UtcNow));
         }
 
     }

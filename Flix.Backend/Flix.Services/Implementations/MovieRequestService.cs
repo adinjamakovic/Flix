@@ -22,6 +22,7 @@ namespace Flix.Services.Implementations
         private readonly IImageStorageService _imageStorageService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly IActivityService _activityService;
         protected readonly IValidator<MovieRequestInsertRequest> _insertValidator;
         protected readonly IValidator<MovieRequestUpdateRequest> _updateValidator;
         public MovieRequestService(
@@ -30,6 +31,7 @@ namespace Flix.Services.Implementations
             IImageStorageService imageStorageService,
             ICurrentUserService currentUserService,
             IResponseImageUrlResolver imageUrlResolver,
+            IActivityService activityService,
             IValidator<MovieRequestInsertRequest> insertValidator,
             IValidator<MovieRequestUpdateRequest> updateValidator)
             : base(context, mapper)
@@ -37,6 +39,7 @@ namespace Flix.Services.Implementations
             _imageStorageService = imageStorageService;
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
+            _activityService = activityService;
             _insertValidator = insertValidator;
             _updateValidator = updateValidator;
         }
@@ -158,6 +161,12 @@ namespace Flix.Services.Implementations
                 await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Movie, movieEntity.Poster);
                 throw;
             }
+
+            await _activityService.InsertAsync(requestedByUserId, new ActivityInsertRequest
+            {
+                Type = ActivityType.RequestedMovie,
+                MovieId = movieEntity.Id
+            });
 
             movieRequestEntity.RequestedBy = await _context.Users
                 .Include(x => x.Country)
