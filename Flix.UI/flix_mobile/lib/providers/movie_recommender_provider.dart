@@ -11,7 +11,9 @@ class MovieRecommenderProvider extends BaseProvider<MovieRecommendation> {
   }
 
   Future<List<MovieRecommendation>> getRecommendationsForUser() async {
-    return getList("GetRecommendationsForUser");
+    var result = await get(action: "GetRecommendationsForUser");
+
+    return result.items ?? List<MovieRecommendation>.empty();
   }
 
   Future<List<Movie>> getRecommendedMoviesForUser() async {

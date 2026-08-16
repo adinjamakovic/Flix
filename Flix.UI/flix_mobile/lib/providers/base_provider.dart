@@ -20,14 +20,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }
 
   Future<SearchResult<T>> get({dynamic filter, String? action}) async {
-    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
-    if(filter != null)
-    {
-      var queryString = getQueryString(filter);
-      url = "$url?$queryString";
-    }
-
-    var uri = Uri.parse(url);
+    var uri = Uri.parse(_buildUrl(action, filter));
     var headers = createHeaders();
 
     var response = await http.get(uri, headers: headers);
@@ -46,25 +39,35 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  // Endpoints outside the generic CRUD stack hang off a named action rather
-  // than the controller root and answer with a bare JSON array instead of the
-  // `{ items, totalCount }` shape `get` unpacks.
-  Future<List<T>> getList(String action, {dynamic filter}) async {
-    var url = "$_baseUrl$_endpoint/$action";
-    if (filter != null) {
-      var queryString = getQueryString(filter);
-      url = "$url?$queryString";
-    }
+  Future<dynamic> getObject({dynamic filter, String? action}) async {
+    var uri = Uri.parse(_buildUrl(action, filter));
 
-    var uri = Uri.parse(url);
-    var headers = createHeaders();
-
-    var response = await http.get(uri, headers: headers);
+    var response = await http.get(uri, headers: createHeaders());
 
     if (isValidResponse(response)) {
-      var data = jsonDecode(response.body) as List;
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
 
-      return List<T>.from(data.map((e) => fromJson(e)));
+  String _buildUrl(String? action, dynamic filter) {
+    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
+
+    if (filter != null) {
+      url = "$url?${getQueryString(filter)}";
+    }
+
+    return url;
+  }
+
+  Future<T> getById(int id) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    var response = await http.get(uri, headers: createHeaders());
+
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
     } else {
       throw Exception("Unknown error");
     }

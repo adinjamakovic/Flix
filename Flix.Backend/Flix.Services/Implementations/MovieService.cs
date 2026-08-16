@@ -262,7 +262,7 @@ namespace Flix.Services.Implementations
 
             return genres;
         }
-        public async Task<List<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies = 7)
+        public async Task<PageResult<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies = 7)
         {
             if (numberOfMovies <= 0)
                 throw new ClientException("Number of movies must be greater than zero.");
@@ -279,7 +279,7 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             if (popular.Count == 0)
-                return new List<MovieResponse>();
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
 
             var ids = popular.Select(x => x.MovieId).ToList();
 
@@ -287,13 +287,19 @@ namespace Flix.Services.Implementations
                 .Where(m => ids.Contains(m.Id))
                 .ToDictionaryAsync(m => m.Id);
 
-            return popular
+            var movies = popular
                 .Where(p => moviesById.ContainsKey(p.MovieId))
                 .Select(p => MapToResponse(moviesById[p.MovieId]))
                 .ToList();
+
+            return new PageResult<MovieResponse>
+            {
+                Items = movies,
+                TotalCount = movies.Count
+            };
         }
 
-        public async Task<List<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId)
+        public async Task<PageResult<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId)
         {
             // A friend is a mutual follow - we follow them and they follow us back
             var friendIds = await _context.UserFollows
@@ -305,8 +311,8 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             if (friendIds.Count == 0)
-                return new List<MovieResponse>();
-                
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
+
             var listSignals = _context.MovieListItems
                 .Where(i => friendIds.Contains(i.MovieList.UserId) && i.Movie.IsEnabled)
                 .Select(i => new { UserId = i.MovieList.UserId, i.MovieId });
@@ -326,7 +332,7 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             if (popular.Count == 0)
-                return new List<MovieResponse>();
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
 
             var ids = popular.Select(x => x.MovieId).ToList();
 
@@ -334,10 +340,16 @@ namespace Flix.Services.Implementations
                 .Where(m => ids.Contains(m.Id))
                 .ToDictionaryAsync(m => m.Id);
 
-            return popular
+            var movies = popular
                 .Where(p => moviesById.ContainsKey(p.MovieId))
                 .Select(p => MapToResponse(moviesById[p.MovieId]))
                 .ToList();
+
+            return new PageResult<MovieResponse>
+            {
+                Items = movies,
+                TotalCount = movies.Count
+            };
         }
     }
 }

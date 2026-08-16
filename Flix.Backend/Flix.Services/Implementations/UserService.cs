@@ -16,6 +16,8 @@ namespace Flix.Services.Implementations
         : BaseCRUDService<User, UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>, IUserService
     {
         private const int DefaultRoleId = 2;
+        // As many as the profile screen can comfortably show.
+        private const int LatestReviewsOnProfile = 4;
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
@@ -91,7 +93,8 @@ namespace Flix.Services.Implementations
                     .ThenInclude(ur => ur.Role);
 
             if(search?.IncludeReviews == true)
-                query = query.Include(u => u.Reviews);
+                query = query.Include(u => u.Reviews)
+                    .ThenInclude(x=>x.Movie);
 
             return base.IncludeRelatedEntities(search, query);
         }
@@ -199,12 +202,39 @@ namespace Flix.Services.Implementations
                 .Include(x => x.Country)
                 .Include(x => x.Roles)
                     .ThenInclude(ur => ur.Role)
+                .Include(x=>x.Reviews)
+                .ThenInclude(x=>x.Movie)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (entity is null)
                 throw new ClientException($"{nameof(User)} with Id {id} not found.");
 
-            return MapToResponse(entity);
+            var response = MapToResponse(entity);
+
+            AttachLatestReviews(response, entity);
+
+            return response;
+        }
+
+        // The profile screen shows the newest few reviews a user wrote. Mapster cannot do this leg of
+        // the mapping - UserResponse.Reviews and ReviewResponse.User reference each other, so following
+        // it recurses forever (see the User -> UserResponse config in Program.cs) - hence the by hand
+        // mapping
+        private void AttachLatestReviews(UserResponse response, User entity)
+        {
+            response.Reviews = entity.Reviews
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(LatestReviewsOnProfile)
+                .Select(review =>
+                {
+                    var reviewResponse = _mapper.Map<ReviewResponse>(review);
+                    reviewResponse.User = null;
+
+                    _imageUrlResolver.Resolve(reviewResponse);
+
+                    return reviewResponse;
+                })
+                .ToList();
         }
 
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)

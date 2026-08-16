@@ -102,7 +102,7 @@ class _ReviewListState extends State<ReviewList> {
         _latestMovieReviews = latestMovieReviews;
         _isLoading = false;
       });
-    } on Exception catch (e) {
+    } catch (e) {
       if (!mounted) return;
 
       setState(() {

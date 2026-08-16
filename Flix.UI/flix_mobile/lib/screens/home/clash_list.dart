@@ -87,7 +87,10 @@ class _ClashListState extends State<ClashList> {
         _entriesByClashId = entries;
         _isLoading = false;
       });
-    } on Exception catch (e) {
+      // Everything, not just Exception: a payload the models cannot parse throws
+      // a TypeError, and letting that escape leaves _isLoading true forever -
+      // the screen spins instead of saying what went wrong.
+    } catch (e) {
       if (!mounted) return;
 
       setState(() {

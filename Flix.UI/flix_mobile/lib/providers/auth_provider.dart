@@ -11,13 +11,14 @@ class AuthProvider extends ChangeNotifier {
   static String? _accessToken;
   String? _refreshToken;
   String? _username;
-  int? _userId;
 
 
   static String? get accessToken => _accessToken;
+  static int? get currentUserId =>
+      int.tryParse(_readClaim(_accessToken, "Id") ?? "");
   String? get refreshToken => _refreshToken;
   String? get username => _username;
-  int? get userId => _userId;
+  int? get userId => currentUserId;
   bool get isAuthenticated => _isAuthenticated;
 
   String _baseUrl = "";
@@ -53,7 +54,6 @@ class AuthProvider extends ChangeNotifier {
     _accessToken = data['accessToken'];
     _refreshToken = data['refreshToken'];
     _username = _readClaim(_accessToken, "Username");
-    _userId = int.tryParse(_readClaim(_accessToken, "Id") ?? "");
     notifyListeners();
   }
 
@@ -112,7 +112,6 @@ class AuthProvider extends ChangeNotifier {
     _accessToken = null;
     _refreshToken  = null;
     _username = null;
-    _userId = null;
     notifyListeners();
   }
 

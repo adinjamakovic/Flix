@@ -25,7 +25,7 @@ class CastMember {
   final DateTime? birthDate;
   final String? biography;
   final String? photo;
-  final List<CastRole?> roles;
+  final List<CastRole?>? roles;
 
   String? get fullName {
     final List<String> parts = [firstName, lastName]

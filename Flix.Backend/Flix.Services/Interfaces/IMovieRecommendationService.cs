@@ -6,8 +6,8 @@ namespace Flix.Services.Interfaces
     public interface IMovieRecommendationService
     {
         Task GenerateRecommendationAsync();
-        Task<List<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search);
+        Task<PageResult<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search);
         Task DeleteOldRecommendations();
-        Task<List<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId);
+        Task<PageResult<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId);
     }
 }

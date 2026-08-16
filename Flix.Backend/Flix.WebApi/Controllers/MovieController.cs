@@ -54,13 +54,13 @@ namespace Flix.WebApi.Controllers
         }
 
         [HttpGet("PopularThisWeek")]
-        public async Task<ActionResult<List<MovieResponse>>> GetPopularThisWeek([FromQuery] int numberOfMovies = 7)
+        public async Task<ActionResult<PageResult<MovieResponse>>> GetPopularThisWeek([FromQuery] int numberOfMovies = 7)
         {
             var result = await _service.GetPopularMoviesForThisWeekAsync(numberOfMovies);
-            return Ok(result);   
+            return Ok(result);
         }
         [HttpGet("PopularWithFriends")]
-        public async Task<ActionResult<List<MovieResponse>>> GetPopularWithFriends()
+        public async Task<ActionResult<PageResult<MovieResponse>>> GetPopularWithFriends()
         {
             var result = await _service.GetPopularMoviesWithFriendsAsync(_currentUserService.GetUserId());
             return Ok(result);   

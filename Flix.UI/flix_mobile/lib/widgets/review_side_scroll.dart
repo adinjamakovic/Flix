@@ -7,20 +7,24 @@ class ReviewSideScroll extends StatefulWidget {
     super.key,
     required this.title,
     required this.reviews,
-    this.onReviewTap,
+    this.onReviewTap, 
+    required this.isUserProfile,
   });
 
   final String title;
   final List<Review> reviews;
   final ValueChanged<Review>? onReviewTap;
+  final bool isUserProfile;
 
   @override
   _ReviewSideScrollState createState() => _ReviewSideScrollState();
 }
 
 class _ReviewSideScrollState extends State<ReviewSideScroll> {
-  static const double _posterWidth = 100;
-  static const double _posterHeight = 150;
+  static const double _posterWidthForHome = 100;
+  static const double _posterHeightForHome = 150;
+  static const double _posterWidthForUser = 90;
+  static const double _posterHeightForUser = 140;
   static const double _posterRadius = 6;
   static const double _bylineGap = 6;
   static const double _bylineHeight = 30;
@@ -41,7 +45,7 @@ class _ReviewSideScrollState extends State<ReviewSideScroll> {
           ),
           const SizedBox(height: 4),
           SizedBox(
-            height: _posterHeight + _bylineGap + _bylineHeight,
+            height: (widget.isUserProfile ? _posterHeightForUser : _posterHeightForHome) + _bylineGap + _bylineHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: widget.reviews.length,
@@ -57,20 +61,31 @@ class _ReviewSideScrollState extends State<ReviewSideScroll> {
 
   Widget _buildReviewCard(Review review) {
     final Widget card = SizedBox(
-      width: _posterWidth,
+      width: widget.isUserProfile ? _posterWidthForUser : _posterWidthForHome,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          widget.isUserProfile ?
           buildPoster(
             context,
             review.movie?.poster,
-            width: _posterWidth,
-            height: _posterHeight,
+            width: _posterWidthForUser,
+            height: _posterHeightForUser,
+            iconSize: 32,
+            borderRadius: _posterRadius,
+          ) :
+          buildPoster(
+            context,
+            review.movie?.poster,
+            width: _posterWidthForHome,
+            height: _posterHeightForHome,
             iconSize: 32,
             borderRadius: _posterRadius,
           ),
           const SizedBox(height: _bylineGap),
-          _buildByline(review),
+          widget.isUserProfile ? 
+          _buildForUser(review) : 
+          _buildForHome(review),
         ],
       ),
     );
@@ -94,7 +109,7 @@ class _ReviewSideScrollState extends State<ReviewSideScroll> {
     );
   }
 
-  Widget _buildByline(Review review) {
+  Widget _buildForHome(Review review) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Row(
@@ -122,6 +137,32 @@ class _ReviewSideScrollState extends State<ReviewSideScroll> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              buildRating(
+                context,
+                review.rating,
+                size: 11,
+                emptyLabel: "No rating",
+                isLiked: review.isLiked == true,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForUser(Review review) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(width: 6),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
               buildRating(
                 context,
                 review.rating,

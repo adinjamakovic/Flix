@@ -1,8 +1,9 @@
+import 'package:flix_mobile/layouts/profile_screen.dart';
 import 'package:flix_mobile/screens/activity.dart';
 import 'package:flix_mobile/layouts/home_screen.dart';
 import 'package:flix_mobile/screens/movie_requests/movie_requests.dart';
 import 'package:flix_mobile/screens/search.dart';
-import 'package:flix_mobile/screens/user_profile.dart';
+import 'package:flix_mobile/screens/user_profile/user_profile.dart';
 import 'package:flutter/material.dart';
 
 class ContainerScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _ContainerScreenState extends State<ContainerScreen> {
         Search(),
         MovieRequests(),
         ActivityScreen(),
-        UserProfile(),
+        ProfileScreen(),
         ][currentPageIndex],
     );
   }

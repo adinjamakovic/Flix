@@ -12,6 +12,9 @@ namespace Flix.Services.Implementations
     {
         private const int LatestFromFriendsCount = 10;
 
+        private static readonly decimal[] RatingScale =
+            Enumerable.Range(1, 10).Select(step => step * 0.5m).ToArray();
+
         private readonly IResponseImageUrlResolver _imageUrlResolver;
 
         public ReviewService(FlixDbContext context, IMapper mapper, IResponseImageUrlResolver imageUrlResolver)
@@ -74,7 +77,7 @@ namespace Flix.Services.Implementations
             return query;
         }
 
-        public async Task<List<ReviewResponse>> GetLatestReviewsFromFriendsAsync(int userId)
+        public async Task<PageResult<ReviewResponse>> GetLatestReviewsFromFriendsAsync(int userId)
         {
             var friendIds = await _context.UserFollows
                 .Where(f => f.FollowerId == userId
@@ -85,7 +88,7 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             if (friendIds.Count == 0)
-                return new List<ReviewResponse>();
+                return new PageResult<ReviewResponse> { Items = [], TotalCount = 0 };
 
             var latest = await _context.Reviews
                 .Include(r => r.User)
@@ -101,7 +104,53 @@ namespace Flix.Services.Implementations
                 .Take(LatestFromFriendsCount)
                 .ToListAsync();
 
-            return latest.Select(MapToResponse).ToList();
+            var reviews = latest.Select(MapToResponse).ToList();
+
+            return new PageResult<ReviewResponse>
+            {
+                Items = reviews,
+                TotalCount = reviews.Count
+            };
+        }
+
+        public async Task<ReviewCountResponse> GetReviewCountAsync(ReviewCountSearchObject? search)
+        {
+            if (search?.UserId is null && search?.MovieId is null)
+                throw new ClientException("Either a UserId or a MovieId is required to count reviews.");
+
+            var query = _context.Reviews.AsQueryable();
+
+            if (search.UserId != null)
+                query = query.Where(r => r.UserId == search.UserId);
+
+            if (search.MovieId != null)
+                query = query.Where(r => r.MovieId == search.MovieId);
+
+            var counts = await query
+                .GroupBy(r => r.Rating)
+                .Select(g => new { Rating = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var rated = counts.Where(c => c.Rating is not null).ToList();
+            var ratedCount = rated.Sum(c => c.Count);
+
+            return new ReviewCountResponse
+            {
+                UserId = search.UserId,
+                MovieId = search.MovieId,
+                TotalCount = counts.Sum(c => c.Count),
+                UnratedCount = counts.Where(c => c.Rating is null).Sum(c => c.Count),
+                AverageRating = ratedCount == 0
+                    ? null
+                    : Math.Round(rated.Sum(c => c.Rating!.Value * c.Count) / ratedCount, 2),
+                Ratings = RatingScale
+                    .Select(rating => new ReviewRatingCountResponse
+                    {
+                        Rating = rating,
+                        Count = counts.FirstOrDefault(c => c.Rating == rating)?.Count ?? 0
+                    })
+                    .ToList()
+            };
         }
 
         public async Task DeleteAsync(int id)

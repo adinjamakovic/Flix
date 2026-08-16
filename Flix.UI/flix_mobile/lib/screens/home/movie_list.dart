@@ -61,13 +61,15 @@ class _MovieListState extends State<MovieList> {
     }
 
     try {
-      final Future<List<Review>> friendReviews =
-          _optional(_reviewProvider.getList("LatestFromFriends"));
+      final Future<List<Review>> friendReviews = _optional(
+          _reviewProvider.get(action: "LatestFromFriends").then(itemsOf<Review>));
 
       final List<List<Movie>> results = await Future.wait([
         _movieRecommenderProvider.getRecommendedMoviesForUser(),
-        _movieProvider.getList("PopularThisWeek"),
-        _optional(_movieProvider.getList("PopularWithFriends")),
+        _movieProvider.get(action: "PopularThisWeek").then(itemsOf<Movie>),
+        _optional(_movieProvider
+            .get(action: "PopularWithFriends")
+            .then(itemsOf<Movie>)),
       ]);
       final List<Review> reviews = await friendReviews;
       if(!mounted) return;
@@ -79,7 +81,7 @@ class _MovieListState extends State<MovieList> {
         _newReviewsFromFriends = reviews;
         _isLoading = false;
       });
-    } on Exception catch (e) {
+    } catch (e) {
       if (!mounted) return;
 
       setState(() {
@@ -95,7 +97,7 @@ class _MovieListState extends State<MovieList> {
   Future<List<T>> _optional<T>(Future<List<T>> request) async {
     try {
       return await request;
-    } on Exception {
+    } catch (_) {
       return List<T>.empty();
     }
   }
@@ -155,6 +157,7 @@ class _MovieListState extends State<MovieList> {
                 title: "New reviews from friends",
                 reviews: _newReviewsFromFriends,
                 onReviewTap: _onReviewTapped,
+                isUserProfile: false,
               ),
               const SizedBox(height: 12),
             ],

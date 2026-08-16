@@ -18,9 +18,30 @@ namespace Flix.WebApi.Controllers
 
         [HttpGet("LatestFromFriends")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ReviewResponse>>> GetLatestFromFriends()
+        public async Task<ActionResult<PageResult<ReviewResponse>>> GetLatestFromFriends()
         {
             var result = await _service.GetLatestReviewsFromFriendsAsync(_currentUserService.GetUserId());
+            return Ok(result);
+        }
+
+        [HttpGet("UserReviewCount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ReviewCountResponse>> GetUserReviewCount()
+        {
+            var result = await _service.GetReviewCountAsync(
+                new ReviewCountSearchObject { UserId = _currentUserService.GetUserId() });
+
+            return Ok(result);
+        }
+
+        [HttpGet("MovieReviewCount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ReviewCountResponse>> GetMovieReviewCount([FromQuery] int movieId)
+        {
+            var result = await _service.GetReviewCountAsync(
+                new ReviewCountSearchObject { MovieId = movieId });
+
             return Ok(result);
         }
 

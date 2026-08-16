@@ -1,4 +1,5 @@
 import 'package:flix_mobile/models/country.dart';
+import 'package:flix_mobile/models/review.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // To generate run command: "dart run build_runner build"
@@ -22,7 +23,8 @@ class User {
       this.bio,
       this.moviesWatched,
       this.reviewsWritten,
-      this.country
+      this.country,
+      this.reviews
       );
 
   final int? id;
@@ -42,6 +44,7 @@ class User {
   final int? moviesWatched;
   final int? reviewsWritten;
   final Country? country;
+  final List<Review>? reviews;
 
   String? get fullName {
     final List<String> parts = [firstName, lastName]

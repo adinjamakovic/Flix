@@ -24,8 +24,8 @@ class ActivityScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: <Widget>[
-            _ActivityFeed(source: ActivityFeedSource.followers),
-            _ActivityFeed(source: ActivityFeedSource.self),
+            ActivityFeed(source: ActivityFeedSource.followers),
+            ActivityFeed(source: ActivityFeedSource.self),
           ],
         ),
       ),
@@ -35,16 +35,16 @@ class ActivityScreen extends StatelessWidget {
 
 enum ActivityFeedSource { followers, self }
 
-class _ActivityFeed extends StatefulWidget {
-  const _ActivityFeed({required this.source});
+class ActivityFeed extends StatefulWidget {
+  const ActivityFeed({super.key, required this.source});
 
   final ActivityFeedSource source;
 
   @override
-  State<_ActivityFeed> createState() => _ActivityFeedState();
+  State<ActivityFeed> createState() => _ActivityFeedState();
 }
 
-class _ActivityFeedState extends State<_ActivityFeed> {
+class _ActivityFeedState extends State<ActivityFeed> {
   static const int _pageSize = 20;
 
   // How close to the bottom the list gets before the next page goes out.

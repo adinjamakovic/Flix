@@ -197,7 +197,7 @@ namespace Flix.Services.Implementations
             await _context.MovieRecommendations.ExecuteDeleteAsync();
         }
 
-        public async Task<List<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search)
+        public async Task<PageResult<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search)
         {
             var recommendationEntities = await _context.MovieRecommendations
                 .Include(x=>x.RecommendedMovie)
@@ -216,10 +216,14 @@ namespace Flix.Services.Implementations
                 _imageUrlResolver.Resolve(recommendation.RecommendedMovie);
             }
 
-            return recommendations;
+            return new PageResult<MovieRecommendationResponse>
+            {
+                Items = recommendations,
+                TotalCount = recommendations.Count
+            };
         }
 
-        public async Task<List<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId)
+        public async Task<PageResult<MovieRecommendationResponse>> GetRecommendationsForUserAsync(int userId)
         {
             var excludedMovieIds = await GetMoviesAlreadySeenByUser(userId);
 
@@ -257,7 +261,7 @@ namespace Flix.Services.Implementations
 
                 var keptForSeed = 0;
 
-                foreach (var recommendation in set)
+                foreach (var recommendation in set.Items)
                 {
                     if (keptForSeed == RecommendationsPerSeed)
                         break;
@@ -278,10 +282,14 @@ namespace Flix.Services.Implementations
             if (recommendations.Count == 0)
                 return await GetPopularRecommendationsAsync(excludedMovieIds);
 
-            return recommendations;
+            return new PageResult<MovieRecommendationResponse>
+            {
+                Items = recommendations,
+                TotalCount = recommendations.Count
+            };
         }
 
-        private async Task<List<MovieRecommendationResponse>> GetPopularRecommendationsAsync(HashSet<int> excludedMovieIds)
+        private async Task<PageResult<MovieRecommendationResponse>> GetPopularRecommendationsAsync(HashSet<int> excludedMovieIds)
         {
             var reviewSignals = _context.Reviews
                 .Where(r => r.Movie.IsEnabled && !excludedMovieIds.Contains(r.MovieId))
@@ -323,13 +331,13 @@ namespace Flix.Services.Implementations
             }
 
             if (rankedMovieIds.Count == 0)
-                return new List<MovieRecommendationResponse>();
+                return new PageResult<MovieRecommendationResponse> { Items = [], TotalCount = 0 };
 
             var moviesById = await _context.Movies
                 .Where(m => rankedMovieIds.Contains(m.Id))
                 .ToDictionaryAsync(m => m.Id);
 
-            return rankedMovieIds
+            var popular = rankedMovieIds
                 .Where(moviesById.ContainsKey)
                 .Select(movieId =>
                 {
@@ -345,6 +353,12 @@ namespace Flix.Services.Implementations
                     };
                 })
                 .ToList();
+
+            return new PageResult<MovieRecommendationResponse>
+            {
+                Items = popular,
+                TotalCount = popular.Count
+            };
         }
 
         // A recommendation is only useful if it is a discovery, so anything the user has already

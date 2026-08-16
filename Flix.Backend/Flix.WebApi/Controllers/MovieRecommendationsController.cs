@@ -1,5 +1,6 @@
 using Flix.Model.Access;
 using Flix.Model.Requests;
+using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Interfaces;
 using Flix.WebApi.Filters;
@@ -35,13 +36,13 @@ namespace Flix.WebApi.Controllers
         }
 
         [HttpGet("GetRecommendationsForMovies")]
-        public async Task<IActionResult> GetRecommendationsForMovie([FromQuery] MovieRecommendationSearchObject search)
+        public async Task<ActionResult<PageResult<MovieRecommendationResponse>>> GetRecommendationsForMovie([FromQuery] MovieRecommendationSearchObject search)
         {
             var result = await _movieRecommendationService.GetRecommendationsForMovieAsync(search);
             return Ok(result);
         }
         [HttpGet("GetRecommendationsForUser")]
-        public async Task<IActionResult> GetRecommendationsForCurrentUser()
+        public async Task<ActionResult<PageResult<MovieRecommendationResponse>>> GetRecommendationsForCurrentUser()
         {
             var result = await _movieRecommendationService.GetRecommendationsForUserAsync(_currentUserService.GetUserId());
             return Ok(result);
