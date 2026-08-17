@@ -8,7 +8,10 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
+using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Flix.Model.Messages;
 
 namespace Flix.Services.Implementations
 {
@@ -23,6 +26,7 @@ namespace Flix.Services.Implementations
         private readonly ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly string _rabbitMqConnectionString;
         protected readonly IValidator<MovieRequestInsertRequest> _insertValidator;
         protected readonly IValidator<MovieRequestUpdateRequest> _updateValidator;
         public MovieRequestService(
@@ -32,6 +36,7 @@ namespace Flix.Services.Implementations
             ICurrentUserService currentUserService,
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
+            IConfiguration configuration,
             IValidator<MovieRequestInsertRequest> insertValidator,
             IValidator<MovieRequestUpdateRequest> updateValidator)
             : base(context, mapper)
@@ -40,6 +45,8 @@ namespace Flix.Services.Implementations
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _rabbitMqConnectionString = configuration.GetConnectionString("RabbitMQ")
+                ?? throw new InvalidOperationException("Connection string 'RabbitMQ' is not configured.");
             _insertValidator = insertValidator;
             _updateValidator = updateValidator;
         }
@@ -173,6 +180,14 @@ namespace Flix.Services.Implementations
                 .Include(x => x.Roles)
                 .ThenInclude(x => x.Role)
                 .FirstAsync(x => x.Id == requestedByUserId);
+
+            var bus = RabbitHutch.CreateBus(_rabbitMqConnectionString);
+            
+            await bus.PubSub.PublishAsync(new MovieRequested
+            {
+                Id = movieRequestEntity.Id,
+                Data = MapToResponse(movieRequestEntity)
+            });
 
             return MapToResponse(movieRequestEntity);
         }
