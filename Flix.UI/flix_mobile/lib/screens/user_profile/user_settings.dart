@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UserSettings extends StatefulWidget {
-  const UserSettings({ Key? key }) : super(key: key);
+  const UserSettings({ super.key });
 
   @override
   _UserSettingsState createState() => _UserSettingsState();

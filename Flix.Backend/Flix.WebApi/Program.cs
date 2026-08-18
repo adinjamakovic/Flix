@@ -125,6 +125,13 @@ TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
 TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
     .Map(dest => dest.MovieCount, src => src.Items.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<MovieList, ListResponse>.NewConfig()
+    .Map(dest => dest.Movies, src => src.Items
+                                                                .OrderBy(x => x.Position)
+                                                                .ThenBy(x => x.AddedAt)
+                                                                .Select(x => x.Movie)
+                                                                .ToList())
+    .IgnoreNullValues(true);
 TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
@@ -170,6 +177,8 @@ builder.Services.AddScoped<IValidator<GenreInsertRequest>, GenreInsertRequestVal
 builder.Services.AddScoped<IValidator<GenreUpdateRequest>, GenreUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<LanguageInsertRequest>, LanguageInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<LanguageUpdateRequest>, LanguageUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ListInsertRequest>, ListInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<ListUpdateRequest>, ListUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieRequestInsertRequest>, MovieRequestInsertRequestValidator>();
@@ -199,6 +208,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<IListService, ListService>();
 
 var app = builder.Build();
 

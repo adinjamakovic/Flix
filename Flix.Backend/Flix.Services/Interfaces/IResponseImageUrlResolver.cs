@@ -10,6 +10,7 @@ namespace Flix.Services.Interfaces
         void Resolve(ClashResponse? response);
         void Resolve(ClashEntryResponse? response);
         void Resolve(CountryResponse? response);
+        void Resolve(ListResponse? response);
         void Resolve(MovieResponse? response);
         void Resolve(MovieCreditResponse? response);
         void Resolve(ReviewResponse? response);

@@ -54,6 +54,20 @@ namespace Flix.Services.Implementations
             response.FlagImage = ToUrl(ImageStorageCategory.Country, response.FlagImage);
         }
 
+        public void Resolve(ListResponse? response)
+        {
+            if (response is null)
+                return;
+
+            Resolve(response.User);
+
+            if (response.Movies is null)
+                return;
+
+            foreach (var movie in response.Movies)
+                Resolve(movie);
+        }
+
         public void Resolve(MovieResponse? response)
         {
             if (response is null)

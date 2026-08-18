@@ -18,6 +18,7 @@ namespace Flix.Services.Implementations
         private const int DefaultRoleId = 2;
         // As many as the profile screen can comfortably show.
         private const int LatestReviewsOnProfile = 4;
+        private const string WatchlistName = "Watchlist";
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
@@ -117,6 +118,14 @@ namespace Flix.Services.Implementations
                 Role = await GetAssignableRoleAsync(request.RoleId ?? DefaultRoleId),
                 AssignedAt = DateTime.UtcNow
             });
+
+            // Every account owns a watchlist from the moment it exists
+            entity.Lists.Add(new MovieList
+            {
+                Name = WatchlistName,
+                Type = ListType.Watchlist,
+                CreatedAt = DateTime.UtcNow
+            });
         }
 
         protected override async Task BeforeUpdateAsync(User entity, UserUpdateRequest request)
@@ -171,15 +180,61 @@ namespace Flix.Services.Implementations
 
         protected override async Task BeforeDeleteAsync(User entity)
         {
-            await _context.Entry(entity)
-                .Collection(u => u.Roles)
-                .LoadAsync();
-            _context.UserRoles.RemoveRange(entity.Roles);
+            var votes = await _context.ClashVotes
+                .Where(x => x.VoterId == entity.Id)
+                .ToListAsync();
 
-            await _context.Entry(entity)
-                .Collection(u => u.RefreshTokens)
-                .LoadAsync();
-            _context.RefreshTokens.RemoveRange(entity.RefreshTokens);
+            _context.ClashVotes.RemoveRange(votes);
+
+            var followers = await _context.UserFollows
+                .Where(x => x.FollowingId == entity.Id)
+                .ToListAsync();
+
+            _context.UserFollows.RemoveRange(followers);
+
+            var blocks = await _context.UserBlocks
+                .Where(x => x.BlockedId == entity.Id)
+                .ToListAsync();
+
+            _context.UserBlocks.RemoveRange(blocks);
+
+            var reportsAgainstThem = await _context.UserReports
+                .Where(x => x.ReportedUserId == entity.Id)
+                .ToListAsync();
+
+            _context.UserReports.RemoveRange(reportsAgainstThem);
+
+            var mentions = await _context.Activities
+                .Where(x => x.TargetUserId == entity.Id)
+                .ToListAsync();
+
+            _context.Activities.RemoveRange(mentions);
+
+            await ClearModerationTrailAsync(entity.Id);
+        }
+
+        private async Task ClearModerationTrailAsync(int userId)
+        {
+            var handledUserReports = await _context.UserReports
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var report in handledUserReports)
+                report.ReviewedByUserId = null;
+
+            var handledIssueReports = await _context.MovieIssueReports
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var report in handledIssueReports)
+                report.ReviewedByUserId = null;
+
+            var handledRequests = await _context.MovieRequests
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var request in handledRequests)
+                request.ReviewedByUserId = null;
         }
 
         protected override async Task AfterDeleteAsync(User entity)

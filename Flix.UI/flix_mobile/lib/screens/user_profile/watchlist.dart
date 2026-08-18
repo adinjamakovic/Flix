@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Watchlist extends StatefulWidget {
-  const Watchlist({ Key? key }) : super(key: key);
+  const Watchlist({ super.key });
 
   @override
   _WatchlistState createState() => _WatchlistState();

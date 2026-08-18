@@ -158,9 +158,11 @@ namespace Flix.Services.Implementations
             var entity = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id)
                 ?? throw new ClientException($"{nameof(Review)} with Id {id} not found.");
 
-            // Every foreign key in the model is Restrict, so the activity rows pointing at
-            // this review have to go first or SaveChanges fails on the constraint. An
-            // activity for a review that no longer exists has nothing left to show anyway.
+            // An activity's key to its review is one of the few that cannot cascade - the
+            // author the activity belongs to already reaches the same table - so the rows
+            // pointing at this review have to go first or SaveChanges fails on the
+            // constraint. An activity for a review that no longer exists has nothing left
+            // to show anyway.
             var activities = await _context.Activities
                 .Where(a => a.ReviewId == id)
                 .ToListAsync();

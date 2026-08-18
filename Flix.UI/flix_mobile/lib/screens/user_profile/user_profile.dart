@@ -1,4 +1,3 @@
-import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/review_count.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/review_provider.dart';

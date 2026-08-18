@@ -17,10 +17,10 @@ class ReviewSideScroll extends StatefulWidget {
   final bool isUserProfile;
 
   @override
-  _ReviewSideScrollState createState() => _ReviewSideScrollState();
+  ReviewSideScrollState createState() => ReviewSideScrollState();
 }
 
-class _ReviewSideScrollState extends State<ReviewSideScroll> {
+class ReviewSideScrollState extends State<ReviewSideScroll> {
   static const double _posterWidthForHome = 100;
   static const double _posterHeightForHome = 150;
   static const double _posterWidthForUser = 90;
@@ -152,8 +152,6 @@ class _ReviewSideScrollState extends State<ReviewSideScroll> {
   }
 
   Widget _buildForUser(Review review) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

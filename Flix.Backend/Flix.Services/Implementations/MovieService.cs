@@ -175,9 +175,6 @@ namespace Flix.Services.Implementations
                 entity.Credits.Add(credit);
         }
 
-        // Every foreign key in the model is Restrict, so the rows the movie owns have to
-        // go first or the delete is refused. These two are the movie's own composition -
-        // its credits and its genre links - not content anyone else authored.
         protected override async Task BeforeDeleteAsync(Movie entity)
         {
             await _context.Entry(entity).Collection(x => x.Credits).LoadAsync();
@@ -189,13 +186,17 @@ namespace Flix.Services.Implementations
 
             _context.Set<MovieGenre>().RemoveRange(genreLinks);
 
-            // A movie sits on both ends of a recommendation, so rows pointing at it either way have
-            // to go before the delete - both foreign keys are NoAction and would block it otherwise.
             var recommendations = await _context.MovieRecommendations
                 .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
                 .ToListAsync();
 
             _context.MovieRecommendations.RemoveRange(recommendations);
+
+            var listItems = await _context.MovieListItems
+                .Where(x => x.MovieId == entity.Id)
+                .ToListAsync();
+
+            _context.MovieListItems.RemoveRange(listItems);
         }
 
         protected override async Task AfterDeleteAsync(Movie entity)
