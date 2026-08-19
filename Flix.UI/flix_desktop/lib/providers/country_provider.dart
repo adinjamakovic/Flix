@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 class CountryProvider extends ChangeNotifier {
-  final String _baseUrl = "https://localhost:7140/Country";
+  final String _baseUrl = "http://localhost:5071/Country";
 
   Future<SearchResult<Country>> get({dynamic filter}) async {
     var url = _baseUrl;

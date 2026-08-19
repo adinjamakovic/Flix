@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
@@ -9,8 +11,6 @@ using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.Services.Implementations
 {
@@ -23,6 +23,10 @@ namespace Flix.Services.Implementations
             MovieUpdateRequest>,
         IMovieService
     {
+        // The friends list feeds a single home-screen row, so it is capped the same way
+        // the weekly popular row is rather than taking a count from the caller.
+        private const int PopularWithFriendsCount = 7;
+
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         public MovieService(
@@ -171,9 +175,6 @@ namespace Flix.Services.Implementations
                 entity.Credits.Add(credit);
         }
 
-        // Every foreign key in the model is Restrict, so the rows the movie owns have to
-        // go first or the delete is refused. These two are the movie's own composition -
-        // its credits and its genre links - not content anyone else authored.
         protected override async Task BeforeDeleteAsync(Movie entity)
         {
             await _context.Entry(entity).Collection(x => x.Credits).LoadAsync();
@@ -184,6 +185,18 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             _context.Set<MovieGenre>().RemoveRange(genreLinks);
+
+            var recommendations = await _context.MovieRecommendations
+                .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
+                .ToListAsync();
+
+            _context.MovieRecommendations.RemoveRange(recommendations);
+
+            var listItems = await _context.MovieListItems
+                .Where(x => x.MovieId == entity.Id)
+                .ToListAsync();
+
+            _context.MovieListItems.RemoveRange(listItems);
         }
 
         protected override async Task AfterDeleteAsync(Movie entity)
@@ -249,6 +262,95 @@ namespace Flix.Services.Implementations
                 throw new ClientException($"Genre(s) with Id {string.Join(", ", missing)} not found.");
 
             return genres;
+        }
+        public async Task<PageResult<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies = 7)
+        {
+            if (numberOfMovies <= 0)
+                throw new ClientException("Number of movies must be greater than zero.");
+
+            var since = DateTime.UtcNow.AddDays(-7);
+
+            var popular = await _context.Reviews
+                .Where(r => r.CreatedAt >= since && r.Movie.IsEnabled)
+                .GroupBy(r => r.MovieId)
+                .Select(g => new { MovieId = g.Key, ReviewCount = g.Count() })
+                .OrderByDescending(x => x.ReviewCount)
+                .ThenBy(x => x.MovieId)
+                .Take(numberOfMovies)
+                .ToListAsync();
+
+            if (popular.Count == 0)
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
+
+            var ids = popular.Select(x => x.MovieId).ToList();
+
+            var moviesById = await GetDataSource()
+                .Where(m => ids.Contains(m.Id))
+                .ToDictionaryAsync(m => m.Id);
+
+            var movies = popular
+                .Where(p => moviesById.ContainsKey(p.MovieId))
+                .Select(p => MapToResponse(moviesById[p.MovieId]))
+                .ToList();
+
+            return new PageResult<MovieResponse>
+            {
+                Items = movies,
+                TotalCount = movies.Count
+            };
+        }
+
+        public async Task<PageResult<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId)
+        {
+            // A friend is a mutual follow - we follow them and they follow us back
+            var friendIds = await _context.UserFollows
+                .Where(f => f.FollowerId == userId
+                    && _context.UserFollows.Any(back =>
+                        back.FollowerId == f.FollowingId && back.FollowingId == userId))
+                .Select(f => f.FollowingId)
+                .Distinct()
+                .ToListAsync();
+
+            if (friendIds.Count == 0)
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
+
+            var listSignals = _context.MovieListItems
+                .Where(i => friendIds.Contains(i.MovieList.UserId) && i.Movie.IsEnabled)
+                .Select(i => new { UserId = i.MovieList.UserId, i.MovieId });
+
+            var reviewSignals = _context.Reviews
+                .Where(r => friendIds.Contains(r.UserId) && r.Movie.IsEnabled)
+                .Select(r => new { r.UserId, r.MovieId });
+
+            var popular = await listSignals
+                .Concat(reviewSignals)
+                .Distinct()
+                .GroupBy(s => s.MovieId)
+                .Select(g => new { MovieId = g.Key, FriendCount = g.Count() })
+                .OrderByDescending(x => x.FriendCount)
+                .ThenBy(x => x.MovieId)
+                .Take(PopularWithFriendsCount)
+                .ToListAsync();
+
+            if (popular.Count == 0)
+                return new PageResult<MovieResponse> { Items = [], TotalCount = 0 };
+
+            var ids = popular.Select(x => x.MovieId).ToList();
+
+            var moviesById = await GetDataSource()
+                .Where(m => ids.Contains(m.Id))
+                .ToDictionaryAsync(m => m.Id);
+
+            var movies = popular
+                .Where(p => moviesById.ContainsKey(p.MovieId))
+                .Select(p => MapToResponse(moviesById[p.MovieId]))
+                .ToList();
+
+            return new PageResult<MovieResponse>
+            {
+                Items = movies,
+                TotalCount = movies.Count
+            };
         }
     }
 }

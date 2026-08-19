@@ -14,8 +14,11 @@ class AuthProvider extends ChangeNotifier {
 
 
   static String? get accessToken => _accessToken;
+  static int? get currentUserId =>
+      int.tryParse(_readClaim(_accessToken, "Id") ?? "");
   String? get refreshToken => _refreshToken;
   String? get username => _username;
+  int? get userId => currentUserId;
   bool get isAuthenticated => _isAuthenticated;
 
   String _baseUrl = "";

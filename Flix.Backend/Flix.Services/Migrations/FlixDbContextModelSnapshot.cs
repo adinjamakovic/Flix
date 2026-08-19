@@ -1083,8 +1083,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 1,
                             Description = "The ageing patriarch of an organised crime dynasty transfers control of his clandestine empire to his reluctant youngest son.",
                             DurationMinutes = 175,
+                            HeaderImage = "Movie/the_godfather_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/the_godfather_poster.png",
                             ReleaseDate = new DateTime(1972, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Godfather",
                             TrailerUrl = "https://www.youtube.com/watch?v=sY1S34973zA",
@@ -1096,8 +1098,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 1,
                             Description = "The lives of two mob hitmen, a boxer, a gangster's wife and a pair of diner bandits intertwine in four tales of violence and redemption.",
                             DurationMinutes = 154,
+                            HeaderImage = "Movie/pulp_fiction_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/pulp_fiction_poster.png",
                             ReleaseDate = new DateTime(1994, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Pulp Fiction",
                             TrailerUrl = "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
@@ -1109,8 +1113,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 3,
                             Description = "During her family's move to the suburbs, a sullen ten-year-old girl wanders into a world ruled by gods, witches and spirits where humans are changed into beasts.",
                             DurationMinutes = 125,
+                            HeaderImage = "Movie/spirited_away_header.png",
                             IsEnabled = true,
                             LanguageId = 2,
+                            Poster = "Movie/spirited_away_poster.png",
                             ReleaseDate = new DateTime(2001, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Spirited Away",
                             TrailerUrl = "https://www.youtube.com/watch?v=ByXuk9QqQkk",
@@ -1122,8 +1128,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 5,
                             Description = "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
                             DurationMinutes = 132,
+                            HeaderImage = "Movie/parasite_header.png",
                             IsEnabled = true,
                             LanguageId = 4,
+                            Poster = "Movie/parasite_poster.png",
                             ReleaseDate = new DateTime(2019, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Parasite",
                             TrailerUrl = "https://www.youtube.com/watch?v=5xH0HfJHsaY",
@@ -1135,8 +1143,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 1,
                             Description = "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a chief executive.",
                             DurationMinutes = 148,
+                            HeaderImage = "Movie/inception_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/inception_poster.png",
                             ReleaseDate = new DateTime(2010, 7, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Inception",
                             TrailerUrl = "https://www.youtube.com/watch?v=YoHD9XEInc0",
@@ -1148,8 +1158,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 1,
                             Description = "Batman raises the stakes in his war on crime until a rising criminal mastermind known as the Joker forces Gotham into anarchy.",
                             DurationMinutes = 152,
+                            HeaderImage = "Movie/the_dark_knight_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/the_dark_knight_poster.png",
                             ReleaseDate = new DateTime(2008, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Dark Knight",
                             TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY",
@@ -1161,8 +1173,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 4,
                             Description = "A shy waitress in Montmartre decides to change the lives of those around her for the better while struggling with her own isolation.",
                             DurationMinutes = 122,
+                            HeaderImage = "Movie/amelie_header.png",
                             IsEnabled = true,
                             LanguageId = 3,
+                            Poster = "Movie/amelie_poster.png",
                             ReleaseDate = new DateTime(2001, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Amelie",
                             TrailerUrl = "https://www.youtube.com/watch?v=HUECWi5pX7o",
@@ -1174,8 +1188,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 7,
                             Description = "A filmmaker recalls his childhood in a Sicilian village and the friendship with the projectionist who taught him to love the movies.",
                             DurationMinutes = 155,
+                            HeaderImage = "Movie/cinema_paradiso_header.png",
                             IsEnabled = true,
                             LanguageId = 6,
+                            Poster = "Movie/cinema_paradiso_poster.png",
                             ReleaseDate = new DateTime(1988, 11, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Cinema Paradiso",
                             TrailerUrl = "https://www.youtube.com/watch?v=Ah0kPnzzrs4",
@@ -1187,8 +1203,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 1,
                             Description = "An overwhelmed laundromat owner facing an audit discovers she must connect with parallel versions of herself to stop a threat spanning the multiverse.",
                             DurationMinutes = 139,
+                            HeaderImage = "Movie/everything_everywhere_all_at_once_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/everything_everywhere_all_at_once_poster.png",
                             ReleaseDate = new DateTime(2022, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Everything Everywhere All at Once",
                             TrailerUrl = "https://www.youtube.com/watch?v=wxN1T1uxQ2g",
@@ -1200,8 +1218,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 9,
                             Description = "In a post-apocalyptic wasteland, a drifter and a rebel warrior flee from a tyrant and his war parties in a relentless convoy chase.",
                             DurationMinutes = 120,
+                            HeaderImage = "Movie/mad_max_fury_road_header.png",
                             IsEnabled = true,
                             LanguageId = 1,
+                            Poster = "Movie/mad_max_fury_road_poster.png",
                             ReleaseDate = new DateTime(2015, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Mad Max: Fury Road",
                             TrailerUrl = "https://www.youtube.com/watch?v=hEJnMQG9ev8",
@@ -1213,8 +1233,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 6,
                             Description = "The claustrophobic patrol of a German U-boat crew in the Atlantic during the Second World War, told from inside the submarine.",
                             DurationMinutes = 149,
+                            HeaderImage = "Movie/das_boot_header.png",
                             IsEnabled = true,
                             LanguageId = 5,
+                            Poster = "Movie/das_boot_poster.png",
                             ReleaseDate = new DateTime(1981, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Das Boot",
                             TrailerUrl = "https://www.youtube.com/watch?v=zTaS7OFHM6M",
@@ -1226,8 +1248,10 @@ namespace Flix.Services.Database.Migrations
                             CountryId = 3,
                             Description = "A poor village under attack by bandits recruits seven masterless samurai to help them defend themselves.",
                             DurationMinutes = 207,
+                            HeaderImage = "Movie/seven_samurai_header.png",
                             IsEnabled = true,
                             LanguageId = 2,
+                            Poster = "Movie/seven_samurai_poster.png",
                             ReleaseDate = new DateTime(1954, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Seven Samurai",
                             TrailerUrl = "https://www.youtube.com/watch?v=wErvXaYtDGE",
@@ -1949,6 +1973,438 @@ namespace Flix.Services.Database.Migrations
                             Type = 2,
                             UpdatedAt = new DateTime(2026, 6, 23, 12, 5, 0, 0, DateTimeKind.Unspecified),
                             UserId = 9
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2025, 2, 8, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2025, 2, 18, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2025, 2, 23, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2025, 3, 5, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2025, 3, 10, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2025, 3, 15, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2025, 3, 20, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2025, 3, 25, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2025, 3, 30, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2025, 4, 4, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2025, 4, 9, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2025, 4, 14, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2025, 4, 19, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2025, 4, 24, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2025, 4, 29, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2025, 5, 4, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2025, 5, 9, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2025, 5, 14, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2025, 5, 19, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2025, 5, 24, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2025, 5, 29, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2025, 6, 3, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2025, 6, 8, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2025, 6, 13, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2025, 6, 18, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2025, 6, 23, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2025, 6, 28, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2025, 7, 3, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2025, 7, 8, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedAt = new DateTime(2025, 7, 13, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedAt = new DateTime(2025, 7, 18, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedAt = new DateTime(2025, 7, 23, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedAt = new DateTime(2025, 7, 28, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedAt = new DateTime(2025, 8, 2, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedAt = new DateTime(2025, 8, 7, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedAt = new DateTime(2025, 8, 12, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedAt = new DateTime(2025, 8, 17, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedAt = new DateTime(2025, 8, 22, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedAt = new DateTime(2025, 8, 27, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedAt = new DateTime(2025, 9, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedAt = new DateTime(2025, 9, 6, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedAt = new DateTime(2025, 9, 11, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedAt = new DateTime(2025, 9, 16, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedAt = new DateTime(2025, 9, 21, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CreatedAt = new DateTime(2025, 9, 26, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CreatedAt = new DateTime(2025, 10, 1, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CreatedAt = new DateTime(2025, 10, 6, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CreatedAt = new DateTime(2025, 10, 11, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Films I still need to get to.",
+                            Name = "Watchlist",
+                            Type = 1,
+                            UserId = 50
                         });
                 });
 
@@ -2157,7 +2613,769 @@ namespace Flix.Services.Database.Migrations
                             MovieId = 5,
                             MovieListId = 8,
                             Position = 3
+                        },
+                        new
+                        {
+                            Id = 23,
+                            AddedAt = new DateTime(2025, 2, 12, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 9,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 24,
+                            AddedAt = new DateTime(2025, 2, 21, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 9,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 25,
+                            AddedAt = new DateTime(2025, 2, 22, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 10,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 26,
+                            AddedAt = new DateTime(2025, 2, 27, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 6,
+                            MovieListId = 11,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 27,
+                            AddedAt = new DateTime(2025, 3, 9, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 12,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 28,
+                            AddedAt = new DateTime(2025, 3, 14, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 13,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 29,
+                            AddedAt = new DateTime(2025, 3, 23, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 13,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 30,
+                            AddedAt = new DateTime(2025, 3, 19, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 14,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 31,
+                            AddedAt = new DateTime(2025, 3, 24, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 15,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 32,
+                            AddedAt = new DateTime(2025, 4, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 15,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 33,
+                            AddedAt = new DateTime(2025, 3, 29, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 16,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 34,
+                            AddedAt = new DateTime(2025, 4, 7, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 16,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 35,
+                            AddedAt = new DateTime(2025, 4, 3, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 17,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 36,
+                            AddedAt = new DateTime(2025, 4, 12, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 17,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 37,
+                            AddedAt = new DateTime(2025, 4, 8, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 18,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 38,
+                            AddedAt = new DateTime(2025, 4, 17, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 5,
+                            MovieListId = 18,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 39,
+                            AddedAt = new DateTime(2025, 4, 13, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 19,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 40,
+                            AddedAt = new DateTime(2025, 4, 22, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 19,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 41,
+                            AddedAt = new DateTime(2025, 4, 18, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 20,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 42,
+                            AddedAt = new DateTime(2025, 4, 27, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 2,
+                            MovieListId = 20,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            AddedAt = new DateTime(2025, 4, 23, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 21,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 44,
+                            AddedAt = new DateTime(2025, 5, 2, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 21,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 45,
+                            AddedAt = new DateTime(2025, 4, 28, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 22,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 46,
+                            AddedAt = new DateTime(2025, 5, 7, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 22,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            AddedAt = new DateTime(2025, 5, 3, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 23,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 48,
+                            AddedAt = new DateTime(2025, 5, 12, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 23,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 49,
+                            AddedAt = new DateTime(2025, 5, 8, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 24,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 50,
+                            AddedAt = new DateTime(2025, 5, 17, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 24,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 51,
+                            AddedAt = new DateTime(2025, 5, 13, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 25,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 52,
+                            AddedAt = new DateTime(2025, 5, 22, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 5,
+                            MovieListId = 25,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 53,
+                            AddedAt = new DateTime(2025, 5, 18, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 2,
+                            MovieListId = 26,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 54,
+                            AddedAt = new DateTime(2025, 5, 27, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 26,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 55,
+                            AddedAt = new DateTime(2025, 5, 23, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 5,
+                            MovieListId = 27,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 56,
+                            AddedAt = new DateTime(2025, 6, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 6,
+                            MovieListId = 27,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 57,
+                            AddedAt = new DateTime(2025, 5, 28, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 28,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 58,
+                            AddedAt = new DateTime(2025, 6, 6, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 28,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 59,
+                            AddedAt = new DateTime(2025, 6, 2, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 29,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 60,
+                            AddedAt = new DateTime(2025, 6, 11, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 29,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 61,
+                            AddedAt = new DateTime(2025, 6, 7, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 30,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 62,
+                            AddedAt = new DateTime(2025, 6, 16, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 5,
+                            MovieListId = 30,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 63,
+                            AddedAt = new DateTime(2025, 6, 12, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 31,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 64,
+                            AddedAt = new DateTime(2025, 6, 21, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 31,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 65,
+                            AddedAt = new DateTime(2025, 6, 17, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 32,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 66,
+                            AddedAt = new DateTime(2025, 6, 26, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 32,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 67,
+                            AddedAt = new DateTime(2025, 6, 22, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 33,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 68,
+                            AddedAt = new DateTime(2025, 7, 1, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 33,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 69,
+                            AddedAt = new DateTime(2025, 6, 27, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 34,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 70,
+                            AddedAt = new DateTime(2025, 7, 6, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 34,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 71,
+                            AddedAt = new DateTime(2025, 7, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 35,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 72,
+                            AddedAt = new DateTime(2025, 7, 11, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 35,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 73,
+                            AddedAt = new DateTime(2025, 7, 7, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 2,
+                            MovieListId = 36,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 74,
+                            AddedAt = new DateTime(2025, 7, 16, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 36,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 75,
+                            AddedAt = new DateTime(2025, 7, 12, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 37,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 76,
+                            AddedAt = new DateTime(2025, 7, 21, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 37,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 77,
+                            AddedAt = new DateTime(2025, 7, 17, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 38,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 78,
+                            AddedAt = new DateTime(2025, 7, 26, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 38,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 79,
+                            AddedAt = new DateTime(2025, 7, 22, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 39,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 80,
+                            AddedAt = new DateTime(2025, 7, 31, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 39,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 81,
+                            AddedAt = new DateTime(2025, 7, 27, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 40,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 82,
+                            AddedAt = new DateTime(2025, 8, 5, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 40,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 83,
+                            AddedAt = new DateTime(2025, 8, 1, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 41,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 84,
+                            AddedAt = new DateTime(2025, 8, 10, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 41,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 85,
+                            AddedAt = new DateTime(2025, 8, 6, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 42,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 86,
+                            AddedAt = new DateTime(2025, 8, 15, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 42,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 87,
+                            AddedAt = new DateTime(2025, 8, 11, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 6,
+                            MovieListId = 43,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 88,
+                            AddedAt = new DateTime(2025, 8, 20, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 43,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 89,
+                            AddedAt = new DateTime(2025, 8, 16, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 44,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 90,
+                            AddedAt = new DateTime(2025, 8, 25, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 44,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 91,
+                            AddedAt = new DateTime(2025, 8, 21, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 45,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 92,
+                            AddedAt = new DateTime(2025, 8, 30, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 2,
+                            MovieListId = 45,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 93,
+                            AddedAt = new DateTime(2025, 8, 26, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 46,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 94,
+                            AddedAt = new DateTime(2025, 9, 4, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 46,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 95,
+                            AddedAt = new DateTime(2025, 8, 31, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 47,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 96,
+                            AddedAt = new DateTime(2025, 9, 9, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 1,
+                            MovieListId = 47,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 97,
+                            AddedAt = new DateTime(2025, 9, 5, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 48,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 98,
+                            AddedAt = new DateTime(2025, 9, 14, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 48,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 99,
+                            AddedAt = new DateTime(2025, 9, 10, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 49,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 100,
+                            AddedAt = new DateTime(2025, 9, 19, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 7,
+                            MovieListId = 49,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 101,
+                            AddedAt = new DateTime(2025, 9, 15, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 50,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 102,
+                            AddedAt = new DateTime(2025, 9, 24, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 8,
+                            MovieListId = 50,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 103,
+                            AddedAt = new DateTime(2025, 9, 20, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 5,
+                            MovieListId = 51,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 104,
+                            AddedAt = new DateTime(2025, 9, 29, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 51,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 105,
+                            AddedAt = new DateTime(2025, 9, 25, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 52,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 106,
+                            AddedAt = new DateTime(2025, 10, 4, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 52,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 107,
+                            AddedAt = new DateTime(2025, 9, 30, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 53,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 108,
+                            AddedAt = new DateTime(2025, 10, 9, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 4,
+                            MovieListId = 53,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 109,
+                            AddedAt = new DateTime(2025, 10, 5, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 3,
+                            MovieListId = 54,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 110,
+                            AddedAt = new DateTime(2025, 10, 14, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 10,
+                            MovieListId = 54,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 111,
+                            AddedAt = new DateTime(2025, 10, 10, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 9,
+                            MovieListId = 55,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 112,
+                            AddedAt = new DateTime(2025, 10, 19, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 11,
+                            MovieListId = 55,
+                            Position = 2
+                        },
+                        new
+                        {
+                            Id = 113,
+                            AddedAt = new DateTime(2025, 10, 15, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 12,
+                            MovieListId = 56,
+                            Position = 1
+                        },
+                        new
+                        {
+                            Id = 114,
+                            AddedAt = new DateTime(2025, 10, 24, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            MovieId = 6,
+                            MovieListId = 56,
+                            Position = 2
                         });
+                });
+
+            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecommendedMovieId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Score")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("RecommendedMovieId");
+
+                    b.ToTable("MovieRecommendations");
                 });
 
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>
@@ -2601,6 +3819,5518 @@ namespace Flix.Services.Database.Migrations
                             MovieId = 6,
                             Rating = 3.5m,
                             UserId = 8
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2026, 8, 12, 19, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 8, 12, 16, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 8, 12, 13, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 8, 12, 10, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 3, 13, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 8, 12, 21, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 4, 3, 12, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 4, 24, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 8, 12, 6, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 8, 11, 11, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 8, 11, 8, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 4, 13, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 8, 12, 4, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 8, 11, 16, 36, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2026, 8, 12, 15, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.5m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 8, 12, 12, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.0m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 4, 16, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2026, 8, 10, 3, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.0m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 8, 11, 5, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 5, 14, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 8, 11, 19, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.5m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 6, 4, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 8, 11, 7, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 8, 11, 21, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.0m,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 5, 17, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 5, 24, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 8, 9, 18, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 8, 10, 20, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 43,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 6, 14, 12, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 2.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 44,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 6, 28, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 45,
+                            ContainsSpoilers = true,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 8, 11, 10, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 3.0m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 46,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 7, 26, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 47,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 8, 10, 16, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 48,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 6, 17, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 49,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 6, 24, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 50,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 8, 9, 15, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 51,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 7, 15, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 52,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2026, 8, 10, 14, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 2.5m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 53,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2026, 8, 10, 22, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.5m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 54,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 8, 26, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 55,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 7, 18, 10, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 56,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 7, 25, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 57,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 8, 8, 13, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 58,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 8, 29, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 59,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2025, 9, 5, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 60,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 8, 10, 5, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 61,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 9, 19, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 62,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 9, 26, 20, 23, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.0m,
+                            UserId = 6
+                        },
+                        new
+                        {
+                            Id = 63,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 8, 18, 17, 44, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 64,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 8, 25, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 65,
+                            ContainsSpoilers = true,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 9, 1, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 66,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2026, 8, 8, 10, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 67,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 9, 15, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 68,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 10, 6, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 69,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 10, 27, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 70,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 8, 9, 11, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.0m,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 71,
+                            ContainsSpoilers = true,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 9, 18, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.0m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 72,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 9, 25, 19, 22, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 73,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 10, 2, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 74,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 10, 16, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 75,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 10, 30, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 76,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 8, 9, 21, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 77,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 11, 20, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 78,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 12, 4, 17, 32, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 8
+                        },
+                        new
+                        {
+                            Id = 79,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 10, 19, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 80,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 10, 26, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 81,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 11, 2, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 82,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 8, 7, 5, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.5m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 83,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 11, 16, 11, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 84,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 8, 9, 9, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 85,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2025, 11, 30, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 86,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 8, 8, 15, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 87,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 11, 19, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 88,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 11, 26, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.0m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 89,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 12, 3, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 90,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 12, 10, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 91,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 12, 31, 20, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.0m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 92,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 1, 7, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 93,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 2, 4, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 94,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 12, 20, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 1,
+                            Rating = 5.0m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 95,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 12, 27, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 96,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 1, 10, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 97,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 1, 17, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 98,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 8, 8, 4, 26, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 99,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2026, 2, 7, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 100,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 2, 21, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.0m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 101,
+                            ContainsSpoilers = true,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 3, 7, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 102,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 1, 20, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 103,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 1, 27, 11, 26, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 5.0m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 104,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 2, 3, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 105,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 8, 7, 19, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 106,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 3, 3, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 107,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 3, 10, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 108,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2026, 8, 7, 10, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.5m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 109,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 3, 31, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 110,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 2, 20, 11, 50, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 5.0m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 111,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 2, 27, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 112,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2026, 3, 6, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 2.5m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 113,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 3, 13, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 114,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2026, 8, 12, 14, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 115,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2026, 8, 12, 5, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.5m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 116,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 4, 24, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.0m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 117,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 5, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 118,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 3, 23, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 1,
+                            Rating = 5.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 119,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 4, 6, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 120,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2026, 4, 13, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 121,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 4, 20, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 122,
+                            ContainsSpoilers = true,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2026, 8, 11, 9, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 123,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 5, 11, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 124,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2026, 5, 25, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.5m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 125,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 6, 1, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 126,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 6, 8, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 127,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 4, 23, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 128,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 4, 30, 20, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 129,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 5, 21, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 130,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 6, 4, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 131,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 6, 11, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 132,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2026, 6, 18, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.0m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 133,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 6, 25, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.0m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 134,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 1, 8, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 135,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 1, 15, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 136,
+                            ContainsSpoilers = true,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 5, 31, 15, 30, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 2,
+                            Rating = 5.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 137,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 6, 14, 17, 44, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.5m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 138,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 6, 21, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 139,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 8, 10, 4, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 140,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 1, 11, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 141,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 1, 18, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 142,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 1, 25, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.5m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 143,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2025, 2, 8, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 144,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 2, 15, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 145,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 6, 24, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 146,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 1, 7, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 147,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 1, 14, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 148,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 1, 21, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 149,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 1, 28, 19, 22, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 150,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 2, 18, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 151,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 3, 11, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 5.0m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 152,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 3, 18, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 153,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 1, 31, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 5.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 154,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 2, 7, 17, 32, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 155,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 2, 21, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 156,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 3, 7, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 157,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 3, 14, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 158,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 3, 28, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 2.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 159,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 4, 4, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 160,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 4, 18, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 161,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 3, 3, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 162,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 3, 10, 12, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 163,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 3, 17, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 164,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 3, 24, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 165,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 4, 7, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 2.5m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 166,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 4, 14, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 167,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 4, 21, 18, 45, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 168,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 5, 12, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 169,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 4, 3, 12, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 170,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 4, 17, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 171,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 4, 24, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 172,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 5, 1, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 2.5m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 173,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2025, 5, 8, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 2.0m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 174,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 5, 15, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 175,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 5, 22, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 176,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 6, 5, 15, 30, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.0m,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 177,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 5, 4, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 178,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 5, 11, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 179,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 5, 18, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 180,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 5, 25, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 181,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 6, 15, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 5.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 182,
+                            ContainsSpoilers = true,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 6, 29, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 3.5m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 183,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 7, 6, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 184,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 7, 13, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.0m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 185,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 7, 20, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 186,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 6, 11, 9, 36, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 187,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 6, 18, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 188,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 6, 25, 11, 50, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 189,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2025, 7, 2, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 2.0m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 190,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 7, 9, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.0m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 191,
+                            ContainsSpoilers = true,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 7, 16, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 192,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 7, 23, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 193,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 8, 13, 12, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 194,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 8, 20, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 195,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 7, 5, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 196,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 7, 12, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.0m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 197,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 7, 19, 11, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 198,
+                            ContainsSpoilers = true,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2025, 8, 2, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 2.5m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 199,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 8, 16, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 200,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 8, 23, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 201,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 8, 30, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.0m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 202,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 9, 13, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 203,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 9, 20, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 204,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 8, 5, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 205,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 8, 12, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 206,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 8, 26, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 207,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 9, 9, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 2.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 208,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 9, 23, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 209,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 9, 30, 12, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 3.0m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 210,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 10, 7, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 211,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 10, 14, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 5.0m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 212,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 10, 21, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 12,
+                            Rating = 4.5m,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 213,
+                            ContainsSpoilers = true,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 9, 5, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 214,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 9, 26, 20, 23, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 215,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 10, 3, 15, 30, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 2.5m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 216,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2025, 10, 10, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 2.5m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 217,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 10, 17, 17, 44, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 5.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 218,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 10, 24, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 8,
+                            Rating = 5.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 219,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 11, 7, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 2.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 220,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 11, 14, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.0m,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 221,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 10, 6, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 222,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 10, 13, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 223,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 10, 20, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 224,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 10, 27, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 225,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 11, 3, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 226,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 11, 17, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 7,
+                            Rating = 4.5m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 227,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 12, 15, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.5m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 228,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 12, 22, 11, 50, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 5.0m,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 229,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 11, 6, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 230,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 11, 13, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 231,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 11, 27, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.5m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 232,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 12, 4, 17, 32, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 233,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 12, 11, 12, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 234,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 12, 18, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 235,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 1, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 236,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 1, 8, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 237,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 12, 7, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 238,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 12, 14, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 239,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 12, 21, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 240,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 1, 4, 12, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 241,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 1, 11, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 242,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2026, 1, 25, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 243,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 2, 1, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.0m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 244,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 2, 8, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 245,
+                            ContainsSpoilers = true,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 2, 22, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 246,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 1, 7, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 247,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 1, 14, 10, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 248,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2026, 1, 21, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 2.5m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 249,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 2, 4, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 250,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2026, 2, 11, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 251,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2026, 2, 18, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 252,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2026, 2, 25, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.5m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 253,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 3, 4, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 254,
+                            ContainsSpoilers = true,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 3, 11, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 255,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 2, 7, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 256,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2026, 2, 28, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 257,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2026, 3, 7, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 258,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 3, 14, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 259,
+                            ContainsSpoilers = false,
+                            Content = "Very little landed. Overlong, over-scored and underwritten.",
+                            CreatedAt = new DateTime(2026, 3, 21, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 1.5m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 260,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 4, 4, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 261,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2026, 4, 11, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 262,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 4, 18, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.0m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 263,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2026, 4, 25, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 2.5m,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 264,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2026, 3, 10, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 265,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 3, 17, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 266,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 3, 24, 19, 22, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.5m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 267,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 3, 31, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.5m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 268,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2026, 4, 7, 9, 36, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 269,
+                            ContainsSpoilers = true,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 4, 14, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 270,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2026, 4, 28, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 271,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 5, 12, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 272,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 5, 26, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.0m,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 273,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 4, 10, 12, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 274,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 4, 17, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 275,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2026, 5, 8, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 276,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 5, 15, 11, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 277,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2026, 5, 29, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.0m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 278,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2026, 6, 5, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 279,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 6, 12, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 280,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2026, 6, 19, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 2.5m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 281,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 6, 26, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.0m,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 282,
+                            ContainsSpoilers = true,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 5, 18, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 283,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 5, 25, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.5m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 284,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 6, 1, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 285,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 6, 8, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 286,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2026, 6, 15, 18, 45, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 287,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2026, 6, 22, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 288,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 1, 12, 15, 6, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 289,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 1, 19, 10, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 290,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 6, 11, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 291,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 6, 25, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 292,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 1, 8, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 293,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 1, 15, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 294,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 1, 22, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 5.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 295,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2025, 1, 29, 20, 23, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 2.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 296,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 2, 12, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 297,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 2, 26, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.0m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 298,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 3, 5, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 299,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 1, 18, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.0m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 300,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 1, 25, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 301,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 2, 1, 11, 26, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 302,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 2, 8, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 303,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 2, 15, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 304,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 2, 22, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 305,
+                            ContainsSpoilers = false,
+                            Content = "Struggled with it. Handsome to look at and hollow underneath.",
+                            CreatedAt = new DateTime(2025, 3, 8, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.5m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 306,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 3, 15, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 307,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 2, 18, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 308,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 2, 25, 11, 50, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 309,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 3, 4, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 310,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 3, 11, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 311,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 3, 18, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 312,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 3, 25, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 313,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 4, 1, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 314,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 4, 22, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.0m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 315,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 5, 6, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 316,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2025, 3, 28, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 317,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 4, 4, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 318,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 4, 11, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 5.0m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 319,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 4, 18, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 320,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 5, 2, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 321,
+                            ContainsSpoilers = false,
+                            Content = "Not for me. It mistakes volume for weight.",
+                            CreatedAt = new DateTime(2025, 5, 9, 12, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.5m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 322,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 5, 16, 19, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 323,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 5, 23, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 324,
+                            ContainsSpoilers = true,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 5, 30, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 2.0m,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 325,
+                            ContainsSpoilers = false,
+                            Content = "Did not work for me. The premise is considerably better than the execution.",
+                            CreatedAt = new DateTime(2025, 4, 21, 18, 45, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 2.5m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 326,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 4, 28, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 327,
+                            ContainsSpoilers = false,
+                            Content = "The kind of film that quietly reorganises what you expect from everything after it.",
+                            CreatedAt = new DateTime(2025, 5, 5, 20, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 328,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 5, 19, 10, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 329,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 5, 26, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 330,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 6, 9, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 2.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 331,
+                            ContainsSpoilers = true,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 6, 16, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.5m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 332,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 6, 23, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 10,
+                            Rating = 5.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 333,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 6, 30, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.0m,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 334,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2025, 5, 22, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 335,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 6, 5, 15, 30, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 336,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 6, 12, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 337,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 6, 19, 17, 44, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 338,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2025, 6, 26, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 339,
+                            ContainsSpoilers = true,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 7, 3, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 340,
+                            ContainsSpoilers = false,
+                            Content = "Close to perfect. It does in a single scene what most films spend an act setting up.",
+                            CreatedAt = new DateTime(2025, 7, 17, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 341,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 7, 24, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.0m,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 342,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 6, 22, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 343,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 6, 29, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 344,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 7, 6, 10, 1, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 345,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 7, 13, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 346,
+                            ContainsSpoilers = true,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 7, 20, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 5,
+                            Rating = 5.0m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 347,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 8, 3, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 348,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 8, 10, 9, 36, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.0m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 349,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 8, 24, 11, 50, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 350,
+                            ContainsSpoilers = false,
+                            Content = "Lost me in the second half and never made a case for staying.",
+                            CreatedAt = new DateTime(2025, 8, 31, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 2.5m,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 351,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 7, 30, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 352,
+                            ContainsSpoilers = true,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 8, 6, 17, 32, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 353,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 8, 13, 12, 39, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 354,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2025, 8, 20, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 355,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 8, 27, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.5m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 356,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 9, 3, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 357,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2025, 9, 17, 11, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 358,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 9, 24, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 359,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 10, 8, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 360,
+                            ContainsSpoilers = true,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 8, 23, 10, 49, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 2.5m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 361,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 8, 30, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 362,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 9, 6, 12, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 3,
+                            Rating = 5.0m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 363,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 9, 20, 14, 17, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.5m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 364,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 9, 27, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 365,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 10, 11, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.0m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 366,
+                            ContainsSpoilers = false,
+                            Content = "Put it on for half an hour and lost the whole evening. No regrets at all.",
+                            CreatedAt = new DateTime(2025, 10, 18, 18, 45, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 9,
+                            Rating = 5.0m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 367,
+                            ContainsSpoilers = false,
+                            Content = "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+                            CreatedAt = new DateTime(2025, 10, 25, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 4.5m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 368,
+                            ContainsSpoilers = false,
+                            Content = "I can see why people love this. I spent most of it checking the runtime.",
+                            CreatedAt = new DateTime(2025, 11, 1, 20, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 2.5m,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 369,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2025, 9, 23, 17, 20, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 370,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2025, 9, 30, 12, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 371,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 10, 7, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.0m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 372,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2025, 10, 14, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 373,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 10, 21, 9, 48, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 374,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 10, 28, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.5m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 375,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 11, 11, 18, 9, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 376,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 11, 25, 20, 23, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 377,
+                            ContainsSpoilers = false,
+                            Content = "This is the one I hand to people who say they do not watch this sort of thing.",
+                            CreatedAt = new DateTime(2025, 10, 24, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 378,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 10, 31, 19, 58, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 379,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 11, 7, 14, 5, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.5m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 380,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 11, 14, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 381,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2025, 11, 21, 16, 19, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.0m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 382,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2025, 11, 28, 11, 26, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.5m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 383,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2025, 12, 5, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 384,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 12, 19, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 3.5m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 385,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2026, 1, 9, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.0m,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 386,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2025, 11, 24, 19, 22, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 387,
+                            ContainsSpoilers = false,
+                            Content = "I have seen this enough times to quote it and it still catches me out.",
+                            CreatedAt = new DateTime(2025, 12, 1, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.5m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 388,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2025, 12, 8, 9, 36, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.0m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 389,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 12, 15, 16, 43, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 3.5m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 390,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2025, 12, 29, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 391,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 1, 5, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 392,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 1, 12, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 393,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2026, 1, 19, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.0m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 394,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 2, 2, 17, 32, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.5m,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 395,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2025, 12, 25, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 396,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 1, 8, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.0m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 397,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 1, 15, 11, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 398,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 1, 22, 18, 21, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 399,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 1, 29, 13, 28, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 400,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 2, 5, 20, 35, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 4.0m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 401,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 2, 12, 15, 42, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 402,
+                            ContainsSpoilers = true,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 2, 26, 17, 56, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 403,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 3, 5, 12, 3, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.5m,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 404,
+                            ContainsSpoilers = false,
+                            Content = "Really strong. It knows exactly what it is doing, even where it overreaches.",
+                            CreatedAt = new DateTime(2026, 1, 25, 9, 24, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 405,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 2, 1, 16, 31, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 3.5m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 406,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 2, 8, 11, 38, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.5m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 407,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 2, 22, 13, 52, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 408,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 3, 1, 20, 59, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 4.0m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 409,
+                            ContainsSpoilers = true,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 3, 15, 10, 13, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 410,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 3, 29, 12, 27, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 411,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2026, 4, 5, 19, 34, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 4.0m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 412,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 4, 12, 14, 41, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 4.0m,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 413,
+                            ContainsSpoilers = false,
+                            Content = "Very good without quite being great, and I mean that as praise.",
+                            CreatedAt = new DateTime(2026, 2, 25, 16, 55, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 414,
+                            ContainsSpoilers = false,
+                            Content = "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+                            CreatedAt = new DateTime(2026, 3, 4, 11, 2, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 415,
+                            ContainsSpoilers = false,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2026, 3, 18, 13, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 416,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 3, 25, 20, 23, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 4.0m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 417,
+                            ContainsSpoilers = true,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 4, 1, 15, 30, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 6,
+                            Rating = 3.5m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 418,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 4, 8, 10, 37, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.0m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 419,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 4, 15, 17, 44, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.5m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 420,
+                            ContainsSpoilers = false,
+                            Content = "Watched it without much reaction either way. Technically solid throughout.",
+                            CreatedAt = new DateTime(2026, 4, 22, 12, 51, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 3.5m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 421,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 5, 13, 9, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 12,
+                            Rating = 3.5m,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 422,
+                            ContainsSpoilers = false,
+                            Content = "Holds together better than films half its length. Extraordinary control of tone.",
+                            CreatedAt = new DateTime(2026, 3, 28, 11, 26, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.5m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 423,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 4, 4, 18, 33, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 424,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 4, 11, 13, 40, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 3.5m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 425,
+                            ContainsSpoilers = true,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 4, 18, 20, 47, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 4,
+                            Rating = 4.0m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 426,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2026, 4, 25, 15, 54, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.0m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 427,
+                            ContainsSpoilers = false,
+                            Content = "There is a good film in here and about twenty minutes of padding around it.",
+                            CreatedAt = new DateTime(2026, 5, 9, 17, 8, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 7,
+                            Rating = 3.5m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 428,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 5, 16, 12, 15, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 4.0m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 429,
+                            ContainsSpoilers = false,
+                            Content = "Parts of this are excellent. The rest is going through the motions.",
+                            CreatedAt = new DateTime(2026, 5, 30, 14, 29, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 430,
+                            ContainsSpoilers = false,
+                            Content = "Confident filmmaking. The middle sags a little and the ending recovers it.",
+                            CreatedAt = new DateTime(2026, 4, 28, 18, 57, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 1,
+                            Rating = 4.0m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 431,
+                            ContainsSpoilers = true,
+                            Content = "Well made and genuinely moving in places. It stayed with me for a day or two.",
+                            CreatedAt = new DateTime(2026, 5, 5, 13, 4, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 2,
+                            Rating = 4.0m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 432,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 5, 12, 20, 11, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 3,
+                            Rating = 4.0m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 433,
+                            ContainsSpoilers = false,
+                            Content = "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+                            CreatedAt = new DateTime(2026, 5, 19, 15, 18, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = true,
+                            MovieId = 4,
+                            Rating = 4.5m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 434,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2026, 5, 26, 10, 25, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 5,
+                            Rating = 3.5m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 435,
+                            ContainsSpoilers = false,
+                            Content = "Decent, but it never quite decides what it wants to be.",
+                            CreatedAt = new DateTime(2026, 6, 16, 19, 46, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 8,
+                            Rating = 3.0m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 436,
+                            ContainsSpoilers = false,
+                            Content = "Does the difficult part well and the easy part unevenly. Recommended regardless.",
+                            CreatedAt = new DateTime(2026, 6, 23, 14, 53, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = true,
+                            IsRewatch = false,
+                            MovieId = 9,
+                            Rating = 4.0m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 437,
+                            ContainsSpoilers = false,
+                            Content = "Fine. Competent, watchable, not something I expect to return to.",
+                            CreatedAt = new DateTime(2025, 1, 6, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = true,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 10,
+                            Rating = 3.5m,
+                            UserId = 50
+                        },
+                        new
+                        {
+                            Id = 438,
+                            ContainsSpoilers = false,
+                            Content = "Mixed feelings. Individual scenes work far better than the whole does.",
+                            CreatedAt = new DateTime(2025, 1, 13, 16, 7, 0, 0, DateTimeKind.Unspecified),
+                            IsDiaryEntry = false,
+                            IsLiked = false,
+                            IsRewatch = false,
+                            MovieId = 11,
+                            Rating = 3.5m,
+                            UserId = 50
                         });
                 });
 
@@ -2970,6 +9700,606 @@ namespace Flix.Services.Database.Migrations
                             PasswordSalt = "c2FsdF91c2VyXzEwMTIzNA==",
                             PhoneNumber = "+49 151 23456789",
                             Username = "noahfischer"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Bio = "Chicago. New Hollywood, gangster pictures, and films that earn their runtime.",
+                            CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 20, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "elena.marsh@gmail.com",
+                            FirstName = "Elena",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 7, 18, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Marsh",
+                            PasswordHash = "56oDzXvjVIEbnsUg5l8kqIvrWBc3cWAcJ+J+Hdpdn/Q=",
+                            PasswordSalt = "c2FsdF91c2VyXzExMjM0NQ==",
+                            Username = "elenamarsh"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Bio = "Leeds. A crime epic and three uninterrupted hours is my idea of a weekend.",
+                            CountryId = 2,
+                            CreatedAt = new DateTime(2024, 2, 6, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "hugo.bennett@outlook.com",
+                            FirstName = "Hugo",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 8, 7, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Bennett",
+                            PasswordHash = "ocPXo6pq/ZoYtsY6OVKCrZ7yUsNhRjDVNy3/E+pBGNY=",
+                            PasswordSalt = "c2FsdF91c2VyXzEyMzQ1Ng==",
+                            Username = "hugobennett"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Bio = "Berlin. Post-war drama and anything with a moral cost attached to it.",
+                            CountryId = 6,
+                            CreatedAt = new DateTime(2024, 2, 23, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "marta.keller@web.de",
+                            FirstName = "Marta",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 8, 27, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Keller",
+                            PasswordHash = "91AYscaVnZ1z7FJ6yarUFJsYkazuTo9fN1Rb3ut+cOQ=",
+                            PasswordSalt = "c2FsdF91c2VyXzEzNDU2Nw==",
+                            Username = "martakeller"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Bio = "Halifax. Family sagas and betrayals. Blame my father's video shelf.",
+                            CountryId = 8,
+                            CreatedAt = new DateTime(2024, 3, 11, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "owen.doherty@gmail.com",
+                            FirstName = "Owen",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 9, 16, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Doherty",
+                            PasswordHash = "W/HrGO7/nS8bnyP1wXFkW7I8D/T9EpRvC68Ta19wEe4=",
+                            PasswordSalt = "c2FsdF91c2VyXzE0NTY3OA==",
+                            Username = "owendoherty"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Bio = "Naples. Crime cinema, Italian or otherwise, and very strong coffee.",
+                            CountryId = 7,
+                            CreatedAt = new DateTime(2024, 3, 28, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "giulia.ferrari@libero.it",
+                            FirstName = "Giulia",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 10, 6, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Ferrari",
+                            PasswordHash = "qnoBn7ot0ejE1hO8JFc/Xl1pzmwy2lsyVnKMjR4yWCw=",
+                            PasswordSalt = "c2FsdF91c2VyXzE1Njc4OQ==",
+                            Username = "giuliaferrari"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Bio = "Johannesburg. Character studies over spectacle, every single time.",
+                            CountryId = 13,
+                            CreatedAt = new DateTime(2024, 4, 14, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "thabo.nkosi@gmail.com",
+                            FirstName = "Thabo",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 10, 26, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Nkosi",
+                            PasswordHash = "k2hznAQqIbPdkBqY/LVHJs8z/JMK8FeF0DP3/auKZGE=",
+                            PasswordSalt = "c2FsdF91c2VyXzE2Nzg5MA==",
+                            Username = "thabonkosi"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Bio = "Adelaide. A shelf of gangster films and a long list of grudges against remakes.",
+                            CountryId = 9,
+                            CreatedAt = new DateTime(2024, 5, 1, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ryan.chalmers@outlook.com",
+                            FirstName = "Ryan",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 11, 15, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Chalmers",
+                            PasswordHash = "YVuXL5IhnFcRR/KJJ8YzrUJPq3ufx0VKijizYzxq3Ic=",
+                            PasswordSalt = "c2FsdF91c2VyXzE3ODkwMQ==",
+                            Username = "ryanchalmers"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Bio = "Sarajevo. Drama first. I watch for the faces, not the plot.",
+                            CountryId = 10,
+                            CreatedAt = new DateTime(2024, 5, 18, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "amira.hadzic@gmail.com",
+                            FirstName = "Amira",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 12, 5, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Hadzic",
+                            PasswordHash = "ZALAJOvBe+OuXoP5ERCdvX4238NWuRXCRWGFMqGHLOQ=",
+                            PasswordSalt = "c2FsdF91c2VyXzE4OTAxMg==",
+                            Username = "amirahadzic"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Bio = "Kyoto. Repertory houses, quiet films, and subtitles I do not need.",
+                            CountryId = 3,
+                            CreatedAt = new DateTime(2024, 6, 4, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "yuki.nakamura@yahoo.co.jp",
+                            FirstName = "Yuki",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2024, 12, 25, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Nakamura",
+                            PasswordHash = "2IgOHRMLc2yUW/xRF29mybp+iJIH641X3wWnkBTeycQ=",
+                            PasswordSalt = "c2FsdF91c2VyXzE5MDEyMw==",
+                            Username = "yukinakamura"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Bio = "Bordeaux. Slow films, long takes, and the cinema on rue Sainte-Catherine.",
+                            CountryId = 4,
+                            CreatedAt = new DateTime(2024, 6, 21, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "camille.moreau@orange.fr",
+                            FirstName = "Camille",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 1, 14, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Moreau",
+                            PasswordHash = "3ANMUHiAS09QPVv8fF/aboWquLfAPQpYUc+yakbtafE=",
+                            PasswordSalt = "c2FsdF91c2VyXzIwMTIzNA==",
+                            Username = "camillemoreau"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Bio = "Turin. I run a small film club. Neorealism and Ghibli, oddly enough.",
+                            CountryId = 7,
+                            CreatedAt = new DateTime(2024, 7, 8, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "luca.bianchi@libero.it",
+                            FirstName = "Luca",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 2, 3, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Bianchi",
+                            PasswordHash = "NtRw1NCOSC5XvUcXxSucTY3N4cwddiOSVATaYRVa8jk=",
+                            PasswordSalt = "c2FsdF91c2VyXzIxMjM0NQ==",
+                            Username = "lucabianchi"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Bio = "Busan. Festival circuit regular. I like films that do not explain themselves.",
+                            CountryId = 5,
+                            CreatedAt = new DateTime(2024, 7, 25, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "jiwoo.park@naver.com",
+                            FirstName = "Ji-woo",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 2, 23, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Park",
+                            PasswordHash = "u9xtVP3RJvZ0soY3lvIVAk816EGBDaAsoUjJk7Z1MWU=",
+                            PasswordSalt = "c2FsdF91c2VyXzIyMzQ1Ng==",
+                            Username = "jiwoopark"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Bio = "Sapporo. Animation is cinema. I will die on this hill.",
+                            CountryId = 3,
+                            CreatedAt = new DateTime(2024, 8, 11, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "hana.suzuki@yahoo.co.jp",
+                            FirstName = "Hana",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 3, 15, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Suzuki",
+                            PasswordHash = "YowUydGjPKv/C8932mUfEzHOf6bnmu0b75IaV9oFvPs=",
+                            PasswordSalt = "c2FsdF91c2VyXzIzNDU2Nw==",
+                            Username = "hanasuzuki"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Bio = "Cologne. European art cinema and the occasional submarine picture.",
+                            CountryId = 6,
+                            CreatedAt = new DateTime(2024, 8, 28, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "felix.werner@web.de",
+                            FirstName = "Felix",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 4, 4, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Werner",
+                            PasswordHash = "Qty2Ojh4UtEFbULeZqp0MKf14kTbvGaD3E5eeJ79FDM=",
+                            PasswordSalt = "c2FsdF91c2VyXzI0NTY3OA==",
+                            Username = "felixwerner"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Bio = "Kuala Lumpur. World cinema mostly. Subtitles are not a barrier, they are the point.",
+                            CountryId = 11,
+                            CreatedAt = new DateTime(2024, 9, 14, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "aisha.rahman@gmail.com",
+                            FirstName = "Aisha",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 4, 24, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Rahman",
+                            PasswordHash = "LTjnRp2Uh82JHXIigl8Amd8ApFykFJVFa2i03D9k8kI=",
+                            PasswordSalt = "c2FsdF91c2VyXzI1Njc4OQ==",
+                            Username = "aisharahman"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Bio = "Mostar. Balkan and European drama, with a soft spot for anything about childhood.",
+                            CountryId = 10,
+                            CreatedAt = new DateTime(2024, 10, 1, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "sara.delic@gmail.com",
+                            FirstName = "Sara",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 5, 14, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Delic",
+                            PasswordHash = "cJ05dUbp6xesMlf3aKe2zbHcDwwT0lTOUhFJJUO6kjI=",
+                            PasswordSalt = "c2FsdF91c2VyXzI2Nzg5MA==",
+                            Username = "saradelic"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Bio = "Phoenix. IMAX or nothing. I have opinions about frame rates.",
+                            CountryId = 1,
+                            CreatedAt = new DateTime(2024, 10, 18, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "tyler.brooks@gmail.com",
+                            FirstName = "Tyler",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 6, 3, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Brooks",
+                            PasswordHash = "5DJrMoR2bsD2GL4Mea7zAz6b4HWGTUZTngk9Cip5uQ8=",
+                            PasswordSalt = "c2FsdF91c2VyXzI3ODkwMQ==",
+                            Username = "tylerbrooks"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Bio = "Denver. Action, spectacle, and the occasional heist.",
+                            CountryId = 1,
+                            CreatedAt = new DateTime(2024, 11, 4, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "jordan.reeves@outlook.com",
+                            FirstName = "Jordan",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 6, 23, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Reeves",
+                            PasswordHash = "mRNbZLDYMwPzYV+TCDHg805XEsRqSV4klRJwz8Jon+0=",
+                            PasswordSalt = "c2FsdF91c2VyXzI4OTAxMg==",
+                            Username = "jordanreeves"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Bio = "Brisbane. Stunt work, chase sequences, and films that move.",
+                            CountryId = 9,
+                            CreatedAt = new DateTime(2024, 11, 21, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mia.sullivan@gmail.com",
+                            FirstName = "Mia",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 7, 13, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Sullivan",
+                            PasswordHash = "r2O1LpZKZTWsTzz/cArQyjsHY953G8FEezu9cBIradg=",
+                            PasswordSalt = "c2FsdF91c2VyXzI5MDEyMw==",
+                            Username = "miasullivan"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Bio = "Vancouver. I work in VFX and still prefer things done for real.",
+                            CountryId = 8,
+                            CreatedAt = new DateTime(2024, 12, 8, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "lucas.fernandes@gmail.com",
+                            FirstName = "Lucas",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 8, 2, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Fernandes",
+                            PasswordHash = "193uWQqRMeeMclwExE++10lJ83/zHw2CYHffthZF9SU=",
+                            PasswordSalt = "c2FsdF91c2VyXzMwMTIzNA==",
+                            Username = "lucasfernandes"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Bio = "Birmingham. Big screen, big sound, no phone.",
+                            CountryId = 2,
+                            CreatedAt = new DateTime(2024, 12, 25, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "grace.okafor@outlook.com",
+                            FirstName = "Grace",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 8, 22, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Okafor",
+                            PasswordHash = "ShkWtbbfdKGxklNTO+hX+G4sm7k+vevqdXVl5VXVWyk=",
+                            PasswordSalt = "c2FsdF91c2VyXzMxMjM0NQ==",
+                            Username = "graceokafor"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Bio = "Seattle. Science fiction and action. I rewatch trailers more than I should.",
+                            CountryId = 1,
+                            CreatedAt = new DateTime(2025, 1, 11, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dylan.hayes@gmail.com",
+                            FirstName = "Dylan",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 9, 11, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Hayes",
+                            PasswordHash = "uDZeje7lbfSGhpX4LvIy2kpf8+SncifqF4bzSmxlIDI=",
+                            PasswordSalt = "c2FsdF91c2VyXzMyMzQ1Ng==",
+                            Username = "dylanhayes"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Bio = "Munich. Loud films, cold rooms, good projection.",
+                            CountryId = 6,
+                            CreatedAt = new DateTime(2025, 1, 28, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "kai.lehmann@web.de",
+                            FirstName = "Kai",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 10, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Lehmann",
+                            PasswordHash = "ykBP7/QPAP6eNq1+kLwmcDaaJnMtrhjQQch8wiWVA7E=",
+                            PasswordSalt = "c2FsdF91c2VyXzMzNDU2Nw==",
+                            Username = "kailehmann"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Bio = "London. Blockbusters on Friday, recovery on Saturday.",
+                            CountryId = 2,
+                            CreatedAt = new DateTime(2025, 2, 14, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "priya.sharma@gmail.com",
+                            FirstName = "Priya",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 10, 21, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Sharma",
+                            PasswordHash = "qkgSIAUaaTJL3SHDhzXtp42LPbmISQUQoWa4S4oMUss=",
+                            PasswordSalt = "c2FsdF91c2VyXzM0NTY3OA==",
+                            Username = "priyasharma"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Bio = "Hanoi. Animation, science fiction, and anything with a strange premise.",
+                            CountryId = 12,
+                            CreatedAt = new DateTime(2025, 3, 3, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "minh.nguyen@gmail.com",
+                            FirstName = "Minh",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 11, 10, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Nguyen",
+                            PasswordHash = "Q6vDqD3M3YG6X6v8iJziFzARq+QV9ccfNlYGErDhPFY=",
+                            PasswordSalt = "c2FsdF91c2VyXzM1Njc4OQ==",
+                            Username = "minhnguyen"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Bio = "Cape Town. Genre cinema and multiverse nonsense, unapologetically.",
+                            CountryId = 13,
+                            CreatedAt = new DateTime(2025, 3, 20, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "lerato.molefe@gmail.com",
+                            FirstName = "Lerato",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 11, 30, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Molefe",
+                            PasswordHash = "MXB2n1w+d/XiCJqH+6zbCYo1/GHbplQ3bsO9lrzVTBk=",
+                            PasswordSalt = "c2FsdF91c2VyXzM2Nzg5MA==",
+                            Username = "leratomolefe"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Bio = "Dresden. Science fiction mostly. I take notes during films.",
+                            CountryId = 6,
+                            CreatedAt = new DateTime(2025, 4, 6, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "erik.vogel@web.de",
+                            FirstName = "Erik",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2025, 12, 20, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Vogel",
+                            PasswordHash = "u01Wm8Ejya+sKSQpktg/aLLA4QqI1vSboW0305Jym/U=",
+                            PasswordSalt = "c2FsdF91c2VyXzM3ODkwMQ==",
+                            Username = "erikvogel"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Bio = "Penang. Fantasy, animation, and films that are too much on purpose.",
+                            CountryId = 11,
+                            CreatedAt = new DateTime(2025, 4, 23, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "chen.wei@gmail.com",
+                            FirstName = "Chen",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 1, 9, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Wei",
+                            PasswordHash = "U1fJ96IQghydv9+8zJiuKazv1ZlG+s/bXvVDG20dYpk=",
+                            PasswordSalt = "c2FsdF91c2VyXzM4OTAxMg==",
+                            Username = "chenwei"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Bio = "Nantes. Fantasy and animation. I discovered Ghibli far too late.",
+                            CountryId = 4,
+                            CreatedAt = new DateTime(2025, 5, 10, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "isabelle.laurent@orange.fr",
+                            FirstName = "Isabelle",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 1, 29, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Laurent",
+                            PasswordHash = "/SB2nF1QFOAX53iPBQ7e8Ub9zLvr6QF5H5VtkUyXMbc=",
+                            PasswordSalt = "c2FsdF91c2VyXzM5MDEyMw==",
+                            Username = "isabellelaurent"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Bio = "Ipoh. Science fiction, action, and long arguments about time travel.",
+                            CountryId = 11,
+                            CreatedAt = new DateTime(2025, 5, 27, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ravi.menon@gmail.com",
+                            FirstName = "Ravi",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 2, 18, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Menon",
+                            PasswordHash = "JmpqvKb5l6CNX8+XgYpWdDk0j5+NDzBbONq3yov4yHQ=",
+                            PasswordSalt = "c2FsdF91c2VyXzQwMTIzNA==",
+                            Username = "ravimenon"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Bio = "Nagoya. Anime and genre film. I stay for the credits.",
+                            CountryId = 3,
+                            CreatedAt = new DateTime(2025, 6, 13, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "sana.yamada@yahoo.co.jp",
+                            FirstName = "Sana",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 3, 10, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Yamada",
+                            PasswordHash = "mtnWgjYyG3JimK8r7TXk8s0vi+4Vq60zAVF1ndca/m4=",
+                            PasswordSalt = "c2FsdF91c2VyXzQxMjM0NQ==",
+                            Username = "sanayamada"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Bio = "Ho Chi Minh City. Speculative fiction on screen, in any language.",
+                            CountryId = 12,
+                            CreatedAt = new DateTime(2025, 6, 30, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "duc.tran@gmail.com",
+                            FirstName = "Duc",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 3, 30, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Tran",
+                            PasswordHash = "+nEy4YH4smw8N7RC1Is4qdC+aqwHMVlWRMI/bskJb7s=",
+                            PasswordSalt = "c2FsdF91c2VyXzQyMzQ1Ng==",
+                            Username = "ductran"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Bio = "Bristol. A bit of everything. I rate generously and regret nothing.",
+                            CountryId = 2,
+                            CreatedAt = new DateTime(2025, 7, 17, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "nora.whitfield@outlook.com",
+                            FirstName = "Nora",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 4, 19, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Whitfield",
+                            PasswordHash = "PjpZBTk8oPBnVNAHGPE1VIGuNxTl/n1R2u6p1gWfMQA=",
+                            PasswordSalt = "c2FsdF91c2VyXzQzNDU2Nw==",
+                            Username = "norawhitfield"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Bio = "Marseille. No fixed taste. Whatever happens to be on.",
+                            CountryId = 4,
+                            CreatedAt = new DateTime(2025, 8, 3, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "andre.dubois@orange.fr",
+                            FirstName = "Andre",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 5, 9, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Dubois",
+                            PasswordHash = "iQ4qyA4saZ6PgoUaGsisTZyxVn6wI7kP6YcNVieam3c=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ0NTY3OA==",
+                            Username = "andredubois"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Bio = "Banja Luka. I watch broadly and rewatch rarely.",
+                            CountryId = 10,
+                            CreatedAt = new DateTime(2025, 8, 20, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "katarina.novak@gmail.com",
+                            FirstName = "Katarina",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 5, 29, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Novak",
+                            PasswordHash = "vrDqlyYdlrFg/vL9mb6kotLIt9wzGYpmkC5bgHnVe2c=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ1Njc4OQ==",
+                            Username = "katarinanovak"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Bio = "Ottawa. I keep a spreadsheet. That is my entire personality.",
+                            CountryId = 8,
+                            CreatedAt = new DateTime(2025, 9, 6, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "sam.whitaker@gmail.com",
+                            FirstName = "Sam",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 6, 18, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Whitaker",
+                            PasswordHash = "RZJj78FWiY4qPFhYBztXpVdG4jr47JBDJPI8S7PS/UY=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ2Nzg5MA==",
+                            Username = "samwhitaker"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Bio = "Toulouse. Curious about everything, loyal to nothing.",
+                            CountryId = 4,
+                            CreatedAt = new DateTime(2025, 9, 23, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "leila.benali@orange.fr",
+                            FirstName = "Leila",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 7, 8, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Benali",
+                            PasswordHash = "QSwNOtBbvHG5l5KW/RQCH7tNMOestB6yeH6+HektdJ8=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ3ODkwMQ==",
+                            Username = "leilabenali"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Bio = "Palermo. I go to the cinema alone twice a week, whatever is showing.",
+                            CountryId = 7,
+                            CreatedAt = new DateTime(2025, 10, 10, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "marco.greco@libero.it",
+                            FirstName = "Marco",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 7, 28, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Greco",
+                            PasswordHash = "RbVqW/37r9ITQTsEHuOPi5V8GwLsIqm1FJIEc1Xz+mc=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ4OTAxMg==",
+                            Username = "marcogreco"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Bio = "Tuzla. Working my way through every list I can find.",
+                            CountryId = 10,
+                            CreatedAt = new DateTime(2025, 10, 27, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "jasmin.begic@gmail.com",
+                            FirstName = "Jasmin",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 8, 17, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Begic",
+                            PasswordHash = "bez+t4LrFzwam+UJxRrbMrp12gzoJNLtftzb2kDr+pw=",
+                            PasswordSalt = "c2FsdF91c2VyXzQ5MDEyMw==",
+                            Username = "jasminbegic"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Bio = "Leipzig. A little of everything, and a very long backlog.",
+                            CountryId = 6,
+                            CreatedAt = new DateTime(2025, 11, 13, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "hannah.stein@web.de",
+                            FirstName = "Hannah",
+                            IsActive = true,
+                            LastLoginAt = new DateTime(2026, 9, 6, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Stein",
+                            PasswordHash = "E7ofOqGC0fEx14O17dutJnNWYukp9Xb28vo4nVGctFU=",
+                            PasswordSalt = "c2FsdF91c2VyXzUwMTIzNA==",
+                            Username = "hannahstein"
                         });
                 });
 
@@ -3339,6 +10669,286 @@ namespace Flix.Services.Database.Migrations
                             AssignedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 10
+                        },
+                        new
+                        {
+                            Id = 10011,
+                            AssignedAt = new DateTime(2024, 1, 20, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 10012,
+                            AssignedAt = new DateTime(2024, 2, 6, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 10013,
+                            AssignedAt = new DateTime(2024, 2, 23, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 13
+                        },
+                        new
+                        {
+                            Id = 10014,
+                            AssignedAt = new DateTime(2024, 3, 11, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 14
+                        },
+                        new
+                        {
+                            Id = 10015,
+                            AssignedAt = new DateTime(2024, 3, 28, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 15
+                        },
+                        new
+                        {
+                            Id = 10016,
+                            AssignedAt = new DateTime(2024, 4, 14, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 16
+                        },
+                        new
+                        {
+                            Id = 10017,
+                            AssignedAt = new DateTime(2024, 5, 1, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 17
+                        },
+                        new
+                        {
+                            Id = 10018,
+                            AssignedAt = new DateTime(2024, 5, 18, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 18
+                        },
+                        new
+                        {
+                            Id = 10019,
+                            AssignedAt = new DateTime(2024, 6, 4, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 19
+                        },
+                        new
+                        {
+                            Id = 10020,
+                            AssignedAt = new DateTime(2024, 6, 21, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 20
+                        },
+                        new
+                        {
+                            Id = 10021,
+                            AssignedAt = new DateTime(2024, 7, 8, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 21
+                        },
+                        new
+                        {
+                            Id = 10022,
+                            AssignedAt = new DateTime(2024, 7, 25, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 22
+                        },
+                        new
+                        {
+                            Id = 10023,
+                            AssignedAt = new DateTime(2024, 8, 11, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 23
+                        },
+                        new
+                        {
+                            Id = 10024,
+                            AssignedAt = new DateTime(2024, 8, 28, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 24
+                        },
+                        new
+                        {
+                            Id = 10025,
+                            AssignedAt = new DateTime(2024, 9, 14, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 25
+                        },
+                        new
+                        {
+                            Id = 10026,
+                            AssignedAt = new DateTime(2024, 10, 1, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 26
+                        },
+                        new
+                        {
+                            Id = 10027,
+                            AssignedAt = new DateTime(2024, 10, 18, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 27
+                        },
+                        new
+                        {
+                            Id = 10028,
+                            AssignedAt = new DateTime(2024, 11, 4, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 28
+                        },
+                        new
+                        {
+                            Id = 10029,
+                            AssignedAt = new DateTime(2024, 11, 21, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 29
+                        },
+                        new
+                        {
+                            Id = 10030,
+                            AssignedAt = new DateTime(2024, 12, 8, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 30
+                        },
+                        new
+                        {
+                            Id = 10031,
+                            AssignedAt = new DateTime(2024, 12, 25, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 31
+                        },
+                        new
+                        {
+                            Id = 10032,
+                            AssignedAt = new DateTime(2025, 1, 11, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 32
+                        },
+                        new
+                        {
+                            Id = 10033,
+                            AssignedAt = new DateTime(2025, 1, 28, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 33
+                        },
+                        new
+                        {
+                            Id = 10034,
+                            AssignedAt = new DateTime(2025, 2, 14, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 34
+                        },
+                        new
+                        {
+                            Id = 10035,
+                            AssignedAt = new DateTime(2025, 3, 3, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 35
+                        },
+                        new
+                        {
+                            Id = 10036,
+                            AssignedAt = new DateTime(2025, 3, 20, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 36
+                        },
+                        new
+                        {
+                            Id = 10037,
+                            AssignedAt = new DateTime(2025, 4, 6, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 37
+                        },
+                        new
+                        {
+                            Id = 10038,
+                            AssignedAt = new DateTime(2025, 4, 23, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 38
+                        },
+                        new
+                        {
+                            Id = 10039,
+                            AssignedAt = new DateTime(2025, 5, 10, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 39
+                        },
+                        new
+                        {
+                            Id = 10040,
+                            AssignedAt = new DateTime(2025, 5, 27, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 40
+                        },
+                        new
+                        {
+                            Id = 10041,
+                            AssignedAt = new DateTime(2025, 6, 13, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 41
+                        },
+                        new
+                        {
+                            Id = 10042,
+                            AssignedAt = new DateTime(2025, 6, 30, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 42
+                        },
+                        new
+                        {
+                            Id = 10043,
+                            AssignedAt = new DateTime(2025, 7, 17, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 43
+                        },
+                        new
+                        {
+                            Id = 10044,
+                            AssignedAt = new DateTime(2025, 8, 3, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 44
+                        },
+                        new
+                        {
+                            Id = 10045,
+                            AssignedAt = new DateTime(2025, 8, 20, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 45
+                        },
+                        new
+                        {
+                            Id = 10046,
+                            AssignedAt = new DateTime(2025, 9, 6, 13, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 46
+                        },
+                        new
+                        {
+                            Id = 10047,
+                            AssignedAt = new DateTime(2025, 9, 23, 14, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 47
+                        },
+                        new
+                        {
+                            Id = 10048,
+                            AssignedAt = new DateTime(2025, 10, 10, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 48
+                        },
+                        new
+                        {
+                            Id = 10049,
+                            AssignedAt = new DateTime(2025, 10, 27, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 49
+                        },
+                        new
+                        {
+                            Id = 10050,
+                            AssignedAt = new DateTime(2025, 11, 13, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleId = 2,
+                            UserId = 50
                         });
                 });
 
@@ -3347,32 +10957,32 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Clash", "Clash")
                         .WithMany()
                         .HasForeignKey("ClashId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Flix.Services.Database.MovieList", "MovieList")
                         .WithMany()
                         .HasForeignKey("MovieListId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Flix.Services.Database.Review", "Review")
                         .WithMany()
                         .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Flix.Services.Database.User", "TargetUser")
                         .WithMany()
                         .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Clash");
@@ -3404,19 +11014,19 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Clash", "Clash")
                         .WithMany("Entries")
                         .HasForeignKey("ClashId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.MovieList", "MovieList")
                         .WithMany()
                         .HasForeignKey("MovieListId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("ClashEntries")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Clash");
@@ -3431,13 +11041,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.ClashEntry", "ClashEntry")
                         .WithMany("Votes")
                         .HasForeignKey("ClashEntryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "Voter")
                         .WithMany()
                         .HasForeignKey("VoterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("ClashEntry");
@@ -3467,13 +11077,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.CastMember", "CastMember")
                         .WithMany("Credits")
                         .HasForeignKey("CastMemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany("Credits")
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CastMember");
@@ -3486,13 +11096,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Genre", "Genre")
                         .WithMany()
                         .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Genre");
@@ -3505,19 +11115,18 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "ReportedBy")
                         .WithMany()
                         .HasForeignKey("ReportedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "ReviewedBy")
                         .WithMany()
-                        .HasForeignKey("ReviewedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReviewedByUserId");
 
                     b.Navigation("Movie");
 
@@ -3531,7 +11140,7 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("Lists")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -3542,13 +11151,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.MovieList", "MovieList")
                         .WithMany("Items")
                         .HasForeignKey("MovieListId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Movie");
@@ -3556,23 +11165,41 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("MovieList");
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
+                {
+                    b.HasOne("Flix.Services.Database.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Flix.Services.Database.Movie", "RecommendedMovie")
+                        .WithMany()
+                        .HasForeignKey("RecommendedMovieId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("RecommendedMovie");
+                });
+
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>
                 {
                     b.HasOne("Flix.Services.Database.Movie", "CreatedMovie")
                         .WithMany()
                         .HasForeignKey("CreatedMovieId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Flix.Services.Database.User", "RequestedBy")
                         .WithMany()
                         .HasForeignKey("RequestedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "ReviewedBy")
                         .WithMany()
-                        .HasForeignKey("ReviewedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReviewedByUserId");
 
                     b.Navigation("CreatedMovie");
 
@@ -3586,13 +11213,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany("Studios")
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.Studio", "Studio")
                         .WithMany("Movies")
                         .HasForeignKey("StudioId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Movie");
@@ -3605,7 +11232,7 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -3616,13 +11243,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.Movie", "Movie")
                         .WithMany("Reviews")
                         .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Movie");
@@ -3645,13 +11272,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "Blocked")
                         .WithMany()
                         .HasForeignKey("BlockedId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "Blocker")
                         .WithMany()
                         .HasForeignKey("BlockerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Blocked");
@@ -3664,13 +11291,13 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "Follower")
                         .WithMany("Following")
                         .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "Followee")
                         .WithMany("Followers")
                         .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Followee");
@@ -3683,19 +11310,18 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "ReportedUser")
                         .WithMany()
                         .HasForeignKey("ReportedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "Reporter")
                         .WithMany()
                         .HasForeignKey("ReporterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Flix.Services.Database.User", "ReviewedBy")
                         .WithMany()
-                        .HasForeignKey("ReviewedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReviewedByUserId");
 
                     b.Navigation("ReportedUser");
 
@@ -3715,7 +11341,7 @@ namespace Flix.Services.Database.Migrations
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");

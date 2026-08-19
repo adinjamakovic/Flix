@@ -19,15 +19,8 @@ abstract class BaseProvider<T> with ChangeNotifier {
         defaultValue: defaultBaseUrl);
   }
 
-  Future<SearchResult<T>> get({dynamic filter}) async {
-    var url = "$_baseUrl$_endpoint";
-    if(filter != null)
-    {
-      var queryString = getQueryString(filter);
-      url = "$url?$queryString";
-    }
-
-    var uri = Uri.parse(url);
+  Future<SearchResult<T>> get({dynamic filter, String? action}) async {
+    var uri = Uri.parse(_buildUrl(action, filter));
     var headers = createHeaders();
 
     var response = await http.get(uri, headers: headers);
@@ -46,14 +39,52 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  Future<dynamic> getObject({dynamic filter, String? action}) async {
+    var uri = Uri.parse(_buildUrl(action, filter));
+
+    var response = await http.get(uri, headers: createHeaders());
+
+    if (isValidResponse(response)) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
+  String _buildUrl(String? action, dynamic filter) {
+    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
+
+    if (filter != null) {
+      url = "$url?${getQueryString(filter)}";
+    }
+
+    return url;
+  }
+
+  Future<T> getById(int id) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    var response = await http.get(uri, headers: createHeaders());
+
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
   // because the insert/update requests carry an `IFormFile`, so writes are
   // sent as form fields rather than as a JSON body.
+  //
+  // A write can also hang off a named action rather than the controller root -
+  // `POST /MovieRequest/UserRequest` does - which is what `action` is for.
   Future<T> insert(
     Map<String, dynamic> fields, {
     Map<String, PickedImage> files = const {},
+    String? action,
   }) async {
-    var uri = Uri.parse("$_baseUrl$_endpoint");
+    var uri = Uri.parse("$_baseUrl$_endpoint${action == null ? "" : "/$action"}");
 
     return _send(http.MultipartRequest("POST", uri), fields, files);
   }

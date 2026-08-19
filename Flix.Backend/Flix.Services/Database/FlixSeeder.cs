@@ -36,6 +36,9 @@ namespace Flix.Services.Database
             SeedMovieRequests(modelBuilder);
             SeedMovieIssueReports(modelBuilder);
             SeedUserReports(modelBuilder);
+            SeedRecommenderUsers(modelBuilder);
+            SeedRecommenderReviews(modelBuilder);
+            SeedRecommenderWatchlists(modelBuilder);
         }
 
         private static void SeedCountries(ModelBuilder modelBuilder)
@@ -416,6 +419,8 @@ namespace Flix.Services.Database
                     Id = 1,
                     Title = "The Godfather",
                     Description = "The ageing patriarch of an organised crime dynasty transfers control of his clandestine empire to his reluctant youngest son.",
+                    Poster = "Movie/the_godfather_poster.png",
+                    HeaderImage = "Movie/the_godfather_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=sY1S34973zA",
                     ReleaseDate = new DateTime(1972, 3, 24),
                     DurationMinutes = 175,
@@ -429,6 +434,8 @@ namespace Flix.Services.Database
                     Id = 2,
                     Title = "Pulp Fiction",
                     Description = "The lives of two mob hitmen, a boxer, a gangster's wife and a pair of diner bandits intertwine in four tales of violence and redemption.",
+                    Poster = "Movie/pulp_fiction_poster.png",
+                    HeaderImage = "Movie/pulp_fiction_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
                     ReleaseDate = new DateTime(1994, 10, 14),
                     DurationMinutes = 154,
@@ -442,6 +449,8 @@ namespace Flix.Services.Database
                     Id = 3,
                     Title = "Spirited Away",
                     Description = "During her family's move to the suburbs, a sullen ten-year-old girl wanders into a world ruled by gods, witches and spirits where humans are changed into beasts.",
+                    Poster = "Movie/spirited_away_poster.png",
+                    HeaderImage = "Movie/spirited_away_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=ByXuk9QqQkk",
                     ReleaseDate = new DateTime(2001, 7, 20),
                     DurationMinutes = 125,
@@ -455,6 +464,8 @@ namespace Flix.Services.Database
                     Id = 4,
                     Title = "Parasite",
                     Description = "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
+                    Poster = "Movie/parasite_poster.png",
+                    HeaderImage = "Movie/parasite_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=5xH0HfJHsaY",
                     ReleaseDate = new DateTime(2019, 5, 30),
                     DurationMinutes = 132,
@@ -468,6 +479,8 @@ namespace Flix.Services.Database
                     Id = 5,
                     Title = "Inception",
                     Description = "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a chief executive.",
+                    Poster = "Movie/inception_poster.png",
+                    HeaderImage = "Movie/inception_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=YoHD9XEInc0",
                     ReleaseDate = new DateTime(2010, 7, 16),
                     DurationMinutes = 148,
@@ -481,6 +494,8 @@ namespace Flix.Services.Database
                     Id = 6,
                     Title = "The Dark Knight",
                     Description = "Batman raises the stakes in his war on crime until a rising criminal mastermind known as the Joker forces Gotham into anarchy.",
+                    Poster = "Movie/the_dark_knight_poster.png",
+                    HeaderImage = "Movie/the_dark_knight_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY",
                     ReleaseDate = new DateTime(2008, 7, 18),
                     DurationMinutes = 152,
@@ -494,6 +509,8 @@ namespace Flix.Services.Database
                     Id = 7,
                     Title = "Amelie",
                     Description = "A shy waitress in Montmartre decides to change the lives of those around her for the better while struggling with her own isolation.",
+                    Poster = "Movie/amelie_poster.png",
+                    HeaderImage = "Movie/amelie_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=HUECWi5pX7o",
                     ReleaseDate = new DateTime(2001, 4, 25),
                     DurationMinutes = 122,
@@ -507,6 +524,8 @@ namespace Flix.Services.Database
                     Id = 8,
                     Title = "Cinema Paradiso",
                     Description = "A filmmaker recalls his childhood in a Sicilian village and the friendship with the projectionist who taught him to love the movies.",
+                    Poster = "Movie/cinema_paradiso_poster.png",
+                    HeaderImage = "Movie/cinema_paradiso_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=Ah0kPnzzrs4",
                     ReleaseDate = new DateTime(1988, 11, 17),
                     DurationMinutes = 155,
@@ -520,6 +539,8 @@ namespace Flix.Services.Database
                     Id = 9,
                     Title = "Everything Everywhere All at Once",
                     Description = "An overwhelmed laundromat owner facing an audit discovers she must connect with parallel versions of herself to stop a threat spanning the multiverse.",
+                    Poster = "Movie/everything_everywhere_all_at_once_poster.png",
+                    HeaderImage = "Movie/everything_everywhere_all_at_once_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=wxN1T1uxQ2g",
                     ReleaseDate = new DateTime(2022, 3, 25),
                     DurationMinutes = 139,
@@ -533,6 +554,8 @@ namespace Flix.Services.Database
                     Id = 10,
                     Title = "Mad Max: Fury Road",
                     Description = "In a post-apocalyptic wasteland, a drifter and a rebel warrior flee from a tyrant and his war parties in a relentless convoy chase.",
+                    Poster = "Movie/mad_max_fury_road_poster.png",
+                    HeaderImage = "Movie/mad_max_fury_road_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=hEJnMQG9ev8",
                     ReleaseDate = new DateTime(2015, 5, 15),
                     DurationMinutes = 120,
@@ -546,6 +569,8 @@ namespace Flix.Services.Database
                     Id = 11,
                     Title = "Das Boot",
                     Description = "The claustrophobic patrol of a German U-boat crew in the Atlantic during the Second World War, told from inside the submarine.",
+                    Poster = "Movie/das_boot_poster.png",
+                    HeaderImage = "Movie/das_boot_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=zTaS7OFHM6M",
                     ReleaseDate = new DateTime(1981, 9, 17),
                     DurationMinutes = 149,
@@ -559,6 +584,8 @@ namespace Flix.Services.Database
                     Id = 12,
                     Title = "Seven Samurai",
                     Description = "A poor village under attack by bandits recruits seven masterless samurai to help them defend themselves.",
+                    Poster = "Movie/seven_samurai_poster.png",
+                    HeaderImage = "Movie/seven_samurai_header.png",
                     TrailerUrl = "https://www.youtube.com/watch?v=wErvXaYtDGE",
                     ReleaseDate = new DateTime(1954, 4, 26),
                     DurationMinutes = 207,
@@ -1415,5 +1442,461 @@ namespace Flix.Services.Database
                     AdminComment = "Reviewed the exchange. Disagreement about a list is not a guideline violation and the comment was civil."
                 });
         }
+
+        // -------------------------------------------------------------------
+        // Recommender training data
+        //
+        // The hand-written seed above gives 10 users and 14 reviews. A 10 x 12
+        // rating matrix is far too sparse to factorise, and users who have rated
+        // nearly every film leave nothing to recommend. Users 11-50 and the
+        // rating table below widen it to 50 users x 12 films at roughly 73%
+        // density, so every user keeps two to four unrated films as candidates.
+        //
+        // Users belong to one of five taste groups (classic crime and drama,
+        // world cinema, blockbuster, genre and science fiction, eclectic) and
+        // their ratings follow that group with per-user variation. The latent
+        // factors a collaborative filter recovers therefore correspond to
+        // something real rather than to noise, and the group a user belongs to
+        // is the ground truth to check recommendations against.
+        // -------------------------------------------------------------------
+
+        private const int SeededMovieCount = 12;
+        private const int RecommenderFirstUserId = 11;
+        private const int RecommenderFirstUserRoleId = 10011;
+        private const int RecommenderFirstReviewId = 15;
+        private const int RecommenderFirstMovieListId = 9;
+        private const int RecommenderFirstMovieListItemId = 23;
+
+        // Password for every generated account is Test123!, hashed with the same
+        // PBKDF2-SHA256 parameters as CryptoService, so they can all log in.
+        private static readonly (string First, string Last, string Username, string Email, int CountryId, string Bio, string Salt, string Hash)[] RecommenderUsers =
+        {
+            // Taste group: classic crime and drama (users 11-18)
+            ("Elena", "Marsh", "elenamarsh", "elena.marsh@gmail.com", 1,
+                "Chicago. New Hollywood, gangster pictures, and films that earn their runtime.",
+                "c2FsdF91c2VyXzExMjM0NQ==", "56oDzXvjVIEbnsUg5l8kqIvrWBc3cWAcJ+J+Hdpdn/Q="),
+            ("Hugo", "Bennett", "hugobennett", "hugo.bennett@outlook.com", 2,
+                "Leeds. A crime epic and three uninterrupted hours is my idea of a weekend.",
+                "c2FsdF91c2VyXzEyMzQ1Ng==", "ocPXo6pq/ZoYtsY6OVKCrZ7yUsNhRjDVNy3/E+pBGNY="),
+            ("Marta", "Keller", "martakeller", "marta.keller@web.de", 6,
+                "Berlin. Post-war drama and anything with a moral cost attached to it.",
+                "c2FsdF91c2VyXzEzNDU2Nw==", "91AYscaVnZ1z7FJ6yarUFJsYkazuTo9fN1Rb3ut+cOQ="),
+            ("Owen", "Doherty", "owendoherty", "owen.doherty@gmail.com", 8,
+                "Halifax. Family sagas and betrayals. Blame my father's video shelf.",
+                "c2FsdF91c2VyXzE0NTY3OA==", "W/HrGO7/nS8bnyP1wXFkW7I8D/T9EpRvC68Ta19wEe4="),
+            ("Giulia", "Ferrari", "giuliaferrari", "giulia.ferrari@libero.it", 7,
+                "Naples. Crime cinema, Italian or otherwise, and very strong coffee.",
+                "c2FsdF91c2VyXzE1Njc4OQ==", "qnoBn7ot0ejE1hO8JFc/Xl1pzmwy2lsyVnKMjR4yWCw="),
+            ("Thabo", "Nkosi", "thabonkosi", "thabo.nkosi@gmail.com", 13,
+                "Johannesburg. Character studies over spectacle, every single time.",
+                "c2FsdF91c2VyXzE2Nzg5MA==", "k2hznAQqIbPdkBqY/LVHJs8z/JMK8FeF0DP3/auKZGE="),
+            ("Ryan", "Chalmers", "ryanchalmers", "ryan.chalmers@outlook.com", 9,
+                "Adelaide. A shelf of gangster films and a long list of grudges against remakes.",
+                "c2FsdF91c2VyXzE3ODkwMQ==", "YVuXL5IhnFcRR/KJJ8YzrUJPq3ufx0VKijizYzxq3Ic="),
+            ("Amira", "Hadzic", "amirahadzic", "amira.hadzic@gmail.com", 10,
+                "Sarajevo. Drama first. I watch for the faces, not the plot.",
+                "c2FsdF91c2VyXzE4OTAxMg==", "ZALAJOvBe+OuXoP5ERCdvX4238NWuRXCRWGFMqGHLOQ="),
+
+            // Taste group: world cinema and arthouse (users 19-26)
+            ("Yuki", "Nakamura", "yukinakamura", "yuki.nakamura@yahoo.co.jp", 3,
+                "Kyoto. Repertory houses, quiet films, and subtitles I do not need.",
+                "c2FsdF91c2VyXzE5MDEyMw==", "2IgOHRMLc2yUW/xRF29mybp+iJIH641X3wWnkBTeycQ="),
+            ("Camille", "Moreau", "camillemoreau", "camille.moreau@orange.fr", 4,
+                "Bordeaux. Slow films, long takes, and the cinema on rue Sainte-Catherine.",
+                "c2FsdF91c2VyXzIwMTIzNA==", "3ANMUHiAS09QPVv8fF/aboWquLfAPQpYUc+yakbtafE="),
+            ("Luca", "Bianchi", "lucabianchi", "luca.bianchi@libero.it", 7,
+                "Turin. I run a small film club. Neorealism and Ghibli, oddly enough.",
+                "c2FsdF91c2VyXzIxMjM0NQ==", "NtRw1NCOSC5XvUcXxSucTY3N4cwddiOSVATaYRVa8jk="),
+            ("Ji-woo", "Park", "jiwoopark", "jiwoo.park@naver.com", 5,
+                "Busan. Festival circuit regular. I like films that do not explain themselves.",
+                "c2FsdF91c2VyXzIyMzQ1Ng==", "u9xtVP3RJvZ0soY3lvIVAk816EGBDaAsoUjJk7Z1MWU="),
+            ("Hana", "Suzuki", "hanasuzuki", "hana.suzuki@yahoo.co.jp", 3,
+                "Sapporo. Animation is cinema. I will die on this hill.",
+                "c2FsdF91c2VyXzIzNDU2Nw==", "YowUydGjPKv/C8932mUfEzHOf6bnmu0b75IaV9oFvPs="),
+            ("Felix", "Werner", "felixwerner", "felix.werner@web.de", 6,
+                "Cologne. European art cinema and the occasional submarine picture.",
+                "c2FsdF91c2VyXzI0NTY3OA==", "Qty2Ojh4UtEFbULeZqp0MKf14kTbvGaD3E5eeJ79FDM="),
+            ("Aisha", "Rahman", "aisharahman", "aisha.rahman@gmail.com", 11,
+                "Kuala Lumpur. World cinema mostly. Subtitles are not a barrier, they are the point.",
+                "c2FsdF91c2VyXzI1Njc4OQ==", "LTjnRp2Uh82JHXIigl8Amd8ApFykFJVFa2i03D9k8kI="),
+            ("Sara", "Delic", "saradelic", "sara.delic@gmail.com", 10,
+                "Mostar. Balkan and European drama, with a soft spot for anything about childhood.",
+                "c2FsdF91c2VyXzI2Nzg5MA==", "cJ05dUbp6xesMlf3aKe2zbHcDwwT0lTOUhFJJUO6kjI="),
+
+            // Taste group: blockbuster and action (users 27-34)
+            ("Tyler", "Brooks", "tylerbrooks", "tyler.brooks@gmail.com", 1,
+                "Phoenix. IMAX or nothing. I have opinions about frame rates.",
+                "c2FsdF91c2VyXzI3ODkwMQ==", "5DJrMoR2bsD2GL4Mea7zAz6b4HWGTUZTngk9Cip5uQ8="),
+            ("Jordan", "Reeves", "jordanreeves", "jordan.reeves@outlook.com", 1,
+                "Denver. Action, spectacle, and the occasional heist.",
+                "c2FsdF91c2VyXzI4OTAxMg==", "mRNbZLDYMwPzYV+TCDHg805XEsRqSV4klRJwz8Jon+0="),
+            ("Mia", "Sullivan", "miasullivan", "mia.sullivan@gmail.com", 9,
+                "Brisbane. Stunt work, chase sequences, and films that move.",
+                "c2FsdF91c2VyXzI5MDEyMw==", "r2O1LpZKZTWsTzz/cArQyjsHY953G8FEezu9cBIradg="),
+            ("Lucas", "Fernandes", "lucasfernandes", "lucas.fernandes@gmail.com", 8,
+                "Vancouver. I work in VFX and still prefer things done for real.",
+                "c2FsdF91c2VyXzMwMTIzNA==", "193uWQqRMeeMclwExE++10lJ83/zHw2CYHffthZF9SU="),
+            ("Grace", "Okafor", "graceokafor", "grace.okafor@outlook.com", 2,
+                "Birmingham. Big screen, big sound, no phone.",
+                "c2FsdF91c2VyXzMxMjM0NQ==", "ShkWtbbfdKGxklNTO+hX+G4sm7k+vevqdXVl5VXVWyk="),
+            ("Dylan", "Hayes", "dylanhayes", "dylan.hayes@gmail.com", 1,
+                "Seattle. Science fiction and action. I rewatch trailers more than I should.",
+                "c2FsdF91c2VyXzMyMzQ1Ng==", "uDZeje7lbfSGhpX4LvIy2kpf8+SncifqF4bzSmxlIDI="),
+            ("Kai", "Lehmann", "kailehmann", "kai.lehmann@web.de", 6,
+                "Munich. Loud films, cold rooms, good projection.",
+                "c2FsdF91c2VyXzMzNDU2Nw==", "ykBP7/QPAP6eNq1+kLwmcDaaJnMtrhjQQch8wiWVA7E="),
+            ("Priya", "Sharma", "priyasharma", "priya.sharma@gmail.com", 2,
+                "London. Blockbusters on Friday, recovery on Saturday.",
+                "c2FsdF91c2VyXzM0NTY3OA==", "qkgSIAUaaTJL3SHDhzXtp42LPbmISQUQoWa4S4oMUss="),
+
+            // Taste group: genre, science fiction and animation (users 35-42)
+            ("Minh", "Nguyen", "minhnguyen", "minh.nguyen@gmail.com", 12,
+                "Hanoi. Animation, science fiction, and anything with a strange premise.",
+                "c2FsdF91c2VyXzM1Njc4OQ==", "Q6vDqD3M3YG6X6v8iJziFzARq+QV9ccfNlYGErDhPFY="),
+            ("Lerato", "Molefe", "leratomolefe", "lerato.molefe@gmail.com", 13,
+                "Cape Town. Genre cinema and multiverse nonsense, unapologetically.",
+                "c2FsdF91c2VyXzM2Nzg5MA==", "MXB2n1w+d/XiCJqH+6zbCYo1/GHbplQ3bsO9lrzVTBk="),
+            ("Erik", "Vogel", "erikvogel", "erik.vogel@web.de", 6,
+                "Dresden. Science fiction mostly. I take notes during films.",
+                "c2FsdF91c2VyXzM3ODkwMQ==", "u01Wm8Ejya+sKSQpktg/aLLA4QqI1vSboW0305Jym/U="),
+            ("Chen", "Wei", "chenwei", "chen.wei@gmail.com", 11,
+                "Penang. Fantasy, animation, and films that are too much on purpose.",
+                "c2FsdF91c2VyXzM4OTAxMg==", "U1fJ96IQghydv9+8zJiuKazv1ZlG+s/bXvVDG20dYpk="),
+            ("Isabelle", "Laurent", "isabellelaurent", "isabelle.laurent@orange.fr", 4,
+                "Nantes. Fantasy and animation. I discovered Ghibli far too late.",
+                "c2FsdF91c2VyXzM5MDEyMw==", "/SB2nF1QFOAX53iPBQ7e8Ub9zLvr6QF5H5VtkUyXMbc="),
+            ("Ravi", "Menon", "ravimenon", "ravi.menon@gmail.com", 11,
+                "Ipoh. Science fiction, action, and long arguments about time travel.",
+                "c2FsdF91c2VyXzQwMTIzNA==", "JmpqvKb5l6CNX8+XgYpWdDk0j5+NDzBbONq3yov4yHQ="),
+            ("Sana", "Yamada", "sanayamada", "sana.yamada@yahoo.co.jp", 3,
+                "Nagoya. Anime and genre film. I stay for the credits.",
+                "c2FsdF91c2VyXzQxMjM0NQ==", "mtnWgjYyG3JimK8r7TXk8s0vi+4Vq60zAVF1ndca/m4="),
+            ("Duc", "Tran", "ductran", "duc.tran@gmail.com", 12,
+                "Ho Chi Minh City. Speculative fiction on screen, in any language.",
+                "c2FsdF91c2VyXzQyMzQ1Ng==", "+nEy4YH4smw8N7RC1Is4qdC+aqwHMVlWRMI/bskJb7s="),
+
+            // Taste group: eclectic (users 43-50)
+            ("Nora", "Whitfield", "norawhitfield", "nora.whitfield@outlook.com", 2,
+                "Bristol. A bit of everything. I rate generously and regret nothing.",
+                "c2FsdF91c2VyXzQzNDU2Nw==", "PjpZBTk8oPBnVNAHGPE1VIGuNxTl/n1R2u6p1gWfMQA="),
+            ("Andre", "Dubois", "andredubois", "andre.dubois@orange.fr", 4,
+                "Marseille. No fixed taste. Whatever happens to be on.",
+                "c2FsdF91c2VyXzQ0NTY3OA==", "iQ4qyA4saZ6PgoUaGsisTZyxVn6wI7kP6YcNVieam3c="),
+            ("Katarina", "Novak", "katarinanovak", "katarina.novak@gmail.com", 10,
+                "Banja Luka. I watch broadly and rewatch rarely.",
+                "c2FsdF91c2VyXzQ1Njc4OQ==", "vrDqlyYdlrFg/vL9mb6kotLIt9wzGYpmkC5bgHnVe2c="),
+            ("Sam", "Whitaker", "samwhitaker", "sam.whitaker@gmail.com", 8,
+                "Ottawa. I keep a spreadsheet. That is my entire personality.",
+                "c2FsdF91c2VyXzQ2Nzg5MA==", "RZJj78FWiY4qPFhYBztXpVdG4jr47JBDJPI8S7PS/UY="),
+            ("Leila", "Benali", "leilabenali", "leila.benali@orange.fr", 4,
+                "Toulouse. Curious about everything, loyal to nothing.",
+                "c2FsdF91c2VyXzQ3ODkwMQ==", "QSwNOtBbvHG5l5KW/RQCH7tNMOestB6yeH6+HektdJ8="),
+            ("Marco", "Greco", "marcogreco", "marco.greco@libero.it", 7,
+                "Palermo. I go to the cinema alone twice a week, whatever is showing.",
+                "c2FsdF91c2VyXzQ4OTAxMg==", "RbVqW/37r9ITQTsEHuOPi5V8GwLsIqm1FJIEc1Xz+mc="),
+            ("Jasmin", "Begic", "jasminbegic", "jasmin.begic@gmail.com", 10,
+                "Tuzla. Working my way through every list I can find.",
+                "c2FsdF91c2VyXzQ5MDEyMw==", "bez+t4LrFzwam+UJxRrbMrp12gzoJNLtftzb2kDr+pw="),
+            ("Hannah", "Stein", "hannahstein", "hannah.stein@web.de", 6,
+                "Leipzig. A little of everything, and a very long backlog.",
+                "c2FsdF91c2VyXzUwMTIzNA==", "E7ofOqGC0fEx14O17dutJnNWYukp9Xb28vo4nVGctFU="),
+        };
+
+        private static readonly (int UserId, decimal?[] Ratings)[] RecommenderRatings =
+        {
+            // Existing users, slotted into a taste group by the reviews they already have.
+            (1,  new decimal?[] { 4.0m, 3.5m, 5.0m, 4.5m, 3.0m, null, 4.5m, 4.5m, null, null, 4.5m, 5.0m }), // world cinema
+            (2,  new decimal?[] { null, 4.5m, 3.0m, null, 3.5m, 4.5m, 3.5m, null, 2.5m, 3.0m, null, null }), // classic
+            (3,  new decimal?[] { 4.0m, null, 4.0m, 4.0m, 3.5m, 3.5m, null, 3.5m, null, 3.5m, null, 4.0m }), // eclectic
+            (4,  new decimal?[] { 4.0m, 3.5m, 5.0m, 4.5m, 2.5m, null, 4.5m, null, 3.0m, null, 4.5m, 4.5m }), // world cinema
+            (5,  new decimal?[] { 4.0m, 3.5m, null, 4.5m, 3.0m, 2.5m, null, null, null, 2.5m, 4.5m, null }), // world cinema
+            (6,  new decimal?[] { 3.5m, 4.0m, 3.0m, null, null, null, 2.0m, 2.0m, 4.5m, 5.0m, 3.0m, null }), // blockbuster
+            (7,  new decimal?[] { 4.0m, 3.5m, 5.0m, 4.5m, 3.0m, null, null, 5.0m, null, null, 4.0m, 4.0m }), // world cinema
+            (8,  new decimal?[] { 3.0m, 4.0m, 4.5m, null, 4.5m, null, 3.0m, null, 5.0m, 4.5m, null, 3.5m }), // genre
+            (9,  new decimal?[] { 3.5m, 4.0m, 3.0m, 3.5m, 4.5m, 5.0m, 2.0m, null, 4.5m, null, null, null }), // blockbuster
+            (10, new decimal?[] { 4.0m, 3.0m, 4.5m, 4.5m, null, null, 4.0m, 5.0m, null, null, null, 4.5m }), // world cinema
+
+            // Classic crime and drama.
+            (11, new decimal?[] { 5.0m, 4.5m, null, 4.0m, 3.5m, 4.5m, null, 4.5m, null, 3.0m, null, 5.0m }),
+            (12, new decimal?[] { 4.5m, 5.0m, 3.0m, null, null, 4.5m, 3.0m, 4.5m, 2.5m, null, 4.5m, null }),
+            (13, new decimal?[] { 5.0m, 4.0m, 2.5m, 4.5m, null, 5.0m, null, null, 2.5m, 3.0m, 4.5m, null }),
+            (14, new decimal?[] { 5.0m, null, 3.0m, 4.0m, 4.0m, 4.0m, null, 4.5m, null, 2.5m, 4.5m, 5.0m }),
+            (15, new decimal?[] { 4.5m, 4.5m, null, null, 3.5m, null, 3.5m, 5.0m, 2.0m, 3.0m, 4.5m, 4.5m }),
+            (16, new decimal?[] { null, 5.0m, null, 3.5m, 3.0m, 4.5m, 3.0m, 4.0m, 2.5m, null, 4.0m, 5.0m }),
+            (17, new decimal?[] { 4.5m, 4.0m, 3.0m, 4.5m, 3.5m, null, null, 4.5m, null, null, 5.0m, 5.0m }),
+            (18, new decimal?[] { 5.0m, 4.5m, null, 4.0m, null, 4.5m, 3.0m, null, 2.0m, 3.0m, null, 5.0m }),
+
+            // World cinema and arthouse.
+            (19, new decimal?[] { 4.0m, 3.5m, 5.0m, 5.0m, null, 2.5m, 4.5m, 5.0m, null, null, 4.5m, null }),
+            (20, new decimal?[] { 4.5m, null, 5.0m, 4.5m, 2.5m, 2.0m, 4.5m, 5.0m, null, 2.0m, null, null }),
+            (21, new decimal?[] { 4.0m, 4.0m, 4.5m, 5.0m, null, null, 5.0m, null, 3.5m, 2.0m, 4.0m, 4.5m }),
+            (22, new decimal?[] { null, 3.5m, 5.0m, 5.0m, 2.0m, 3.0m, 4.5m, 5.0m, null, null, 4.5m, 4.5m }),
+            (23, new decimal?[] { 4.0m, 3.0m, 5.0m, null, 2.5m, null, 4.5m, 5.0m, 4.0m, null, 4.5m, 4.5m }),
+            (24, new decimal?[] { 4.5m, 3.5m, null, 5.0m, null, 2.5m, null, 4.5m, 3.0m, 2.5m, 5.0m, 4.5m }),
+            (25, new decimal?[] { 4.0m, null, null, 5.0m, 2.5m, 2.5m, 5.0m, 5.0m, null, 2.0m, 4.0m, null }),
+            (26, new decimal?[] { 3.5m, 4.0m, 5.0m, 4.5m, 3.0m, null, 4.5m, null, null, null, 4.5m, 5.0m }),
+
+            // Blockbuster and action.
+            (27, new decimal?[] { 3.5m, 4.0m, null, 3.5m, 5.0m, 5.0m, 2.0m, null, 4.5m, 5.0m, null, null }),
+            (28, new decimal?[] { 4.0m, 4.5m, 3.0m, null, 5.0m, 5.0m, null, 2.0m, 4.0m, 4.5m, null, 3.5m }),
+            (29, new decimal?[] { 3.0m, 4.0m, 2.5m, null, 4.5m, 5.0m, 2.0m, 2.5m, 5.0m, 5.0m, null, null }),
+            (30, new decimal?[] { 3.5m, null, null, 4.0m, 5.0m, 4.5m, 1.5m, null, 4.5m, 5.0m, 3.0m, 2.5m }),
+            (31, new decimal?[] { 4.0m, 4.0m, 3.5m, 3.5m, 5.0m, 5.0m, null, 2.0m, null, 4.5m, null, 3.0m }),
+            (32, new decimal?[] { 3.5m, 4.5m, null, null, 4.5m, 5.0m, null, 2.0m, 4.5m, 5.0m, 2.5m, 3.0m }),
+            (33, new decimal?[] { null, 4.0m, 3.5m, 3.0m, 5.0m, 4.5m, 2.0m, null, 5.0m, 5.0m, null, null }),
+            (34, new decimal?[] { 4.0m, null, 3.0m, 3.0m, 5.0m, 5.0m, 2.0m, null, 4.5m, null, 3.0m, 3.5m }),
+
+            // Genre, science fiction and animation.
+            (35, new decimal?[] { 3.0m, 4.0m, 5.0m, 4.5m, 4.5m, 4.0m, null, 2.5m, 5.0m, null, null, null }),
+            (36, new decimal?[] { 3.5m, 4.5m, 5.0m, 4.5m, 5.0m, 4.0m, 3.0m, null, null, 4.0m, null, 3.5m }),
+            (37, new decimal?[] { null, 4.0m, 4.5m, 5.0m, 4.5m, null, 3.5m, 2.5m, 5.0m, 4.5m, 2.0m, null }),
+            (38, new decimal?[] { 2.5m, 4.0m, 5.0m, null, 4.0m, 4.5m, null, 2.0m, 4.5m, 5.0m, 3.0m, null }),
+            (39, new decimal?[] { 3.0m, null, 5.0m, 4.5m, 4.5m, 4.0m, 4.0m, null, 5.0m, 4.0m, null, null }),
+            (40, new decimal?[] { 3.5m, 4.5m, 4.5m, 4.0m, 5.0m, null, 3.5m, 3.0m, null, 4.5m, 2.5m, null }),
+            (41, new decimal?[] { null, 4.0m, 5.0m, 4.5m, 4.5m, 4.5m, 3.0m, null, 5.0m, 4.5m, null, 3.5m }),
+            (42, new decimal?[] { 2.5m, 3.5m, 5.0m, null, 4.5m, 4.0m, null, 3.0m, 5.0m, 4.5m, 2.5m, null }),
+
+            // Eclectic.
+            (43, new decimal?[] { 4.0m, 4.0m, 4.0m, 4.0m, 3.5m, 3.5m, null, 3.5m, null, 3.5m, null, null }),
+            (44, new decimal?[] { 4.5m, 4.0m, 3.5m, 4.0m, 4.0m, 3.5m, 3.5m, null, 3.5m, null, null, 4.0m }),
+            (45, new decimal?[] { 4.0m, 4.5m, 4.0m, 3.5m, null, 4.0m, 3.0m, 3.5m, 4.0m, null, 3.5m, null }),
+            (46, new decimal?[] { 3.5m, null, 4.0m, 4.5m, 3.5m, 3.5m, 4.0m, 3.5m, null, 3.5m, 3.5m, null }),
+            (47, new decimal?[] { 4.0m, 3.5m, 4.5m, null, 3.5m, 4.0m, null, 3.5m, null, 3.5m, 4.0m, 4.0m }),
+            (48, new decimal?[] { 4.0m, 4.0m, null, 4.0m, 4.0m, 3.5m, 3.0m, 3.5m, 3.5m, null, null, 3.5m }),
+            (49, new decimal?[] { 4.5m, 4.0m, 3.5m, 4.0m, 3.0m, null, 3.5m, 4.0m, null, 3.5m, null, null }),
+            (50, new decimal?[] { 4.0m, 4.0m, 4.0m, 4.5m, 3.5m, null, null, 3.0m, 4.0m, 3.5m, 3.5m, null }),
+        };
+
+        // Cells the rating table leaves null because SeedReviews already covers
+        // them. The user has still seen those films, so they must not be treated
+        // as unwatched when the watchlists are built.
+        private static readonly HashSet<(int UserId, int MovieId)> HandWrittenReviews = new()
+        {
+            (2, 1), (2, 4), (3, 2), (3, 9), (4, 8), (5, 3), (5, 12),
+            (6, 5), (6, 6), (7, 7), (8, 4), (8, 6), (9, 10), (10, 11)
+        };
+
+        // Users 2 and 5 already have a hand-written watchlist in SeedMovieLists.
+        private static readonly HashSet<int> UsersWithSeededWatchlists = new() { 2, 5 };
+
+        // Review text is picked from these by rating band. It deliberately never
+        // names the film, so the pools stay valid whatever is in the movie table.
+        private static readonly string[] HighPraise =
+        {
+            "Close to perfect. It does in a single scene what most films spend an act setting up.",
+            "I have seen this enough times to quote it and it still catches me out.",
+            "Everything here is deliberate: the blocking, the cuts, the silences between lines.",
+            "This is the one I hand to people who say they do not watch this sort of thing.",
+            "A masterpiece, and I do not use the word often. Every minute of it is earned.",
+            "Put it on for half an hour and lost the whole evening. No regrets at all.",
+            "Holds together better than films half its length. Extraordinary control of tone.",
+            "The kind of film that quietly reorganises what you expect from everything after it."
+        };
+
+        private static readonly string[] Positive =
+        {
+            "Really strong. It knows exactly what it is doing, even where it overreaches.",
+            "Very good without quite being great, and I mean that as praise.",
+            "Enjoyed this a great deal. A couple of choices I would argue with, but it works.",
+            "Confident filmmaking. The middle sags a little and the ending recovers it.",
+            "Well made and genuinely moving in places. It stayed with me for a day or two.",
+            "Does the difficult part well and the easy part unevenly. Recommended regardless."
+        };
+
+        private static readonly string[] Lukewarm =
+        {
+            "Fine. Competent, watchable, not something I expect to return to.",
+            "Mixed feelings. Individual scenes work far better than the whole does.",
+            "There is a good film in here and about twenty minutes of padding around it.",
+            "Watched it without much reaction either way. Technically solid throughout.",
+            "Decent, but it never quite decides what it wants to be.",
+            "Parts of this are excellent. The rest is going through the motions."
+        };
+
+        private static readonly string[] Negative =
+        {
+            "Did not work for me. The premise is considerably better than the execution.",
+            "Struggled with it. Handsome to look at and hollow underneath.",
+            "Lost me in the second half and never made a case for staying.",
+            "Not for me. It mistakes volume for weight.",
+            "I can see why people love this. I spent most of it checking the runtime."
+        };
+
+        private static readonly string[] Dismissive =
+        {
+            "A slog. I finished it out of stubbornness and nothing else.",
+            "Very little landed. Overlong, over-scored and underwritten.",
+            "Gave it an honest try and got nothing back."
+        };
+
+        private static void SeedRecommenderUsers(ModelBuilder modelBuilder)
+        {
+            var users = new List<User>();
+            var roles = new List<UserRole>();
+
+            for (var i = 0; i < RecommenderUsers.Length; i++)
+            {
+                var (first, last, username, email, countryId, bio, salt, hash) = RecommenderUsers[i];
+                var createdAt = new DateTime(2024, 1, 20, 0, 0, 0).AddDays(i * 17).AddHours(8 + i % 10);
+
+                users.Add(new User
+                {
+                    Id = RecommenderFirstUserId + i,
+                    FirstName = first,
+                    LastName = last,
+                    Username = username,
+                    Email = email,
+                    PasswordSalt = salt,
+                    PasswordHash = hash, // password: Test123!
+                    IsActive = true,
+                    CreatedAt = createdAt,
+                    LastLoginAt = createdAt.AddDays(180 + i * 3),
+                    Bio = bio,
+                    CountryId = countryId
+                });
+
+                roles.Add(new UserRole
+                {
+                    Id = RecommenderFirstUserRoleId + i,
+                    UserId = RecommenderFirstUserId + i,
+                    RoleId = 2,
+                    AssignedAt = createdAt
+                });
+            }
+
+            modelBuilder.Entity<User>().HasData(users);
+            modelBuilder.Entity<UserRole>().HasData(roles);
+        }
+
+        private static void SeedRecommenderReviews(ModelBuilder modelBuilder)
+        {
+            var reviews = new List<Review>();
+            var id = RecommenderFirstReviewId;
+
+            foreach (var (userId, ratings) in RecommenderRatings)
+            {
+                for (var movieId = 1; movieId <= SeededMovieCount; movieId++)
+                {
+                    if (ratings[movieId - 1] is not decimal rating)
+                        continue;
+
+                    var seed = userId * 31 + movieId * 7;
+
+                    reviews.Add(new Review
+                    {
+                        Id = id++,
+                        UserId = userId,
+                        MovieId = movieId,
+                        Rating = rating,
+                        IsLiked = rating >= 4.0m,
+                        Content = ReviewContent(rating, seed),
+                        ContainsSpoilers = seed % 17 == 0,
+                        IsDiaryEntry = seed % 4 == 0,
+                        IsRewatch = rating >= 4.5m && seed % 3 == 0,
+                        CreatedAt = ReviewDate(seed)
+                    });
+                }
+            }
+
+            ApplyPopularThisWeekDates(reviews);
+
+            modelBuilder.Entity<Review>().HasData(reviews);
+        }
+
+        // Once PopularWeekAnchor is more than a week in the past the endpoint
+        // starts coming back empty - bump the anchor and add a migration.
+        private static readonly DateTime PopularWeekAnchor = new DateTime(2026, 8, 13, 0, 0, 0);
+
+        private static readonly (int MovieId, int ReviewCount)[] PopularThisWeekCounts =
+        {
+            (6, 9), (9, 7), (4, 6), (3, 5), (12, 4), (10, 3), (2, 2), (7, 2), (1, 1)
+        };
+
+        private static void ApplyPopularThisWeekDates(List<Review> reviews)
+        {
+            foreach (var (movieId, reviewCount) in PopularThisWeekCounts)
+            {
+                var recent = reviews.Where(r => r.MovieId == movieId).Take(reviewCount).ToList();
+
+                for (var i = 0; i < recent.Count; i++)
+                {
+                    recent[i].CreatedAt = PopularWeekAnchor
+                        .AddDays(-(i % 6))
+                        .AddHours(-(1 + (i * 5 + movieId * 3) % 20))
+                        .AddMinutes(-((i * 7 + movieId * 11) % 60));
+                }
+            }
+        }
+
+        private static void SeedRecommenderWatchlists(ModelBuilder modelBuilder)
+        {
+            var lists = new List<MovieList>();
+            var items = new List<MovieListItem>();
+            var listId = RecommenderFirstMovieListId;
+            var itemId = RecommenderFirstMovieListItemId;
+
+            foreach (var (userId, ratings) in RecommenderRatings)
+            {
+                if (UsersWithSeededWatchlists.Contains(userId))
+                    continue;
+
+                var createdAt = new DateTime(2025, 2, 3, 0, 0, 0).AddDays(userId * 5).AddHours(8 + userId % 10);
+
+                lists.Add(new MovieList
+                {
+                    Id = listId,
+                    UserId = userId,
+                    Name = "Watchlist",
+                    Description = "Films I still need to get to.",
+                    Type = ListType.Watchlist,
+                    CreatedAt = createdAt
+                });
+
+                var unrated = Enumerable.Range(1, SeededMovieCount)
+                    .Where(movieId => ratings[movieId - 1] is null
+                                      && !HandWrittenReviews.Contains((userId, movieId)))
+                    .ToArray();
+
+                // Leave at least one unrated film off the list.
+                var take = unrated.Length <= 1 ? 0 : Math.Min(2, unrated.Length - 1);
+
+                for (var i = 0; i < take; i++)
+                {
+                    items.Add(new MovieListItem
+                    {
+                        Id = itemId++,
+                        MovieListId = listId,
+                        MovieId = unrated[(userId + i) % unrated.Length],
+                        Position = i + 1,
+                        AddedAt = createdAt.AddDays(i * 9 + 4)
+                    });
+                }
+
+                listId++;
+            }
+
+            modelBuilder.Entity<MovieList>().HasData(lists);
+            modelBuilder.Entity<MovieListItem>().HasData(items);
+        }
+
+        private static string ReviewContent(decimal rating, int seed)
+        {
+            var pool = rating switch
+            {
+                >= 4.5m => HighPraise,
+                >= 4.0m => Positive,
+                >= 3.0m => Lukewarm,
+                >= 2.0m => Negative,
+                _ => Dismissive
+            };
+
+            return pool[seed % pool.Length];
+        }
+
+        private static DateTime ReviewDate(int seed) =>
+            new DateTime(2025, 1, 6, 0, 0, 0)
+                .AddDays(seed % 540)
+                .AddHours(9 + seed % 12)
+                .AddMinutes(seed % 60);
     }
 }

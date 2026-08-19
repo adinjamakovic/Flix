@@ -1,5 +1,6 @@
 using Flix.CommonServices.CryptoService;
 using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
@@ -15,10 +16,14 @@ namespace Flix.Services.Implementations
         : BaseCRUDService<User, UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>, IUserService
     {
         private const int DefaultRoleId = 2;
+        // As many as the profile screen can comfortably show.
+        private const int LatestReviewsOnProfile = 4;
+        private const string WatchlistName = "Watchlist";
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly IActivityService _activityService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
@@ -26,12 +31,26 @@ namespace Flix.Services.Implementations
             IValidator<UserInsertRequest> insertValidator,
             IValidator<UserUpdateRequest> updateValidator,
             IImageStorageService imageStorageService,
-            IResponseImageUrlResolver imageUrlResolver)
+            IResponseImageUrlResolver imageUrlResolver,
+            IActivityService activityService)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageStorageService = imageStorageService;
             _imageUrlResolver = imageUrlResolver;
+            _activityService = activityService;
+        }
+
+        public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
+        {
+            var response = await base.InsertAsync(request);
+
+            await _activityService.InsertAsync(response.Id, new ActivityInsertRequest
+            {
+                Type = ActivityType.JoinedPlatform
+            });
+
+            return response;
         }
 
         protected override IQueryable<User> GetDataSource()
@@ -59,7 +78,7 @@ namespace Flix.Services.Implementations
             if(search?.CountryId is int countryId)
                 query = query.Where(u => u.CountryId == countryId);
 
-            if (search.IsActive is bool isActive)
+            if (search?.IsActive is bool isActive)
                 query = query.Where(u => u.IsActive == isActive);
 
             return query;
@@ -75,7 +94,8 @@ namespace Flix.Services.Implementations
                     .ThenInclude(ur => ur.Role);
 
             if(search?.IncludeReviews == true)
-                query = query.Include(u => u.Reviews);
+                query = query.Include(u => u.Reviews)
+                    .ThenInclude(x=>x.Movie);
 
             return base.IncludeRelatedEntities(search, query);
         }
@@ -97,6 +117,14 @@ namespace Flix.Services.Implementations
             {
                 Role = await GetAssignableRoleAsync(request.RoleId ?? DefaultRoleId),
                 AssignedAt = DateTime.UtcNow
+            });
+
+            // Every account owns a watchlist from the moment it exists
+            entity.Lists.Add(new MovieList
+            {
+                Name = WatchlistName,
+                Type = ListType.Watchlist,
+                CreatedAt = DateTime.UtcNow
             });
         }
 
@@ -152,15 +180,61 @@ namespace Flix.Services.Implementations
 
         protected override async Task BeforeDeleteAsync(User entity)
         {
-            await _context.Entry(entity)
-                .Collection(u => u.Roles)
-                .LoadAsync();
-            _context.UserRoles.RemoveRange(entity.Roles);
+            var votes = await _context.ClashVotes
+                .Where(x => x.VoterId == entity.Id)
+                .ToListAsync();
 
-            await _context.Entry(entity)
-                .Collection(u => u.RefreshTokens)
-                .LoadAsync();
-            _context.RefreshTokens.RemoveRange(entity.RefreshTokens);
+            _context.ClashVotes.RemoveRange(votes);
+
+            var followers = await _context.UserFollows
+                .Where(x => x.FollowingId == entity.Id)
+                .ToListAsync();
+
+            _context.UserFollows.RemoveRange(followers);
+
+            var blocks = await _context.UserBlocks
+                .Where(x => x.BlockedId == entity.Id)
+                .ToListAsync();
+
+            _context.UserBlocks.RemoveRange(blocks);
+
+            var reportsAgainstThem = await _context.UserReports
+                .Where(x => x.ReportedUserId == entity.Id)
+                .ToListAsync();
+
+            _context.UserReports.RemoveRange(reportsAgainstThem);
+
+            var mentions = await _context.Activities
+                .Where(x => x.TargetUserId == entity.Id)
+                .ToListAsync();
+
+            _context.Activities.RemoveRange(mentions);
+
+            await ClearModerationTrailAsync(entity.Id);
+        }
+
+        private async Task ClearModerationTrailAsync(int userId)
+        {
+            var handledUserReports = await _context.UserReports
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var report in handledUserReports)
+                report.ReviewedByUserId = null;
+
+            var handledIssueReports = await _context.MovieIssueReports
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var report in handledIssueReports)
+                report.ReviewedByUserId = null;
+
+            var handledRequests = await _context.MovieRequests
+                .Where(x => x.ReviewedByUserId == userId)
+                .ToListAsync();
+
+            foreach(var request in handledRequests)
+                request.ReviewedByUserId = null;
         }
 
         protected override async Task AfterDeleteAsync(User entity)
@@ -183,12 +257,39 @@ namespace Flix.Services.Implementations
                 .Include(x => x.Country)
                 .Include(x => x.Roles)
                     .ThenInclude(ur => ur.Role)
+                .Include(x=>x.Reviews)
+                .ThenInclude(x=>x.Movie)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (entity is null)
                 throw new ClientException($"{nameof(User)} with Id {id} not found.");
 
-            return MapToResponse(entity);
+            var response = MapToResponse(entity);
+
+            AttachLatestReviews(response, entity);
+
+            return response;
+        }
+
+        // The profile screen shows the newest few reviews a user wrote. Mapster cannot do this leg of
+        // the mapping - UserResponse.Reviews and ReviewResponse.User reference each other, so following
+        // it recurses forever (see the User -> UserResponse config in Program.cs) - hence the by hand
+        // mapping
+        private void AttachLatestReviews(UserResponse response, User entity)
+        {
+            response.Reviews = entity.Reviews
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(LatestReviewsOnProfile)
+                .Select(review =>
+                {
+                    var reviewResponse = _mapper.Map<ReviewResponse>(review);
+                    reviewResponse.User = null;
+
+                    _imageUrlResolver.Resolve(reviewResponse);
+
+                    return reviewResponse;
+                })
+                .ToList();
         }
 
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
@@ -199,6 +300,13 @@ namespace Flix.Services.Implementations
                 .FirstOrDefaultAsync(u => u.Username == username);
             var response = user == null ? null : _mapper.Map<UserSensitiveResponse>(user);
             return response;
+        }
+
+        public async Task UpdateLastLoginAsync(int userId)
+        {
+            await _context.Users
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastLoginAt, DateTime.UtcNow));
         }
 
     }

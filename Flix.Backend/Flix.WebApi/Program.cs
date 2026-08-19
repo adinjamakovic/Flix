@@ -9,6 +9,7 @@ using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
 using Flix.WebApi.Filters;
 using Flix.WebApi.Services.AccessManager;
+using Flix.WebApi.Services.CurrentUser;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -70,6 +71,13 @@ TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
     .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
+    // UserResponse.Reviews and ReviewResponse.User point straight back at each other, and EF fixup
+    // wires both ends of that pair whenever a user and any of their reviews are tracked by the same
+    // query - which every review feed and the activity feed do. Letting Mapster follow it recurses
+    // user -> reviews -> user until the stack blows, taking the process down with it. So it is never
+    // mapped automatically: UserService.GetByIdAsync fills it for the profile screen, and clears the
+    // author on the way so the cycle cannot come back through the nested responses.
+    .Ignore(dest => dest.Reviews)
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
@@ -117,6 +125,23 @@ TypeAdapterConfig<ClashEntry, ClashEntryResponse>.NewConfig()
 TypeAdapterConfig<MovieList, MovieListResponse>.NewConfig()
     .Map(dest => dest.MovieCount, src => src.Items.Count)
     .IgnoreNullValues(true);
+TypeAdapterConfig<MovieList, ListResponse>.NewConfig()
+    .Map(dest => dest.Movies, src => src.Items
+                                                                .OrderBy(x => x.Position)
+                                                                .ThenBy(x => x.AddedAt)
+                                                                .Select(x => x.Movie)
+                                                                .ToList())
+    .IgnoreNullValues(true);
+TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
+    .Map(dest => dest.Movie, src => src.CreatedMovie);
+TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
+    .IgnoreNullValues(true)
+    .Map(dest => dest.Movie, src => src.Movie)
+    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie)
+    .Map(dest => dest.Source, src => RecommendationSource.Similar);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -139,6 +164,7 @@ builder.Services.AddDbContext<FlixDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Validators
+builder.Services.AddScoped<IValidator<ActivityInsertRequest>, ActivityInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<CastMemberInsertRequest>, CastMemberInsertRequestValidator>();
@@ -146,17 +172,24 @@ builder.Services.AddScoped<IValidator<CastMemberUpdateRequest>, CastMemberUpdate
 builder.Services.AddScoped<IValidator<ClashInsertRequest>, ClashInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<ClashUpdateRequest>, ClashUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<CountryInsertRequest>, CountryInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<DiaryInsertRequest>, DiaryInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<CountryUpdateRequest>, CountryUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<GenreInsertRequest>, GenreInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<GenreUpdateRequest>, GenreUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<LanguageInsertRequest>, LanguageInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<LanguageUpdateRequest>, LanguageUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ListInsertRequest>, ListInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<ListUpdateRequest>, ListUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieRequestInsertRequest>, MovieRequestInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieRequestUpdateRequest>, MovieRequestUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
 
 //Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -173,8 +206,19 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
+builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
+builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<IListService, ListService>();
+builder.Services.AddScoped<IDiaryService, DiaryService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -183,7 +227,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection is disabled because of the Flutter mobile development environment
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

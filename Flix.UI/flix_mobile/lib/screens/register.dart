@@ -1,6 +1,7 @@
 import 'package:flix_mobile/models/picked_image.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
+import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,15 +50,12 @@ class _RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<_RegisterForm> {
   // Mirror `UserInsertRequestValidator` so the form fails before a round trip.
+  // The rules themselves live in `utils_widget.dart`; these are the lengths only
+  // this form has fields for.
   static const int _nameMaxLength = 50;
   static const int _emailMaxLength = 150;
   static const int _usernameMaxLength = 100;
   static const int _phoneMaxLength = 25;
-  static const int _passwordMinLength = 8;
-
-  static final RegExp _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-  static final RegExp _passwordPattern =
-      RegExp(r'(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])');
 
   final _formKey = GlobalKey<FormState>();
 
@@ -121,9 +119,7 @@ class _RegisterFormState extends State<_RegisterForm> {
       );
     } on Exception catch (e) {
       if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(errorText(e))));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -133,14 +129,6 @@ class _RegisterFormState extends State<_RegisterForm> {
     final trimmed = value.trim();
     return trimmed.isEmpty ? null : trimmed;
   }
-
-  String? _required(String? value, String field) =>
-      (value == null || value.trim().isEmpty) ? '$field is required' : null;
-
-  String? _maxLength(String? value, int maxLength, String field) =>
-      (value != null && value.trim().length > maxLength)
-          ? '$field must be $maxLength characters or fewer'
-          : null;
 
   @override
   Widget build(BuildContext context) {
@@ -210,8 +198,12 @@ class _RegisterFormState extends State<_RegisterForm> {
                             icon: Icons.badge_outlined,
                             textCapitalization: TextCapitalization.words,
                             validator: (value) =>
-                                _required(value, 'First name') ??
-                                _maxLength(value, _nameMaxLength, 'First name'),
+                                requiredValidator(value, 'First name') ??
+                                maxLengthValidator(
+                                  value,
+                                  _nameMaxLength,
+                                  'First name',
+                                ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -222,8 +214,12 @@ class _RegisterFormState extends State<_RegisterForm> {
                             icon: Icons.badge_outlined,
                             textCapitalization: TextCapitalization.words,
                             validator: (value) =>
-                                _required(value, 'Last name') ??
-                                _maxLength(value, _nameMaxLength, 'Last name'),
+                                requiredValidator(value, 'Last name') ??
+                                maxLengthValidator(
+                                  value,
+                                  _nameMaxLength,
+                                  'Last name',
+                                ),
                           ),
                         ),
                       ],
@@ -234,8 +230,12 @@ class _RegisterFormState extends State<_RegisterForm> {
                       hint: 'Username',
                       icon: Icons.person_outline,
                       validator: (value) =>
-                          _required(value, 'Username') ??
-                          _maxLength(value, _usernameMaxLength, 'Username'),
+                          requiredValidator(value, 'Username') ??
+                          maxLengthValidator(
+                            value,
+                            _usernameMaxLength,
+                            'Username',
+                          ),
                     ),
                     const SizedBox(height: 14),
                     _buildField(
@@ -244,11 +244,7 @@ class _RegisterFormState extends State<_RegisterForm> {
                       icon: Icons.mail_outline,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) =>
-                          _required(value, 'Email') ??
-                          _maxLength(value, _emailMaxLength, 'Email') ??
-                          (_emailPattern.hasMatch(value!.trim())
-                              ? null
-                              : 'Enter a valid email address'),
+                          emailValidator(value, maxLength: _emailMaxLength),
                     ),
                     const SizedBox(height: 14),
                     _buildField(
@@ -256,8 +252,11 @@ class _RegisterFormState extends State<_RegisterForm> {
                       hint: 'Phone number (optional)',
                       icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
-                      validator: (value) =>
-                          _maxLength(value, _phoneMaxLength, 'Phone number'),
+                      validator: (value) => maxLengthValidator(
+                        value,
+                        _phoneMaxLength,
+                        'Phone number',
+                      ),
                     ),
                     const SizedBox(height: 14),
                     _buildField(
@@ -271,7 +270,7 @@ class _RegisterFormState extends State<_RegisterForm> {
                           () => _obscurePassword = !_obscurePassword,
                         ),
                       ),
-                      validator: _validatePassword,
+                      validator: passwordValidator,
                     ),
                     const SizedBox(height: 14),
                     _buildField(
@@ -324,21 +323,6 @@ class _RegisterFormState extends State<_RegisterForm> {
         ),
       ),
     );
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password is required';
-
-    if (value.length < _passwordMinLength) {
-      return 'Password must be at least $_passwordMinLength characters';
-    }
-
-    if (!_passwordPattern.hasMatch(value)) {
-      return 'Password must contain upper, lower, a digit and a special '
-          'character';
-    }
-
-    return null;
   }
 
   Widget _buildVisibilityToggle({

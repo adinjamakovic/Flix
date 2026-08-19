@@ -2,6 +2,124 @@ import 'package:flix_mobile/models/picked_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Mirrors `ImageValidationRules.MaxImageSizeBytes`.
+const int maxImageSizeBytes = 5 * 1024 * 1024;
+
+/// Mirrors `ImageValidationRules.AllowedExtensions`.
+const List<String> allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+const Map<String, String> _imageContentTypes = {
+  'jpg': 'image/jpeg',
+  'jpeg': 'image/jpeg',
+  'png': 'image/png',
+  'gif': 'image/gif',
+  'webp': 'image/webp',
+};
+
+class ImagePickResult {
+  const ImagePickResult({this.image, this.error});
+
+  final PickedImage? image;
+  final String? error;
+
+  bool get isCancelled => image == null && error == null;
+}
+
+enum ImagePickAction { camera, gallery, remove }
+
+Future<ImagePickResult> pickImage(
+  ImageSource source, {
+  double maxWidth = 1080,
+  double maxHeight = 1080,
+}) async {
+  final XFile? file;
+  try {
+    file = await _picker.pickImage(
+      source: source,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+    );
+  } on Exception catch (e) {
+    return ImagePickResult(error: e.toString().replaceFirst('Exception: ', ''));
+  }
+
+  if (file == null) return const ImagePickResult();
+
+  final String extension = _extensionOf(file.name);
+  final String? contentType = _imageContentTypes[extension];
+
+  if (contentType == null) {
+    return ImagePickResult(
+      error: 'Image must be one of the following types: '
+          '${allowedImageExtensions.join(", ")}.',
+    );
+  }
+
+  final bytes = await file.readAsBytes();
+
+  if (bytes.length > maxImageSizeBytes) {
+    return ImagePickResult(
+      error: 'Image must be '
+          '${maxImageSizeBytes ~/ (1024 * 1024)} MB or smaller.',
+    );
+  }
+
+  return ImagePickResult(
+    image: PickedImage(
+      fileName: file.name,
+      bytes: bytes,
+      contentType: contentType,
+    ),
+  );
+}
+
+Future<ImagePickAction?> showImageSourceSheet(
+  BuildContext context, {
+  bool canRemove = false,
+  String removeLabel = 'Remove photo',
+}) {
+  final colors = Theme.of(context).colorScheme;
+
+  return showModalBottomSheet<ImagePickAction>(
+    context: context,
+    backgroundColor: colors.surfaceContainerHigh,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: const Text('Take a photo'),
+            onTap: () => Navigator.pop(context, ImagePickAction.camera),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library_outlined),
+            title: const Text('Choose from gallery'),
+            onTap: () => Navigator.pop(context, ImagePickAction.gallery),
+          ),
+          if (canRemove)
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: Text(removeLabel),
+              onTap: () => Navigator.pop(context, ImagePickAction.remove),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+final ImagePicker _picker = ImagePicker();
+
+String _extensionOf(String fileName) {
+  final int dot = fileName.lastIndexOf('.');
+  return dot == -1 ? '' : fileName.substring(dot + 1).toLowerCase();
+}
+
+/// A round image picker — an avatar. `PosterInput` is the rectangular one.
 class ImageInput extends StatefulWidget {
   const ImageInput({
     super.key,
@@ -24,35 +142,11 @@ class ImageInput extends StatefulWidget {
   final IconData placeholderIcon;
   final bool enabled;
 
-  /// Mirrors `ImageValidationRules.MaxImageSizeBytes`.
-  static const int maxSizeBytes = 5 * 1024 * 1024;
-
-  /// Mirrors `ImageValidationRules.AllowedExtensions`.
-  static const List<String> allowedExtensions = [
-    'jpg',
-    'jpeg',
-    'png',
-    'gif',
-    'webp',
-  ];
-
-  static const Map<String, String> _contentTypes = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'webp': 'image/webp',
-  };
-
   @override
   State<ImageInput> createState() => _ImageInputState();
 }
 
-enum _PickAction { camera, gallery, remove }
-
 class _ImageInputState extends State<ImageInput> {
-  final ImagePicker _picker = ImagePicker();
-
   PickedImage? _picked;
   String? _error;
 
@@ -152,103 +246,38 @@ class _ImageInputState extends State<ImageInput> {
   }
 
   Future<void> _openSourceSheet() async {
-    final colors = Theme.of(context).colorScheme;
-
-    final action = await showModalBottomSheet<_PickAction>(
-      context: context,
-      backgroundColor: colors.surfaceContainerHigh,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
-              onTap: () => Navigator.pop(context, _PickAction.camera),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
-              onTap: () => Navigator.pop(context, _PickAction.gallery),
-            ),
-            if (_picked != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: const Text('Remove photo'),
-                onTap: () => Navigator.pop(context, _PickAction.remove),
-              ),
-          ],
-        ),
-      ),
+    final action = await showImageSourceSheet(
+      context,
+      canRemove: _picked != null,
     );
 
     if (action == null) return;
 
-    if (action == _PickAction.remove) {
+    if (action == ImagePickAction.remove) {
       _clear();
       return;
     }
 
-    await _pick(action == _PickAction.camera
+    await _pick(action == ImagePickAction.camera
         ? ImageSource.camera
         : ImageSource.gallery);
   }
 
   Future<void> _pick(ImageSource source) async {
-    final XFile? file;
-    try {
-      // An avatar never needs the sensor's full resolution, and bounding it
-      // here is what keeps a modern phone photo under the API's 5 MB limit.
-      file = await _picker.pickImage(
-        source: source,
-        maxWidth: 1080,
-        maxHeight: 1080,
-      );
-    } on Exception catch (e) {
-      // A denied camera/photo permission surfaces as a PlatformException.
-      _fail(e.toString().replaceFirst('Exception: ', ''));
+    final ImagePickResult result = await pickImage(source);
+
+    if (!mounted || result.isCancelled) return;
+
+    if (result.error != null) {
+      setState(() => _error = result.error);
       return;
     }
 
-    if (file == null) return;
-
-    final String extension = _extensionOf(file.name);
-    final String? contentType = ImageInput._contentTypes[extension];
-
-    if (contentType == null) {
-      _fail('Image must be one of the following types: '
-          '${ImageInput.allowedExtensions.join(", ")}.');
-      return;
-    }
-
-    final bytes = await file.readAsBytes();
-
-    if (bytes.length > ImageInput.maxSizeBytes) {
-      _fail('Image must be '
-          '${ImageInput.maxSizeBytes ~/ (1024 * 1024)} MB or smaller.');
-      return;
-    }
-
-    final picked = PickedImage(
-      fileName: file.name,
-      bytes: bytes,
-      contentType: contentType,
-    );
-
-    if (!mounted) return;
     setState(() {
-      _picked = picked;
+      _picked = result.image;
       _error = null;
     });
-    widget.onChanged(picked);
-  }
-
-  String _extensionOf(String fileName) {
-    final int dot = fileName.lastIndexOf('.');
-    return dot == -1 ? '' : fileName.substring(dot + 1).toLowerCase();
+    widget.onChanged(result.image);
   }
 
   void _clear() {
@@ -257,10 +286,5 @@ class _ImageInputState extends State<ImageInput> {
       _error = null;
     });
     widget.onChanged(null);
-  }
-
-  void _fail(String message) {
-    if (!mounted) return;
-    setState(() => _error = message);
   }
 }

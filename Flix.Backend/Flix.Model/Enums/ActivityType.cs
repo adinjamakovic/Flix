@@ -1,4 +1,4 @@
-namespace Flix.Services.Enums
+namespace Flix.Model.Enums
 {
     public enum ActivityType
     {
@@ -11,6 +11,7 @@ namespace Flix.Services.Enums
         FollowedUser = 6,
         RequestedMovie = 7,
         JoinedClash = 8,
-        WonClash = 9
+        WonClash = 9,
+        VotedOnClash = 10,
     }
 }

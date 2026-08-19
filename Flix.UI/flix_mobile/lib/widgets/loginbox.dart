@@ -1,7 +1,7 @@
 import 'package:flix_mobile/layouts/container_screen.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
-import 'package:flix_mobile/screens/home/movie_list.dart';
 import 'package:flix_mobile/screens/register.dart';
+import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,9 +49,7 @@ class _LoginBoxState extends State<LoginBox> {
       );
     } on Exception catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
+      showSnack(context, errorText(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -118,9 +116,7 @@ class _LoginBoxState extends State<LoginBox> {
                         prefixIcon: Icon(Icons.person_outline),
                       ),
                       validator: (value) =>
-                          (value == null || value.trim().isEmpty)
-                              ? 'Username is required'
-                              : null,
+                          requiredValidator(value, 'Username'),
                     ),
                     const SizedBox(height: 14),
                     TextFormField(

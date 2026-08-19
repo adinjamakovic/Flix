@@ -1,4 +1,18 @@
+import 'package:flix_mobile/providers/activity_provider.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
+import 'package:flix_mobile/providers/cast_member_provider.dart';
+import 'package:flix_mobile/providers/clash_entry_provider.dart';
+import 'package:flix_mobile/providers/clash_provider.dart';
+import 'package:flix_mobile/providers/country_provider.dart';
+import 'package:flix_mobile/providers/diary_provider.dart';
+import 'package:flix_mobile/providers/genre_provider.dart';
+import 'package:flix_mobile/providers/language_provider.dart';
+import 'package:flix_mobile/providers/list_provider.dart';
+import 'package:flix_mobile/providers/movie_provider.dart';
+import 'package:flix_mobile/providers/movie_recommender_provider.dart';
+import 'package:flix_mobile/providers/movie_request_provider.dart';
+import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/providers/user_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flix_mobile/theme/flix_theme.dart';
@@ -10,6 +24,20 @@ void main() {
       MultiProvider(
         providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MovieProvider()),
+        ChangeNotifierProvider(create: (_) => GenreProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => CountryProvider()),
+        ChangeNotifierProvider(create: (_) => CastMemberProvider()),
+        ChangeNotifierProvider(create: (_) => ClashProvider()),
+        ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => MovieRecommenderProvider()),
+        ChangeNotifierProvider(create: (_) => MovieRequestProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => DiaryProvider()),
         ],
       child: const MyApp(),));
 }

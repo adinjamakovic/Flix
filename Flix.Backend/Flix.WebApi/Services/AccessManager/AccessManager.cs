@@ -52,6 +52,8 @@ namespace Flix.WebApi.Services.AccessManager
 
             await _refreshTokenService.InsertAsync(refreshToken);
 
+            await _userService.UpdateLastLoginAsync(user.Id);
+
             return new UserLoginResponse
             {
                 AccessToken = accessToken,
