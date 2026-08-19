@@ -242,5 +242,17 @@ namespace Flix.Services.Implementations
 
             replacement.IsWinner = true;
         }
+
+        public Task AddToWatchlistAsync(int MovieId)
+        {
+            // TODO: Movie Details screen in mobile app needs to be able to add a movie to watchlist
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveIfAddedToWatchlistAsync(int MovieId)
+        {
+            // Review service should remove from watchlist if a movie is logged
+            throw new NotImplementedException();
+        }
     }
 }

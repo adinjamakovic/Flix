@@ -172,6 +172,7 @@ builder.Services.AddScoped<IValidator<CastMemberUpdateRequest>, CastMemberUpdate
 builder.Services.AddScoped<IValidator<ClashInsertRequest>, ClashInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<ClashUpdateRequest>, ClashUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<CountryInsertRequest>, CountryInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<DiaryInsertRequest>, DiaryInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<CountryUpdateRequest>, CountryUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<GenreInsertRequest>, GenreInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<GenreUpdateRequest>, GenreUpdateRequestValidator>();
@@ -209,6 +210,7 @@ builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationServi
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IListService, ListService>();
+builder.Services.AddScoped<IDiaryService, DiaryService>();
 
 var app = builder.Build();
 

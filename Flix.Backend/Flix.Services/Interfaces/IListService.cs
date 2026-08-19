@@ -11,5 +11,7 @@ namespace Flix.Services.Interfaces
         ListInsertRequest, 
         ListUpdateRequest>
     {
+        Task AddToWatchlistAsync(int MovieId);
+        Task RemoveIfAddedToWatchlistAsync(int MovieId);
     }
 }

@@ -1,5 +1,6 @@
 import 'package:flix_mobile/models/review_count.dart';
 import 'package:flix_mobile/models/user.dart';
+import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/screens/activity.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
@@ -9,9 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({ super.key, required this.currentUser });
+  const UserProfile({ super.key, required this.user });
 
-  final User currentUser;
+  final User user;
 
 
   @override
@@ -20,16 +21,22 @@ class UserProfile extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfile> {
   late ReviewProvider _reviewProvider;
+  late AuthProvider _authProvider;
+
   ReviewCount? _reviewCount;
 
   bool _isLoading = true;
   String? _error;
+
+  bool get _isCurrentUser =>
+      widget.user.id != null && widget.user.id == _authProvider.userId;
 
   @override
   void initState() {
     super.initState();
 
     _reviewProvider = context.read<ReviewProvider>();
+    _authProvider = context.read<AuthProvider>();
 
     _load();
   }
@@ -41,7 +48,8 @@ class _UserProfileState extends State<UserProfile> {
     });
 
     try {
-      final ReviewCount reviewCount = await _reviewProvider.getUserReviewCount();
+      final ReviewCount reviewCount =
+          await _reviewProvider.getUserReviewCount(userId: widget.user.id);
 
       if(!mounted) return;
 
@@ -71,21 +79,22 @@ class _UserProfileState extends State<UserProfile> {
    return Column(
        children: [
         SizedBox(height: 16,),
-        buildAvatar( context, 
-          widget.currentUser.profileImage, 
-          widget.currentUser.username,
+        buildAvatar( context,
+          widget.user.profileImage,
+          widget.user.username,
           radius: 48),
         SizedBox(height: 16,),
         Divider(),
         SizedBox(height: 8,),
-        ReviewSideScroll(title: "RECENT ACTIVITY", reviews: widget.currentUser.reviews ?? const [], isUserProfile: true,),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(onPressed: _redirectToActivity, child: const Text("More activity", style: TextStyle(color: Colors.white)),),
-            IconButton(onPressed: _redirectToActivity, icon: Icon(Icons.arrow_forward))
-          ],
-        ),
+        ReviewSideScroll(title: "RECENT ACTIVITY", reviews: widget.user.reviews ?? const [], isUserProfile: true,),
+        if (_isCurrentUser)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(onPressed: _redirectToActivity, child: const Text("More activity", style: TextStyle(color: Colors.white)),),
+              IconButton(onPressed: _redirectToActivity, icon: Icon(Icons.arrow_forward))
+            ],
+          ),
         Divider(),
         _buildRatings(context)
        ],

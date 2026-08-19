@@ -3,6 +3,7 @@ import 'package:flix_mobile/models/clash_entry.dart';
 import 'package:flix_mobile/models/movie.dart';
 import 'package:flix_mobile/models/movie_list_details.dart';
 import 'package:flix_mobile/models/search_result.dart';
+import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
@@ -12,7 +13,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserLists extends StatefulWidget {
-  const UserLists({ super.key });
+  const UserLists({ super.key, required this.user });
+
+  final User user;
 
   @override
   _UserListsState createState() => _UserListsState();
@@ -39,6 +42,9 @@ class _UserListsState extends State<UserLists> {
   bool _isLoading = true;
   String? _error;
 
+  bool get _isCurrentUser =>
+      widget.user.id != null && widget.user.id == _authProvider.userId;
+
   @override
   void initState() {
     super.initState();
@@ -56,12 +62,12 @@ class _UserListsState extends State<UserLists> {
       _error = null;
     });
 
-    final int? userId = _authProvider.userId;
+    final int? userId = widget.user.id;
 
     if (userId == null) {
       setState(() {
         _isLoading = false;
-        _error = "User not logged in";
+        _error = "User not found";
       });
       return;
     }
@@ -106,7 +112,7 @@ class _UserListsState extends State<UserLists> {
   }
 
   Future<Set<int>> _loadClashWinnerListIds() async {
-    final String username = _authProvider.username?.trim() ?? "";
+    final String username = widget.user.username?.trim() ?? "";
     if (username.isEmpty) return const {};
 
     final SearchResult<ClashEntry> result = await _clashEntryProvider.get(
@@ -148,11 +154,13 @@ class _UserListsState extends State<UserLists> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openListForm,
-        tooltip: "New list",
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _isCurrentUser
+          ? FloatingActionButton(
+              onPressed: _openListForm,
+              tooltip: "New list",
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: _buildBody(context),
     );
   }
@@ -173,7 +181,9 @@ class _UserListsState extends State<UserLists> {
     if (_lists.isEmpty) {
       return buildMessage(
         context,
-        "You haven't made a list yet. Start one and the movies on it show up here.",
+        _isCurrentUser
+            ? "You haven't made a list yet. Start one and the movies on it show up here."
+            : "${widget.user.username ?? "This user"} hasn't made a list yet.",
       );
     }
 

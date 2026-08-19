@@ -4,6 +4,7 @@ import 'package:flix_mobile/providers/cast_member_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
 import 'package:flix_mobile/providers/clash_provider.dart';
 import 'package:flix_mobile/providers/country_provider.dart';
+import 'package:flix_mobile/providers/diary_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
@@ -36,6 +37,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ListProvider()),
+        ChangeNotifierProvider(create: (_) => DiaryProvider()),
         ],
       child: const MyApp(),));
 }

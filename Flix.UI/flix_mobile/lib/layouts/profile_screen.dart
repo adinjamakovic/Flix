@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.userId});
+
+  final int? userId;
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -30,6 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool _isLoading = true;
   String? _error;
+
+  bool get _isCurrentUser =>
+      widget.userId == null || widget.userId == _authProvider.userId;
 
   @override
   void initState() {
@@ -56,7 +61,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     try {
-      final User user = await _userProvider.getCurrentUserProfile();
+      final int? userId = widget.userId;
+
+      final User user = userId == null
+          ? await _userProvider.getCurrentUserProfile()
+          : await _userProvider.getById(userId);
 
       if (!mounted) return;
 
@@ -110,24 +119,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.only(left: 8, right: 16),
         child: Row(
           children: <Widget>[
-            IconButton(
-              onPressed: user == null
-                  ? null
-                  : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UserSettings(),
-                        ),
-                      );
-                    },
-              icon: const Icon(Icons.settings_outlined),
-              iconSize: 22,
-              color: colors.onSurface,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints.tightFor(width: 40, height: 40),
-            ),
-            const SizedBox(width: 8),
+            if (_isCurrentUser) ...[
+              IconButton(
+                onPressed: user == null
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserSettings(),
+                          ),
+                        );
+                      },
+                icon: const Icon(Icons.settings_outlined),
+                iconSize: 22,
+                color: colors.onSurface,
+                padding: EdgeInsets.zero,
+                constraints:
+                    const BoxConstraints.tightFor(width: 40, height: 40),
+              ),
+              const SizedBox(width: 8),
+            ],
             Expanded(
               child: Text(
                 user?.username ?? "",
@@ -179,10 +191,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onRefresh: _load,
       child: TabBarView(
         children: <Widget>[
-          UserProfile(currentUser: user),
-          Diary(),
-          UserLists(),
-          Watchlist()
+          UserProfile(user: user),
+          Diary(user: user),
+          UserLists(user: user),
+          Watchlist(user: user)
         ],
       ),
     );

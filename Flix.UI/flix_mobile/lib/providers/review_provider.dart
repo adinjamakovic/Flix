@@ -10,8 +10,11 @@ class ReviewProvider extends BaseProvider<Review> {
     return Review.fromJson(data);
   }
 
-  Future<ReviewCount> getUserReviewCount() async {
-    var data = await getObject(action: "UserReviewCount");
+  Future<ReviewCount> getUserReviewCount({int? userId}) async {
+    var data = await getObject(
+      action: "UserReviewCount",
+      filter: userId == null ? null : {"userId": userId},
+    );
 
     return ReviewCount.fromJson(data);
   }
