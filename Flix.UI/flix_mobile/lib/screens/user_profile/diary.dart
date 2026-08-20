@@ -110,7 +110,7 @@ class _DiaryState extends State<Diary> {
     final List<_DiaryMonth> months = List.empty(growable: true);
 
     for (final Review entry in entries) {
-      final String label = _monthLabel(entry.createdAt);
+      final String label = _monthLabel(entry.loggedOn);
 
       if (months.isEmpty || months.last.label != label) {
         months.add(_DiaryMonth(label, List.empty(growable: true)));
@@ -133,12 +133,8 @@ class _DiaryState extends State<Diary> {
   String _dayLabel(DateTime? date) =>
       date == null ? "-" : date.toLocal().day.toString();
 
-  String _titleLabel(Review entry) {
-    final String title = entry.movie?.title ?? "-";
-    final int? year = entry.movie?.releaseDate?.year;
-
-    return year == null ? title : "$title ($year)";
-  }
+  String _titleLabel(Review entry) =>
+      titleWithYear(entry.movie?.title, entry.movie?.releaseDate);
 
   void _onEntryTapped(Movie movie) {
     Navigator.push(
@@ -279,7 +275,7 @@ class _DiaryState extends State<Diary> {
         borderRadius: BorderRadius.circular(_dayBoxRadius),
       ),
       child: Text(
-        _dayLabel(entry.createdAt),
+        _dayLabel(entry.loggedOn),
         style: TextStyle(
           color: colors.onSurface,
           fontSize: 18,

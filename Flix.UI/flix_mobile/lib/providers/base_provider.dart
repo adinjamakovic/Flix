@@ -107,6 +107,51 @@ abstract class BaseProvider<T> with ChangeNotifier {
     isValidResponse(response);
   }
 
+  // A write that answers with a payload of its own rather than with T — the
+  // movie state behind the actions sheet is a view over three tables, not a
+  // review.
+  Future<dynamic> insertObject(
+    String action,
+    Map<String, dynamic> fields, {
+    Map<String, PickedImage> files = const {},
+  }) async {
+    var request = http.MultipartRequest(
+        "POST", Uri.parse("$_baseUrl$_endpoint/$action"));
+
+    request.headers.addAll(createMultipartHeaders());
+
+    fields.forEach((key, value) => _addField(request.fields, key, value));
+
+    files.forEach((key, image) {
+      request.files.add(http.MultipartFile.fromBytes(
+        key,
+        image.bytes,
+        filename: image.fileName,
+        contentType: MediaType.parse(image.contentType),
+      ));
+    });
+
+    var response = await http.Response.fromStream(await request.send());
+
+    if (!isValidResponse(response)) throw Exception("Unknown error");
+
+    return jsonDecode(response.body);
+  }
+
+  // The two toggles that carry everything they need in the route and answer
+  // with 204 — there is no body either way.
+  Future<void> postAction(String action) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
+
+    isValidResponse(await http.post(uri, headers: createHeaders()));
+  }
+
+  Future<void> deleteAction(String action) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
+
+    isValidResponse(await http.delete(uri, headers: createHeaders()));
+  }
+
   Future<T> _send(
     http.MultipartRequest request,
     Map<String, dynamic> fields,

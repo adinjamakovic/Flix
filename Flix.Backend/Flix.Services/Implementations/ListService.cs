@@ -24,18 +24,23 @@ namespace Flix.Services.Implementations
             ListInsertRequest,
             ListUpdateRequest>, IListService
     {
+        private const string WatchlistName = "Watchlist";
+
         public ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly IActivityService _activityService;
         public ListService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<ListInsertRequest> insertValidator,
             IValidator<ListUpdateRequest> updateValidator,
             ICurrentUserService currentUserService,
-            IResponseImageUrlResolver imageUrlResolver) : base(context, mapper, insertValidator, updateValidator)
+            IResponseImageUrlResolver imageUrlResolver,
+            IActivityService activityService) : base(context, mapper, insertValidator, updateValidator)
         {
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
+            _activityService = activityService;
         }
 
         // The list carries no image itself, but the owner's avatar and the posters of the movies
@@ -243,16 +248,92 @@ namespace Flix.Services.Implementations
             replacement.IsWinner = true;
         }
 
-        public Task AddToWatchlistAsync(int MovieId)
+        public async Task AddToWatchlistAsync(int movieId)
         {
-            // TODO: Movie Details screen in mobile app needs to be able to add a movie to watchlist
-            throw new NotImplementedException();
+            var userId = _currentUserService.GetUserId();
+
+            var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Id == movieId)
+                ?? throw new ClientException($"Movie with Id {movieId} not found.");
+
+            if(!movie.IsEnabled)
+                throw new ClientException("This movie cannot be added to a watchlist.");
+
+            var watchlist = await GetOrCreateWatchlistAsync(userId);
+
+            if(watchlist.Items.Any(x => x.MovieId == movieId))
+                return;
+
+            _context.MovieListItems.Add(new MovieListItem
+            {
+                MovieList = watchlist,
+                MovieId = movieId,
+                Position = watchlist.Items.Count == 0 ? 0 : watchlist.Items.Max(x => x.Position) + 1,
+                AddedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+
+            await _activityService.InsertAsync(userId, new ActivityInsertRequest
+            {
+                Type = ActivityType.AddedToWatchlist,
+                MovieId = movieId,
+                MovieListId = watchlist.Id
+            });
         }
 
-        public Task RemoveIfAddedToWatchlistAsync(int MovieId)
+        // Called both by the watchlist toggle and by logging a movie - a movie that has been
+        // watched has no business sitting in the queue of ones that have not.
+        public async Task RemoveIfAddedToWatchlistAsync(int movieId)
         {
-            // Review service should remove from watchlist if a movie is logged
-            throw new NotImplementedException();
+            var userId = _currentUserService.GetUserId();
+
+            var item = await _context.MovieListItems
+                .FirstOrDefaultAsync(x => x.MovieId == movieId
+                    && x.MovieList.UserId == userId
+                    && x.MovieList.Type == ListType.Watchlist);
+
+            if(item is null)
+                return;
+
+            _context.MovieListItems.Remove(item);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsInWatchlistAsync(int movieId)
+        {
+            var userId = _currentUserService.GetUserId();
+
+            return await _context.MovieListItems
+                .AnyAsync(x => x.MovieId == movieId
+                    && x.MovieList.UserId == userId
+                    && x.MovieList.Type == ListType.Watchlist);
+        }
+
+        // UserService gives every new account a watchlist, but the seeded users predate that and
+        // SeedRecommenderWatchlists only covers some of them.
+        private async Task<MovieList> GetOrCreateWatchlistAsync(int userId)
+        {
+            var watchlist = await _context.MovieLists
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.Type == ListType.Watchlist);
+
+            if(watchlist is not null)
+                return watchlist;
+
+            watchlist = new MovieList
+            {
+                UserId = userId,
+                Name = WatchlistName,
+                Type = ListType.Watchlist,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.MovieLists.Add(watchlist);
+
+            await _context.SaveChangesAsync();
+
+            return watchlist;
         }
     }
 }

@@ -1,11 +1,13 @@
 import 'package:flix_mobile/models/genre.dart';
 import 'package:flix_mobile/models/movie.dart';
+import 'package:flix_mobile/models/movie_user_state.dart';
 import 'package:flix_mobile/models/review_count.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/providers/user_provider.dart';
+import 'package:flix_mobile/screens/movie_details/actions_sheet.dart';
 import 'package:flix_mobile/screens/movie_details/cast.dart';
 import 'package:flix_mobile/screens/movie_details/crew.dart';
 import 'package:flix_mobile/screens/movie_details/details.dart';
@@ -48,9 +50,12 @@ class _MovieDetailsState extends State<MovieDetails>
   Movie? _movie;
   ReviewCount? _reviewCount;
   User? _currentUser;
+  MovieUserState? _movieState;
 
   bool _isLoading = true;
   String? _error;
+
+  int _reviewGeneration = 0;
 
   @override
   void initState() {
@@ -94,6 +99,7 @@ class _MovieDetailsState extends State<MovieDetails>
       final ReviewCount reviewCount = await _reviewProvider
           .getMovieReviewCount(movieId);
       final User? currentUser = await _loadCurrentUser();
+      final MovieUserState movieState = await _loadMovieState(movieId);
 
       if (!mounted) return;
 
@@ -101,6 +107,7 @@ class _MovieDetailsState extends State<MovieDetails>
         _movie = movie;
         _reviewCount = reviewCount;
         _currentUser = currentUser;
+        _movieState = movieState;
         _isLoading = false;
       });
     } catch (e) {
@@ -113,6 +120,28 @@ class _MovieDetailsState extends State<MovieDetails>
     }
   }
 
+  Future<void> _reload() async {
+    final int? movieId = widget.movieId;
+    if (movieId == null) return;
+
+    try {
+      final ReviewCount reviewCount = await _reviewProvider
+          .getMovieReviewCount(movieId);
+      final MovieUserState movieState = await _loadMovieState(movieId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _reviewCount = reviewCount;
+        _movieState = movieState;
+        _reviewGeneration++;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      showSnack(context, errorText(e));
+    }
+  }
+
   // Only the action bar's avatar depends on this, so a failure here must not
   // take the whole screen down with it.
   Future<User?> _loadCurrentUser() async {
@@ -122,6 +151,16 @@ class _MovieDetailsState extends State<MovieDetails>
       return await _userProvider.getCurrentUserProfile();
     } catch (_) {
       return null;
+    }
+  }
+
+  Future<MovieUserState> _loadMovieState(int movieId) async {
+    if (!_authProvider.isAuthenticated) return MovieUserState.empty(movieId);
+
+    try {
+      return await _reviewProvider.getMovieState(movieId);
+    } catch (_) {
+      return MovieUserState.empty(movieId);
     }
   }
 
@@ -160,7 +199,7 @@ class _MovieDetailsState extends State<MovieDetails>
             Divider(),
             _buildRatings(context),
             Divider(),
-            _buildActionBar(context),
+            _buildActionBar(context, movie),
             Divider(),
             TabBar(
               controller: _tabController,
@@ -190,11 +229,14 @@ class _MovieDetailsState extends State<MovieDetails>
       case 3:
         return GenreTab(genres: movie.genres ?? const []);
       default:
-        return ReviewTab(movieId: widget.movieId!);
+        return ReviewTab(
+          key: ValueKey(_reviewGeneration),
+          movieId: widget.movieId!,
+        );
     }
   }
 
-  Widget _buildActionBar(BuildContext context) {
+  Widget _buildActionBar(BuildContext context, Movie movie) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Padding(
@@ -204,9 +246,7 @@ class _MovieDetailsState extends State<MovieDetails>
         borderRadius: BorderRadius.circular(6),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {
-            debugPrint("TODO: review sheet");
-          },
+          onTap: () => _openActionsSheet(movie),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
@@ -218,18 +258,7 @@ class _MovieDetailsState extends State<MovieDetails>
                   radius: 14,
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "Rate, log, review, add to list + more",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: colors.onSurface,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                Expanded(child: _buildActionBarLabel(colors)),
                 const SizedBox(width: 8),
                 Icon(Icons.more_horiz, color: colors.onSurfaceVariant, size: 22),
               ],
@@ -238,6 +267,48 @@ class _MovieDetailsState extends State<MovieDetails>
         ),
       ),
     );
+  }
+
+  // Once the user has recorded anything, the bar stops inviting them to and
+  // shows what they recorded instead - the "you rated this" state.
+  Widget _buildActionBarLabel(ColorScheme colors) {
+    final MovieUserState? state = _movieState;
+
+    if (state == null || !(state.watched || state.liked || state.stars > 0)) {
+      return Text(
+        "Rate, log, review, add to list + more",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: colors.onSurface,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        Icon(Icons.remove_red_eye, size: 18, color: colors.primary),
+        const SizedBox(width: 10),
+        buildRating(
+          context,
+          state.stars,
+          emptyLabel: "Watched",
+          isLiked: state.liked,
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openActionsSheet(Movie movie) async {
+    await showMovieActionsSheet(
+      context,
+      movie,
+      _movieState ?? MovieUserState.empty(movie.id),
+    );
+
+    await _reload();
   }
 
   Widget _buildRatings(BuildContext context) {

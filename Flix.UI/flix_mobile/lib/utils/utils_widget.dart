@@ -205,6 +205,13 @@ Widget buildRating(
   );
 }
 
+String titleWithYear(String? title, DateTime? releaseDate) {
+  final String name = title ?? "-";
+  final int? year = releaseDate?.year;
+
+  return year == null ? name : "$name ($year)";
+}
+
 // Dates are shown as dd/mm/yyyy everywhere. The API sends UTC, so this is also
 // the one place the conversion to local time happens.
 String formatDate(DateTime? date) {

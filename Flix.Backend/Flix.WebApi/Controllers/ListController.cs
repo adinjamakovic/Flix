@@ -15,5 +15,23 @@ namespace Flix.WebApi.Controllers
         public ListController(IListService listService) : base(listService)
         {
         }
+
+        [HttpPost("Watchlist/{movieId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddToWatchlist(int movieId)
+        {
+            await _service.AddToWatchlistAsync(movieId);
+            return NoContent();
+        }
+
+        [HttpDelete("Watchlist/{movieId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveFromWatchlist(int movieId)
+        {
+            await _service.RemoveIfAddedToWatchlistAsync(movieId);
+            return NoContent();
+        }
     }
 }

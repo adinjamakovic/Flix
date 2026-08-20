@@ -8,5 +8,6 @@ namespace Flix.Model.Requests
         public string? Content { get; set; }
         public bool ContainsSpoilers { get; set; }
         public bool IsRewatch { get; set; }
+        public DateTime? WatchedOn { get; set; }
     }
 }

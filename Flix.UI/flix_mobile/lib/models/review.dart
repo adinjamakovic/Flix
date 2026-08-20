@@ -17,6 +17,7 @@ class Review {
       this.containsSpoilers,
       this.isDiaryEntry,
       this.isRewatch,
+      this.watchedOn,
       this.createdAt
       );
 
@@ -32,7 +33,12 @@ class Review {
   final bool? containsSpoilers;
   final bool? isDiaryEntry;
   final bool? isRewatch;
+
+  final DateTime? watchedOn;
+
   final DateTime? createdAt;
+
+  DateTime? get loggedOn => watchedOn ?? createdAt;
 
   factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
 

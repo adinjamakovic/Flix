@@ -1,4 +1,5 @@
-﻿using Flix.Model.Responses;
+﻿using Flix.Model.Requests;
+using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Implementations;
 using Flix.Services.Interfaces;
@@ -43,6 +44,23 @@ namespace Flix.WebApi.Controllers
                 new ReviewCountSearchObject { MovieId = movieId });
 
             return Ok(result);
+        }
+
+        [HttpGet("MovieState")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MovieUserStateResponse>> GetMovieState([FromQuery] int movieId)
+        {
+            return Ok(await _service.GetMovieStateAsync(movieId));
+        }
+
+        [HttpPost("StandingReview")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MovieUserStateResponse>> UpsertStandingReview([FromForm] ReviewUpsertRequest request)
+        {
+            return Ok(await _service.UpsertStandingReviewAsync(request));
         }
 
         // Read-only base, so delete is declared here rather than inherited. Moderating

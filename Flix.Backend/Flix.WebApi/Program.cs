@@ -182,6 +182,7 @@ builder.Services.AddScoped<IValidator<ListInsertRequest>, ListInsertRequestValid
 builder.Services.AddScoped<IValidator<ListUpdateRequest>, ListUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ReviewUpsertRequest>, ReviewUpsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieRequestInsertRequest>, MovieRequestInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieRequestUpdateRequest>, MovieRequestUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestValidator>();
