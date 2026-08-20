@@ -66,10 +66,10 @@ Widget buildSection(
 }
 
 // ---------------------------------------------------------------------------
-// Images
+// Images and links
 // ---------------------------------------------------------------------------
 
-Uri? networkImageUri(String? url) {
+Uri? httpUri(String? url) {
   final Uri? uri = Uri.tryParse(url ?? "");
   if (uri == null) return null;
 
@@ -87,7 +87,7 @@ Widget buildPoster(
   double borderRadius = 6,
 }) {
   final ColorScheme colors = Theme.of(context).colorScheme;
-  final Uri? uri = networkImageUri(posterUrl);
+  final Uri? uri = httpUri(posterUrl);
 
   return ClipRRect(
     borderRadius: BorderRadius.circular(borderRadius),
@@ -117,28 +117,44 @@ Widget _buildPosterPlaceholder(ColorScheme colors, double iconSize) {
   );
 }
 
-// A user's photo. The initial stands in while the image is missing or fails to
-// load, so it is drawn as the child rather than swapped in afterwards.
+// "Sigourney Weaver" -> "SW", a single-word username -> its first letter.
+String initialsOf(String? name) {
+  final List<String> words = (name ?? "")
+      .trim()
+      .split(RegExp(r"\s+"))
+      .where((word) => word.isNotEmpty)
+      .toList();
+
+  if (words.isEmpty) return "?";
+
+  return words
+      .take(2)
+      .map((word) => word.characters.first.toUpperCase())
+      .join();
+}
+
+// A user's or cast member's photo. The initials stand in while the image is
+// missing or fails to load, so they are drawn as the child rather than swapped
+// in afterwards.
 Widget buildAvatar(
   BuildContext context,
   String? imageUrl,
-  String? username, {
+  String? name, {
   double radius = 11,
 }) {
   final ColorScheme colors = Theme.of(context).colorScheme;
 
-  final String name = username ?? "";
-  final Uri? uri = networkImageUri(imageUrl);
+  final Uri? uri = httpUri(imageUrl);
 
   return CircleAvatar(
     radius: radius,
     backgroundColor: colors.surfaceContainerHigh,
     foregroundImage: uri == null ? null : NetworkImage(uri.toString()),
     child: Text(
-      name.isEmpty ? "?" : name.characters.first.toUpperCase(),
+      initialsOf(name),
       style: TextStyle(
         color: colors.onSurfaceVariant,
-        fontSize: radius,
+        fontSize: radius * 0.8,
         fontWeight: FontWeight.w700,
       ),
     ),

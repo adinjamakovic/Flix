@@ -41,6 +41,7 @@ dependencies:
   http_parser: ^4.1.2
   date_picker_plus: ^7.0.1
   image_picker: ^1.2.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

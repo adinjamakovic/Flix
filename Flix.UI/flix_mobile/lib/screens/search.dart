@@ -9,6 +9,7 @@ import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
+import 'package:flix_mobile/screens/movie_details/movie_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,10 +37,8 @@ class _SearchState extends State<Search> {
   static const double _posterWidth = 72;
   static const double _posterHeight = 108;
 
-  // `ContainerScreen` swaps the whole tab body out, so this state is disposed
-  // every time the user leaves the tab. Nothing local is persisted yet, so
-  // previous searches are kept statically — they survive tab changes, but not
-  // a restart of the app.
+  // Nothing local is persisted yet, so previous searches are kept statically —
+  // they survive a rebuild of the tab, but not a restart of the app.
   static final List<String> _previousSearches = <String>[];
 
   late MovieProvider _movieProvider;
@@ -305,8 +304,10 @@ class _SearchState extends State<Search> {
   void _onMovieTapped(Movie movie) {
     _rememberSearch(movie.title ?? "");
 
-    // TODO: open the movie details screen once it exists.
-    debugPrint("TODO: open details for movie ${movie.id}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MovieDetails(movieId: movie.id)),
+    );
   }
 
   void _clearQuery() {

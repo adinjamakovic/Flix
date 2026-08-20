@@ -171,8 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: _authProvider.isAuthenticated
               ? _load
               : () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
+                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => Login()),
                     (route) => false,
                   );

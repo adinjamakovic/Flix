@@ -2,6 +2,7 @@ import 'package:flix_mobile/models/movie.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
+import 'package:flix_mobile/screens/movie_details/movie_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -81,8 +82,10 @@ class _WatchlistState extends State<Watchlist> {
   }
 
   void _onMovieTapped(Movie movie) {
-    // TODO: open the movie details screen once it exists.
-    debugPrint("TODO: open details for movie ${movie.id}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MovieDetails(movieId: movie.id)),
+    );
   }
 
   @override

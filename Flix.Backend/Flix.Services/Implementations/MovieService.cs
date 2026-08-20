@@ -109,10 +109,10 @@ namespace Flix.Services.Implementations
 
         public override async Task<MovieResponse> GetByIdAsync(int id)
         {
-            // A single movie always carries its cast; only the list makes it opt-in.
             var entity = await GetDataSource()
                 .Include(x => x.Credits)
                 .ThenInclude(c => c.CastMember)
+                .Include(x => x.Reviews)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity is null)

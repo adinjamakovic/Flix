@@ -5,6 +5,7 @@ import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/providers/movie_recommender_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
+import 'package:flix_mobile/screens/movie_details/movie_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/movie_side_scroll.dart';
 import 'package:flix_mobile/widgets/review_side_scroll.dart';
@@ -103,8 +104,10 @@ class _MovieListState extends State<MovieList> {
   }
 
   void _onMovieTapped(Movie movie) {
-    // TODO: open the movie details screen once it exists.
-    debugPrint("TODO: open details for movie ${movie.id}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MovieDetails(movieId: movie.id)),
+    );
   }
 
   void _onReviewTapped(Review review) {
@@ -125,12 +128,11 @@ class _MovieListState extends State<MovieList> {
         action: TextButton(
           onPressed: _authProvider.isAuthenticated ? 
           _load : () {
-            Navigator.pushAndRemoveUntil(
-                        context,
+            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => Login()),
-                        (route) => false, 
+                        (route) => false,
                       );
-          }, 
+          },
           child: const Text("Try again"))
       );
     }
