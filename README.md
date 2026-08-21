@@ -12,7 +12,7 @@ dnevnika i pravljenje lista.
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API na SQL Serveru, slike u Azure Blob Storage-u. Četiri slojevita projekta: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin klijent — filmovi, glumci, korisnici, recenzije i clashevi, potpuni CRUD. |
-| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil, dnevnik, watchlist, liste, zahtjevi za filmove. |
+| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil, dnevnik, watchlist, liste, zahtjevi za filmove, prijave grešaka u katalogu. |
 | `docker-compose.yml` | SQL Server + RabbitMQ + API. |
 
 ## Pokretanje
@@ -126,10 +126,26 @@ otvara — odgledano, lajk, ocjena, watchlista i broj zapisa u dnevniku. *Review
 otvara formu (`screens/movie_details/log_form.dart`) koja piše na `POST /Diary`; `Review`
 sada nosi `WatchedOn`, pa se dnevnik sortira po danu gledanja, a ne po vremenu upisa.
 `IsRewatch` odlučuje server, jer je svaki zapis nakon prvog gledanja ponovno gledanje.
-*Watchlist* ide na `POST`/`DELETE /List/Watchlist/{movieId}`, i zapis u dnevnik sam skida
-film sa watchliste.
+*Watchlist* ide na `POST /List/AddToList` i `DELETE /List/Watchlist/{movieId}`, i zapis u
+dnevnik sam skida film sa watchliste.
 
-*Add to a list…* i *Report an issue…* su i dalje prazni.
+*Add to a list…* otvara sheet sa korisnikovim custom listama
+(`screens/movie_details/add_to_list_sheet.dart`) — watchlista se tu ne bira jer je toggle
+iznad, a clash liste pripadaju clashu. Dodavanje ide na `POST /List/AddToList`, koji je
+zamijenio raniji `POST /List/Watchlist/{movieId}`: jedan zahtjev pokriva obje destinacije, gdje
+`ListId` nosi samo custom lista, watchlista se razrješava iz tokena i jedina piše aktivnost.
+Custom lista odbija duplikat, dok ga watchlista tiho ignoriše.
+
+*Report an issue…* otvara formu (`screens/movie_details/report_issue.dart`) — padajuća lista
+tipičnih grešaka u katalogu plus opis, koji je obavezan samo uz *Other*, jer je tada jedino
+što adminu govori šta da ispravi. Prijava ide na `POST /MovieIssueReport` kao `Open`;
+`MovieIssueReportService` sam upisuje prijavitelja iz tokena, a `GetDataSource` onome ko nije
+admin vraća samo njegove prijave, pa i listanje i izmjena i brisanje ostaju u okviru vlastitih.
+Vlasnik svoju prijavu može mijenjati samo dok je otvorena; admin je zatvara `PUT`-om sa
+statusom i komentarom, čime se bilježi ko ju je i kada riješio.
+
+Ekrana za pregled prijava još nema — ni spiska poslanih prijava na mobilnom, ni admin ekrana na
+desktopu — pa se prijave zasad samo šalju.
 
 ## Napomene
 
@@ -155,7 +171,7 @@ films, keeping a diary and building lists.
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API on SQL Server, images in Azure Blob Storage. Four layered projects: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin client — movies, cast, users, reviews and clashes, full CRUD. |
-| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile, diary, watchlist, lists, movie requests. |
+| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile, diary, watchlist, lists, movie requests, catalog issue reports. |
 | `docker-compose.yml` | SQL Server + RabbitMQ + the API. |
 
 ## Running it
@@ -269,10 +285,28 @@ has. *Review or log…* opens a form (`screens/movie_details/log_form.dart`) tha
 `POST /Diary`; `Review` now carries a `WatchedOn`, so the diary is ordered by the day of the
 viewing rather than by the moment the entry was written. `IsRewatch` is decided by the server,
 because every entry after the first viewing is one. *Watchlist* goes to
-`POST`/`DELETE /List/Watchlist/{movieId}`, and logging a movie takes it off the watchlist by
-itself.
+`POST /List/AddToList` and `DELETE /List/Watchlist/{movieId}`, and logging a movie takes it off
+the watchlist by itself.
 
-*Add to a list…* and *Report an issue…* are still stubs.
+*Add to a list…* opens a sheet over the user's custom lists
+(`screens/movie_details/add_to_list_sheet.dart`) — the watchlist is not among them because it
+is the toggle above, and clash lists belong to their clash. The write goes to
+`POST /List/AddToList`, which replaced the older `POST /List/Watchlist/{movieId}`: one request
+covers both destinations, with `ListId` carried only by a custom list, the watchlist resolved
+from the token and the only one of the two with an activity written behind it. A custom list
+rejects a duplicate; the watchlist quietly ignores one.
+
+*Report an issue…* opens a form (`screens/movie_details/report_issue.dart`) — a dropdown of the
+usual catalog mistakes plus a description, required only for *Other*, where it is the only
+thing telling an admin what to fix. The report is filed as `Open` through
+`POST /MovieIssueReport`; `MovieIssueReportService` writes the reporter from the token, and
+`GetDataSource` returns only a non-admin's own reports, so listing, editing and deleting all
+stay inside what the caller filed. An owner can edit a report only while it is still open; an
+admin closes it with a `PUT` carrying the status and a comment, which records who resolved it
+and when.
+
+Nothing reads the reports back yet — there is no list of filed reports on mobile and no admin
+screen on the desktop — so for now they are only sent.
 
 ## Notes
 

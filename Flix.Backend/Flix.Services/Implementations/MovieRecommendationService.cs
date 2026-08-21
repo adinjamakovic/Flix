@@ -2,7 +2,6 @@ using Flix.Model.Enums;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
-using Flix.Services.Enums;
 using Flix.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.ML;

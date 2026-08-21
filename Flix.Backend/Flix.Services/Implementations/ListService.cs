@@ -10,6 +10,7 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,14 +27,16 @@ namespace Flix.Services.Implementations
     {
         private const string WatchlistName = "Watchlist";
 
-        public ICurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly IValidator<AddToListRequest> _addToListValidator;
         public ListService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<ListInsertRequest> insertValidator,
             IValidator<ListUpdateRequest> updateValidator,
+            IValidator<AddToListRequest> addToListValidator,
             ICurrentUserService currentUserService,
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService) : base(context, mapper, insertValidator, updateValidator)
@@ -41,6 +44,7 @@ namespace Flix.Services.Implementations
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _addToListValidator = addToListValidator;
         }
 
         // The list carries no image itself, but the owner's avatar and the posters of the movies
@@ -248,39 +252,6 @@ namespace Flix.Services.Implementations
             replacement.IsWinner = true;
         }
 
-        public async Task AddToWatchlistAsync(int movieId)
-        {
-            var userId = _currentUserService.GetUserId();
-
-            var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Id == movieId)
-                ?? throw new ClientException($"Movie with Id {movieId} not found.");
-
-            if(!movie.IsEnabled)
-                throw new ClientException("This movie cannot be added to a watchlist.");
-
-            var watchlist = await GetOrCreateWatchlistAsync(userId);
-
-            if(watchlist.Items.Any(x => x.MovieId == movieId))
-                return;
-
-            _context.MovieListItems.Add(new MovieListItem
-            {
-                MovieList = watchlist,
-                MovieId = movieId,
-                Position = watchlist.Items.Count == 0 ? 0 : watchlist.Items.Max(x => x.Position) + 1,
-                AddedAt = DateTime.UtcNow
-            });
-
-            await _context.SaveChangesAsync();
-
-            await _activityService.InsertAsync(userId, new ActivityInsertRequest
-            {
-                Type = ActivityType.AddedToWatchlist,
-                MovieId = movieId,
-                MovieListId = watchlist.Id
-            });
-        }
-
         // Called both by the watchlist toggle and by logging a movie - a movie that has been
         // watched has no business sitting in the queue of ones that have not.
         public async Task RemoveIfAddedToWatchlistAsync(int movieId)
@@ -334,6 +305,73 @@ namespace Flix.Services.Implementations
             await _context.SaveChangesAsync();
 
             return watchlist;
+        }
+
+        // The watchlist and a custom list are the same write to a different destination: the
+        // watchlist is resolved from the caller rather than sent by id, and only it has an
+        // activity type to write behind it.
+        public async Task AddToList(AddToListRequest request)
+        {
+            await _addToListValidator.ValidateAndThrowAsync(request);
+
+            var userId = _currentUserService.GetUserId();
+
+            var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Id == request.MovieId)
+                ?? throw new ClientException($"Movie with Id {request.MovieId} not found.");
+
+            if(!movie.IsEnabled)
+                throw new ClientException("This movie cannot be added to a list.");
+
+            var isWatchlist = request.Type == ListType.Watchlist;
+
+            var list = isWatchlist
+                ? await GetOrCreateWatchlistAsync(userId)
+                : await GetCustomListAsync(userId, request.ListId);
+
+            if(list.Items.Any(x => x.MovieId == movie.Id))
+            {
+                if(isWatchlist)
+                    return;
+
+                throw new ClientException("This movie has already been added to this list");
+            }
+
+            _context.MovieListItems.Add(new MovieListItem
+            {
+                MovieList = list,
+                MovieId = movie.Id,
+                Position = list.Items.Count == 0 ? 0 : list.Items.Max(x => x.Position) + 1,
+                AddedAt = DateTime.UtcNow
+            });
+
+            list.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            if(!isWatchlist)
+                return;
+
+            await _activityService.InsertAsync(userId, new ActivityInsertRequest
+            {
+                Type = ActivityType.AddedToWatchlist,
+                MovieId = movie.Id,
+                MovieListId = list.Id
+            });
+        }
+
+        private async Task<MovieList> GetCustomListAsync(int userId, int? listId)
+        {
+            var list = await _context.MovieLists
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => x.Id == listId && x.Type == ListType.Custom);
+
+            if(list is null)
+                throw new ClientException("The list you are trying to edit has been deleted");
+
+            if(list.UserId != userId)
+                throw new ClientException("Only the user who made the list can edit the list");
+
+            return list;
         }
     }
 }

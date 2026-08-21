@@ -32,8 +32,16 @@ class ListProvider extends BaseProvider<MovieListDetails> {
     });
   }
 
-  Future<void> addToWatchlist(int movieId) =>
-      postAction("Watchlist/$movieId");
+  Future<void> addToList(
+    int movieId, {
+    int? listId,
+    ListType type = ListType.custom,
+  }) =>
+      postJson("AddToList", {
+        "movieId": movieId,
+        "listId": listId,
+        "type": type.index,
+      });
 
   Future<void> removeFromWatchlist(int movieId) =>
       deleteAction("Watchlist/$movieId");

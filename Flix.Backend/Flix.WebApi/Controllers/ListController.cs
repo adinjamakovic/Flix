@@ -16,12 +16,12 @@ namespace Flix.WebApi.Controllers
         {
         }
 
-        [HttpPost("Watchlist/{movieId}")]
+        [HttpPost("AddToList")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddToWatchlist(int movieId)
+        public async Task<IActionResult> AddToList(AddToListRequest request)
         {
-            await _service.AddToWatchlistAsync(movieId);
+            await _service.AddToList(request);
             return NoContent();
         }
 

@@ -1,8 +1,11 @@
+import 'package:flix_mobile/enums/list_type.dart';
 import 'package:flix_mobile/models/movie.dart';
 import 'package:flix_mobile/models/movie_user_state.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/screens/movie_details/add_to_list_sheet.dart';
 import 'package:flix_mobile/screens/movie_details/log_form.dart';
+import 'package:flix_mobile/screens/movie_details/report_issue.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/star_rating_input.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +90,7 @@ class _MovieActionsSheetState extends State<MovieActionsSheet> {
           _buildItem(
             icon: Icons.playlist_add,
             label: "Add to a list...",
-            onTap: () => _close(() => debugPrint("TODO: add to a list")),
+            onTap: _openAddToListSheet,
           ),
           const Divider(),
           _buildItem(
@@ -99,10 +102,26 @@ class _MovieActionsSheetState extends State<MovieActionsSheet> {
           _buildItem(
             icon: Icons.report_gmailerrorred_outlined,
             label: "Report an issue...",
-            onTap: () => _close(() => debugPrint("TODO: report an issue")),
+            onTap: _openReportForm,
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _openAddToListSheet() async {
+    final NavigatorState navigator = Navigator.of(context);
+    navigator.pop();
+
+    await showAddToListSheet(navigator.context, widget.movie);
+  }
+
+  Future<void> _openReportForm() async {
+    final NavigatorState navigator = Navigator.of(context);
+    navigator.pop();
+
+    await navigator.push<void>(
+      MaterialPageRoute(builder: (context) => ReportIssue(movie: widget.movie)),
     );
   }
 
@@ -280,7 +299,7 @@ class _MovieActionsSheetState extends State<MovieActionsSheet> {
 
     try {
       if (adding) {
-        await _listProvider.addToWatchlist(movieId);
+        await _listProvider.addToList(movieId, type: ListType.watchlist);
       } else {
         await _listProvider.removeFromWatchlist(movieId);
       }
@@ -332,11 +351,6 @@ class _MovieActionsSheetState extends State<MovieActionsSheet> {
     if (!mounted) return;
 
     Navigator.pop(context);
-  }
-
-  void _close(VoidCallback action) {
-    Navigator.pop(context);
-    action();
   }
 
   Future<void> _viewPoster() async {

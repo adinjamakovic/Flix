@@ -138,12 +138,33 @@ abstract class BaseProvider<T> with ChangeNotifier {
     return jsonDecode(response.body);
   }
 
-  // The two toggles that carry everything they need in the route and answer
-  // with 204 — there is no body either way.
-  Future<void> postAction(String action) async {
+  Future<T> insertJson(Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint");
+
+    return _parse(
+        await http.post(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  Future<T> updateJson(int id, Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    return _parse(
+        await http.put(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  T _parse(http.Response response) {
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
+  Future<void> postJson(String action, Map<String, dynamic> body) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    isValidResponse(await http.post(uri, headers: createHeaders()));
+    isValidResponse(await http.post(uri,
+        headers: createHeaders(), body: jsonEncode(body)));
   }
 
   Future<void> deleteAction(String action) async {

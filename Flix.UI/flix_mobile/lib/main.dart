@@ -8,6 +8,7 @@ import 'package:flix_mobile/providers/diary_provider.dart';
 import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
+import 'package:flix_mobile/providers/movie_issue_report_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/providers/movie_recommender_provider.dart';
 import 'package:flix_mobile/providers/movie_request_provider.dart';
@@ -34,6 +35,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => MovieRecommenderProvider()),
         ChangeNotifierProvider(create: (_) => MovieRequestProvider()),
+        ChangeNotifierProvider(create: (_) => MovieIssueReportProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ListProvider()),
