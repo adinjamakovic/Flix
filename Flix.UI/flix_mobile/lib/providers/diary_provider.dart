@@ -23,4 +23,24 @@ class DiaryProvider extends BaseProvider<Review> {
       "includeTotalCount": includeTotalCount,
     });
   }
+
+  Future<Review> addToDiary({
+    required int movieId,
+    required DateTime watchedOn,
+    double? rating,
+    bool isLiked = false,
+    String? content,
+    bool containsSpoilers = false,
+    bool isRewatch = false,
+  }) {
+    return insert({
+      "movieId": movieId,
+      "watchedOn": watchedOn,
+      "rating": rating,
+      "isLiked": isLiked,
+      "content": content,
+      "containsSpoilers": containsSpoilers,
+      "isRewatch": isRewatch,
+    });
+  }
 }

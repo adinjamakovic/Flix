@@ -107,6 +107,72 @@ abstract class BaseProvider<T> with ChangeNotifier {
     isValidResponse(response);
   }
 
+  // A write that answers with a payload of its own rather than with T — the
+  // movie state behind the actions sheet is a view over three tables, not a
+  // review.
+  Future<dynamic> insertObject(
+    String action,
+    Map<String, dynamic> fields, {
+    Map<String, PickedImage> files = const {},
+  }) async {
+    var request = http.MultipartRequest(
+        "POST", Uri.parse("$_baseUrl$_endpoint/$action"));
+
+    request.headers.addAll(createMultipartHeaders());
+
+    fields.forEach((key, value) => _addField(request.fields, key, value));
+
+    files.forEach((key, image) {
+      request.files.add(http.MultipartFile.fromBytes(
+        key,
+        image.bytes,
+        filename: image.fileName,
+        contentType: MediaType.parse(image.contentType),
+      ));
+    });
+
+    var response = await http.Response.fromStream(await request.send());
+
+    if (!isValidResponse(response)) throw Exception("Unknown error");
+
+    return jsonDecode(response.body);
+  }
+
+  Future<T> insertJson(Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint");
+
+    return _parse(
+        await http.post(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  Future<T> updateJson(int id, Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    return _parse(
+        await http.put(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  T _parse(http.Response response) {
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
+  Future<void> postJson(String action, Map<String, dynamic> body) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
+
+    isValidResponse(await http.post(uri,
+        headers: createHeaders(), body: jsonEncode(body)));
+  }
+
+  Future<void> deleteAction(String action) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
+
+    isValidResponse(await http.delete(uri, headers: createHeaders()));
+  }
+
   Future<T> _send(
     http.MultipartRequest request,
     Map<String, dynamic> fields,

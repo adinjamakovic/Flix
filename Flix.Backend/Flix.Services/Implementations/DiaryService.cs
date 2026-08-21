@@ -18,6 +18,7 @@ namespace Flix.Services.Implementations
         private readonly ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly IListService _listService;
         private readonly IValidator<DiaryInsertRequest> _insertValidator;
 
         public DiaryService(
@@ -26,6 +27,7 @@ namespace Flix.Services.Implementations
             ICurrentUserService currentUserService,
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
+            IListService listService,
             IValidator<DiaryInsertRequest> insertValidator)
         {
             _context = context;
@@ -33,6 +35,7 @@ namespace Flix.Services.Implementations
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _listService = listService;
             _insertValidator = insertValidator;
         }
 
@@ -46,7 +49,7 @@ namespace Flix.Services.Implementations
                 .Where(x => x.IsDiaryEntry && x.UserId == userId);
 
             query = query
-                .OrderByDescending(x => x.CreatedAt)
+                .OrderByDescending(x => x.WatchedOn ?? x.CreatedAt)
                 .ThenByDescending(x => x.Id);
 
             int? totalCount = null;
@@ -81,33 +84,69 @@ namespace Flix.Services.Implementations
             if (!movie.IsEnabled)
                 throw new ClientException("This movie cannot be logged.");
 
-            var entity = new Review
-            {
-                UserId = userId,
-                MovieId = movie.Id,
-                Rating = request.Rating,
-                IsLiked = request.IsLiked,
-                Content = request.Content?.Trim() ?? string.Empty,
-                ContainsSpoilers = request.ContainsSpoilers,
-                IsDiaryEntry = true,
-                IsRewatch = request.IsRewatch,
-                CreatedAt = DateTime.UtcNow
-            };
+            var watchedOn = request.WatchedOn ?? DateTime.UtcNow;
 
-            _context.Reviews.Add(entity);
+            var isRewatch = request.IsRewatch || await HasWatchedBeforeAsync(userId, movie.Id, watchedOn);
+
+            var entity = await _context.Reviews.FirstOrDefaultAsync(x => x.UserId == userId
+                && x.MovieId == movie.Id
+                && !x.IsDiaryEntry);
+
+            var isNewEntry = entity is null;
+
+            if (entity is null)
+            {
+                entity = new Review
+                {
+                    UserId = userId,
+                    MovieId = movie.Id,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Reviews.Add(entity);
+            }
+            else
+            {
+                entity.UpdatedAt = DateTime.UtcNow;
+            }
+
+            entity.Rating = request.Rating;
+            entity.IsLiked = request.IsLiked;
+            entity.Content = request.Content?.Trim() ?? string.Empty;
+            entity.ContainsSpoilers = request.ContainsSpoilers;
+            entity.IsDiaryEntry = true;
+            entity.IsRewatch = isRewatch;
+            entity.WatchedOn = watchedOn;
 
             await _context.SaveChangesAsync();
 
-            await _activityService.InsertAsync(userId, new ActivityInsertRequest
-            {
-                Type = ActivityType.WatchedMovie,
-                MovieId = entity.MovieId,
-                ReviewId = entity.Id
-            });
+            if (isNewEntry || !await HasWatchedActivityAsync(entity.Id))
+                await _activityService.InsertAsync(userId, new ActivityInsertRequest
+                {
+                    Type = ActivityType.WatchedMovie,
+                    MovieId = entity.MovieId,
+                    ReviewId = entity.Id
+                });
+
+            await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
 
             await _context.Entry(entity).Reference(x => x.Movie).LoadAsync();
 
             return MapToResponse(entity);
+        }
+
+        private Task<bool> HasWatchedActivityAsync(int reviewId)
+        {
+            return _context.Activities.AnyAsync(x => x.ReviewId == reviewId
+                && x.Type == ActivityType.WatchedMovie);
+        }
+
+        private Task<bool> HasWatchedBeforeAsync(int userId, int movieId, DateTime watchedOn)
+        {
+            return _context.Reviews.AnyAsync(x => x.UserId == userId
+                && x.MovieId == movieId
+                && x.IsDiaryEntry
+                && (x.WatchedOn ?? x.CreatedAt) <= watchedOn);
         }
 
         // The entry owns no image, but the movie's poster and the author's avatar are stored

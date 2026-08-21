@@ -1779,15 +1779,20 @@ namespace Flix.Services.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminComment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Header")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("int");
@@ -1821,6 +1826,7 @@ namespace Flix.Services.Database.Migrations
                             AdminComment = "Verified against the original release. Entry now reflects the international cut, which is the 122 minute version.",
                             CreatedAt = new DateTime(2026, 4, 2, 10, 45, 0, 0, DateTimeKind.Unspecified),
                             Description = "The runtime is listed as 122 minutes but the French theatrical cut runs 129. Worth checking which version the entry describes.",
+                            Header = "Runtime does not match the theatrical cut",
                             MovieId = 7,
                             ReportedByUserId = 7,
                             ResolvedAt = new DateTime(2026, 4, 4, 14, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1832,6 +1838,7 @@ namespace Flix.Services.Database.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2026, 6, 12, 20, 15, 0, 0, DateTimeKind.Unspecified),
                             Description = "Das Boot exists as a theatrical cut, a director's cut and a television miniseries. The listed duration matches none of them cleanly.",
+                            Header = "Listed duration matches no known version",
                             MovieId = 11,
                             ReportedByUserId = 10,
                             Status = 0
@@ -1841,6 +1848,7 @@ namespace Flix.Services.Database.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2026, 7, 1, 8, 30, 0, 0, DateTimeKind.Unspecified),
                             Description = "Trailer link points to the English dub trailer rather than the original Japanese one.",
+                            Header = "Trailer links to the English dub",
                             MovieId = 3,
                             ReportedByUserId = 5,
                             Status = 0
@@ -1851,6 +1859,7 @@ namespace Flix.Services.Database.Migrations
                             AdminComment = "Reviewed the synopsis; it describes the premise only and reveals no plot outcome. No change made.",
                             CreatedAt = new DateTime(2026, 3, 8, 16, 50, 0, 0, DateTimeKind.Unspecified),
                             Description = "The description contains a spoiler for the final chapter and should be reworded.",
+                            Header = "Synopsis contains a spoiler",
                             MovieId = 2,
                             ReportedByUserId = 6,
                             ResolvedAt = new DateTime(2026, 3, 9, 10, 5, 0, 0, DateTimeKind.Unspecified),
@@ -3626,6 +3635,9 @@ namespace Flix.Services.Database.Migrations
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("WatchedOn")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

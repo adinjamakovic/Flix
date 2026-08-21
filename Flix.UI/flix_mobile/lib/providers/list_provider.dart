@@ -32,6 +32,20 @@ class ListProvider extends BaseProvider<MovieListDetails> {
     });
   }
 
+  Future<void> addToList(
+    int movieId, {
+    int? listId,
+    ListType type = ListType.custom,
+  }) =>
+      postJson("AddToList", {
+        "movieId": movieId,
+        "listId": listId,
+        "type": type.index,
+      });
+
+  Future<void> removeFromWatchlist(int movieId) =>
+      deleteAction("Watchlist/$movieId");
+
   Future<List<Movie>> getWatchlistMovies({required int userId}) async {
     final SearchResult<MovieListDetails> result = await getUserLists(
       userId: userId,

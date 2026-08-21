@@ -182,10 +182,14 @@ builder.Services.AddScoped<IValidator<ListInsertRequest>, ListInsertRequestValid
 builder.Services.AddScoped<IValidator<ListUpdateRequest>, ListUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieInsertRequest>, MovieInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieUpdateRequest>, MovieUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ReviewUpsertRequest>, ReviewUpsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieRequestInsertRequest>, MovieRequestInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieRequestUpdateRequest>, MovieRequestUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioInsertRequest>, StudioInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<AddToListRequest>, AddToListRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieIssueReportInsertRequest>, MovieIssueReportInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<MovieIssueReportUpdateRequest>, MovieIssueReportUpdateRequestValidator>();
 
 //Services
 builder.Services.AddHttpContextAccessor();
@@ -211,6 +215,7 @@ builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
+builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 
 var app = builder.Build();
 

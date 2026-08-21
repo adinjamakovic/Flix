@@ -1,7 +1,9 @@
+import 'package:flix_mobile/models/movie.dart';
 import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/diary_provider.dart';
+import 'package:flix_mobile/screens/movie_details/movie_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -108,7 +110,7 @@ class _DiaryState extends State<Diary> {
     final List<_DiaryMonth> months = List.empty(growable: true);
 
     for (final Review entry in entries) {
-      final String label = _monthLabel(entry.createdAt);
+      final String label = _monthLabel(entry.loggedOn);
 
       if (months.isEmpty || months.last.label != label) {
         months.add(_DiaryMonth(label, List.empty(growable: true)));
@@ -131,16 +133,14 @@ class _DiaryState extends State<Diary> {
   String _dayLabel(DateTime? date) =>
       date == null ? "-" : date.toLocal().day.toString();
 
-  String _titleLabel(Review entry) {
-    final String title = entry.movie?.title ?? "-";
-    final int? year = entry.movie?.releaseDate?.year;
+  String _titleLabel(Review entry) =>
+      titleWithYear(entry.movie?.title, entry.movie?.releaseDate);
 
-    return year == null ? title : "$title ($year)";
-  }
-
-  void _onEntryTapped(Review entry) {
-    // TODO: open the movie details screen once it exists.
-    debugPrint("TODO: open details for movie ${entry.movie?.id}");
+  void _onEntryTapped(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MovieDetails(movieId: movie.id)),
+    );
   }
 
   @override
@@ -204,12 +204,13 @@ class _DiaryState extends State<Diary> {
 
   Widget _buildEntry(Review entry) {
     final ColorScheme colors = Theme.of(context).colorScheme;
+    final Movie? movie = entry.movie;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         InkWell(
-          onTap: () => _onEntryTapped(entry),
+          onTap: movie == null ? null : () => _onEntryTapped(movie),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
@@ -218,7 +219,7 @@ class _DiaryState extends State<Diary> {
                 const SizedBox(width: 12),
                 buildPoster(
                   context,
-                  entry.movie?.poster,
+                  movie?.poster,
                   width: _posterWidth,
                   height: _posterHeight,
                   iconSize: 18,
@@ -274,7 +275,7 @@ class _DiaryState extends State<Diary> {
         borderRadius: BorderRadius.circular(_dayBoxRadius),
       ),
       child: Text(
-        _dayLabel(entry.createdAt),
+        _dayLabel(entry.loggedOn),
         style: TextStyle(
           color: colors.onSurface,
           fontSize: 18,

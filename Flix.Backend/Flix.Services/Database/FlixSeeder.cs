@@ -1,6 +1,5 @@
 using System.Linq;
 using Flix.Model.Enums;
-using Flix.Services.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Database
@@ -1354,6 +1353,7 @@ namespace Flix.Services.Database
                     Id = 1,
                     MovieId = 7,
                     ReportedByUserId = 7,
+                    Header = "Runtime does not match the theatrical cut",
                     Description = "The runtime is listed as 122 minutes but the French theatrical cut runs 129. Worth checking which version the entry describes.",
                     Status = ReportStatus.Resolved,
                     CreatedAt = new DateTime(2026, 4, 2, 10, 45, 0),
@@ -1366,6 +1366,7 @@ namespace Flix.Services.Database
                     Id = 2,
                     MovieId = 11,
                     ReportedByUserId = 10,
+                    Header = "Listed duration matches no known version",
                     Description = "Das Boot exists as a theatrical cut, a director's cut and a television miniseries. The listed duration matches none of them cleanly.",
                     Status = ReportStatus.Open,
                     CreatedAt = new DateTime(2026, 6, 12, 20, 15, 0)
@@ -1375,6 +1376,7 @@ namespace Flix.Services.Database
                     Id = 3,
                     MovieId = 3,
                     ReportedByUserId = 5,
+                    Header = "Trailer links to the English dub",
                     Description = "Trailer link points to the English dub trailer rather than the original Japanese one.",
                     Status = ReportStatus.Open,
                     CreatedAt = new DateTime(2026, 7, 1, 8, 30, 0)
@@ -1384,6 +1386,7 @@ namespace Flix.Services.Database
                     Id = 4,
                     MovieId = 2,
                     ReportedByUserId = 6,
+                    Header = "Synopsis contains a spoiler",
                     Description = "The description contains a spoiler for the final chapter and should be reworded.",
                     Status = ReportStatus.Dismissed,
                     CreatedAt = new DateTime(2026, 3, 8, 16, 50, 0),

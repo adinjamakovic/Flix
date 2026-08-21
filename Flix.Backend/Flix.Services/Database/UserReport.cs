@@ -1,4 +1,4 @@
-using Flix.Services.Enums;
+using Flix.Model.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,21 +9,16 @@ namespace Flix.Services.Database
     {
         [Key]
         public int Id { get; set; }
-       
         public int ReporterId { get; set; }
         [ForeignKey(nameof(ReporterId))]
         public User Reporter { get; set; } = null!;
-
         public int ReportedUserId { get; set; }
         [ForeignKey(nameof(ReportedUserId))]
         public User ReportedUser { get; set; } = null!;
-
         [Required]
         [MaxLength(1000)]
         public string Reason { get; set; } = string.Empty;
-
         public ReportStatus Status { get; set; } = ReportStatus.Open;
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int? ReviewedByUserId { get; set; }
         [ForeignKey(nameof(ReviewedByUserId))]

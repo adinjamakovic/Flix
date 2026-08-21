@@ -1,8 +1,11 @@
-﻿using Flix.Model.Exceptions;
+﻿using Flix.Model.Enums;
+using Flix.Model.Exceptions;
+using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
+using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,11 +19,26 @@ namespace Flix.Services.Implementations
             Enumerable.Range(1, 10).Select(step => step * 0.5m).ToArray();
 
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IListService _listService;
+        private readonly IActivityService _activityService;
+        private readonly IValidator<ReviewUpsertRequest> _upsertValidator;
 
-        public ReviewService(FlixDbContext context, IMapper mapper, IResponseImageUrlResolver imageUrlResolver)
+        public ReviewService(
+            FlixDbContext context,
+            IMapper mapper,
+            IResponseImageUrlResolver imageUrlResolver,
+            ICurrentUserService currentUserService,
+            IListService listService,
+            IActivityService activityService,
+            IValidator<ReviewUpsertRequest> upsertValidator)
             : base(context, mapper)
         {
             _imageUrlResolver = imageUrlResolver;
+            _currentUserService = currentUserService;
+            _listService = listService;
+            _activityService = activityService;
+            _upsertValidator = upsertValidator;
         }
 
         protected override IQueryable<Review> GetDataSource()
@@ -151,6 +169,123 @@ namespace Flix.Services.Implementations
                     })
                     .ToList()
             };
+        }
+
+        public async Task<MovieUserStateResponse> GetMovieStateAsync(int movieId)
+        {
+            var userId = _currentUserService.GetUserId();
+
+            var rows = await GetUserRowsAsync(userId, movieId);
+            var opinion = PickOpinion(rows);
+
+            return new MovieUserStateResponse
+            {
+                MovieId = movieId,
+                IsWatched = rows.Count > 0,
+                IsLiked = opinion?.IsLiked ?? false,
+                Rating = opinion?.Rating,
+                IsInWatchlist = await _listService.IsInWatchlistAsync(movieId),
+                DiaryEntryCount = rows.Count(x => x.IsDiaryEntry)
+            };
+        }
+
+        public async Task<MovieUserStateResponse> UpsertStandingReviewAsync(ReviewUpsertRequest request)
+        {
+            await _upsertValidator.ValidateAndThrowAsync(request);
+
+            var userId = _currentUserService.GetUserId();
+
+            var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Id == request.MovieId)
+                ?? throw new ClientException($"Movie with Id {request.MovieId} not found.");
+
+            if (!movie.IsEnabled)
+                throw new ClientException("This movie cannot be rated.");
+
+            if (!request.IsWatched && !request.IsLiked && request.Rating is null)
+                return await ClearOpinionAsync(userId, movie.Id);
+
+            var opinion = PickOpinion(await GetUserRowsAsync(userId, movie.Id));
+
+            var wasWatched = opinion is not null;
+            var wasLiked = opinion?.IsLiked ?? false;
+
+            if (opinion is null)
+            {
+                opinion = new Review
+                {
+                    UserId = userId,
+                    MovieId = movie.Id,
+                    IsDiaryEntry = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Reviews.Add(opinion);
+            }
+            else
+            {
+                opinion.UpdatedAt = DateTime.UtcNow;
+            }
+
+            opinion.IsLiked = request.IsLiked;
+            opinion.Rating = request.Rating;
+
+            await _context.SaveChangesAsync();
+
+            if (!wasWatched)
+            {
+                await _activityService.InsertAsync(userId, new ActivityInsertRequest
+                {
+                    Type = ActivityType.WatchedMovie,
+                    MovieId = movie.Id,
+                    ReviewId = opinion.Id
+                });
+
+                await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
+            }
+
+            if (request.IsLiked && !wasLiked)
+                await _activityService.InsertAsync(userId, new ActivityInsertRequest
+                {
+                    Type = ActivityType.LikedMovie,
+                    MovieId = movie.Id,
+                    ReviewId = opinion.Id
+                });
+
+            return await GetMovieStateAsync(movie.Id);
+        }
+
+        private async Task<MovieUserStateResponse> ClearOpinionAsync(int userId, int movieId)
+        {
+            var rows = await GetUserRowsAsync(userId, movieId);
+
+            // A diary entry is the record of a viewing, and a written review with it. Neither is
+            // something a toggle gets to throw away.
+            if (rows.Any(x => x.IsDiaryEntry))
+                throw new ClientException(
+                    "This movie is in your diary, so it stays watched. Delete the diary entries to unmark it.");
+
+            var standing = rows.FirstOrDefault(x => !x.IsDiaryEntry);
+
+            if (standing is not null)
+                await DeleteAsync(standing.Id);
+
+            return await GetMovieStateAsync(movieId);
+        }
+
+        private Task<List<Review>> GetUserRowsAsync(int userId, int movieId)
+        {
+            return _context.Reviews
+                .Where(x => x.UserId == userId && x.MovieId == movieId)
+                .ToListAsync();
+        }
+
+        private static Review? PickOpinion(List<Review> rows)
+        {
+            return rows.FirstOrDefault(x => !x.IsDiaryEntry)
+                ?? rows
+                    .OrderByDescending(x => x.WatchedOn ?? x.CreatedAt)
+                    .ThenByDescending(x => x.Id)
+                    .FirstOrDefault();
         }
 
         public async Task DeleteAsync(int id)

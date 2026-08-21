@@ -1,4 +1,5 @@
-﻿using Flix.Model.Responses;
+﻿using Flix.Model.Requests;
+using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,7 @@ namespace Flix.Services.Interfaces
         Task DeleteAsync(int id);
         Task<PageResult<ReviewResponse>> GetLatestReviewsFromFriendsAsync(int userId);
         Task<ReviewCountResponse> GetReviewCountAsync(ReviewCountSearchObject? search);
+        Task<MovieUserStateResponse> GetMovieStateAsync(int movieId);
+        Task<MovieUserStateResponse> UpsertStandingReviewAsync(ReviewUpsertRequest request);
     }
 }
