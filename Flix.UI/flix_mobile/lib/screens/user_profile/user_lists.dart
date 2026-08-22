@@ -7,6 +7,7 @@ import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
 import 'package:flix_mobile/providers/list_provider.dart';
+import 'package:flix_mobile/screens/user_profile/list_details.dart';
 import 'package:flix_mobile/screens/user_profile/list_form.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
@@ -134,10 +135,10 @@ class _UserListsState extends State<UserLists> {
   bool _hasWonClash(MovieListDetails list) =>
       _clashWinnerListIds.contains(list.id);
 
-  Future<void> _openListForm() async {
+  Future<void> _openListForm([MovieListDetails? list]) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const ListForm()),
+      MaterialPageRoute(builder: (context) => ListForm(list: list)),
     );
 
     if (!mounted) return;
@@ -146,8 +147,17 @@ class _UserListsState extends State<UserLists> {
   }
 
   void _onListTapped(MovieListDetails list) {
-    // TODO: open the list details screen once it exists.
-    debugPrint("TODO: open list ${list.id}");
+    if (_isCurrentUser) {
+      _openListForm(list);
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListDetails(list: list, owner: widget.user),
+      ),
+    );
   }
 
   @override

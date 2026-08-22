@@ -1,15 +1,15 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY Flix.Backend/Flix.Backend.slnx Flix.Backend/
-COPY Flix.Backend/Flix.Model/Flix.Model.csproj Flix.Backend/Flix.Model/
-COPY Flix.Backend/Flix.CommonServices/Flix.CommonServices.csproj Flix.Backend/Flix.CommonServices/
-COPY Flix.Backend/Flix.Services/Flix.Services.csproj Flix.Backend/Flix.Services/
-COPY Flix.Backend/Flix.WebApi/Flix.WebApi.csproj Flix.Backend/Flix.WebApi/
-RUN dotnet restore "Flix.Backend/Flix.WebApi/Flix.WebApi.csproj"
+COPY Flix.Backend.slnx .
+COPY Flix.Model/Flix.Model.csproj Flix.Model/
+COPY Flix.CommonServices/Flix.CommonServices.csproj Flix.CommonServices/
+COPY Flix.Services/Flix.Services.csproj Flix.Services/
+COPY Flix.WebApi/Flix.WebApi.csproj Flix.WebApi/
+RUN dotnet restore "Flix.WebApi/Flix.WebApi.csproj"
 
 COPY . .
-RUN dotnet publish "Flix.Backend/Flix.WebApi/Flix.WebApi.csproj" -c Release --no-restore -o /app
+RUN dotnet publish "Flix.WebApi/Flix.WebApi.csproj" -c Release --no-restore -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

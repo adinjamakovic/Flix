@@ -12,14 +12,17 @@ dnevnika i pravljenje lista.
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API na SQL Serveru, slike u Azure Blob Storage-u. Četiri slojevita projekta: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin klijent — filmovi, glumci, korisnici, recenzije i clashevi, potpuni CRUD. |
-| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil, dnevnik, watchlist, liste, zahtjevi za filmove, prijave grešaka u katalogu. |
-| `docker-compose.yml` | SQL Server + RabbitMQ + API. |
+| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil i postavke naloga, dnevnik, watchlist, liste, praćenje i blokiranje korisnika, zahtjevi za filmove, prijave grešaka u katalogu i prijave korisnika. |
+| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + API; `Dockerfile` stoji uz njega. |
 
 ## Pokretanje
 
 ### Sve u Dockeru
 
+Compose fajl i `Dockerfile` stoje u `Flix.Backend/`, pa se pokreće odatle:
+
 ```powershell
+cd Flix.Backend
 docker compose up -d --build
 ```
 
@@ -129,6 +132,11 @@ sada nosi `WatchedOn`, pa se dnevnik sortira po danu gledanja, a ne po vremenu u
 *Watchlist* ide na `POST /List/AddToList` i `DELETE /List/Watchlist/{movieId}`, i zapis u
 dnevnik sam skida film sa watchliste.
 
+Zapis piše i aktivnosti, a ne samo red u `Reviews`: `WatchedMovie` uvijek, `ReviewedMovie` kada
+zapis nosi tekst i `LikedMovie` kada nosi lajk. Svaka od njih se po recenziji upisuje najviše
+jednom, pa dopunjavanje istog zapisa tekstom ili lajkom dodaje aktivnost koja je falila, a ne
+duplikat one koja već stoji.
+
 *Add to a list…* otvara sheet sa korisnikovim custom listama
 (`screens/movie_details/add_to_list_sheet.dart`) — watchlista se tu ne bira jer je toggle
 iznad, a clash liste pripadaju clashu. Dodavanje ide na `POST /List/AddToList`, koji je
@@ -144,8 +152,56 @@ admin vraća samo njegove prijave, pa i listanje i izmjena i brisanje ostaju u o
 Vlasnik svoju prijavu može mijenjati samo dok je otvorena; admin je zatvara `PUT`-om sa
 statusom i komentarom, čime se bilježi ko ju je i kada riješio.
 
-Ekrana za pregled prijava još nema — ni spiska poslanih prijava na mobilnom, ni admin ekrana na
-desktopu — pa se prijave zasad samo šalju.
+Poslane prijave korisnik čita u *Settings → My movie reports*
+(`screens/user_profile/my_issue_reports.dart`) — spisak sa statusom, adminovim komentarom i
+datumom rješavanja, samo za čitanje. Admin ekrana na desktopu još nema, pa prijave niko ne
+zatvara kroz UI.
+
+## Liste
+
+Liste se prave i uređuju na jednom ekranu (`screens/user_profile/list_form.dart`): naziv,
+opcioni opis i pretraga filmova sa debounceom, gdje se odabrani filmovi drže u listi koja se
+šalje kao `movieIds`. Isti ekran otvara i `POST /List` i `PUT /List/{id}`, ovisno o tome da li
+je dobio listu, a nudi i brisanje (`DELETE /List/{id}`, uz potvrdu, jer sa listom odlazi i
+clash u koji je prijavljena). Popuna liste nije obavezna — film se kasnije dodaje sa *Add to a
+list…* na detaljima filma.
+
+Uređivanje je vezano za vlasništvo, ne za ekran: na svom profilu tap na listu otvara formu, a
+na tuđem `screens/user_profile/list_details.dart`, koji istu listu prikazuje samo za čitanje.
+Novonapravljena lista upisuje `CreatedList` aktivnost, pa se pojavljuje i u feedu.
+
+## Praćenje, blokiranje i prijave korisnika
+
+`UserNetworkController` (`/UserNetwork`) drži sve što se tiče odnosa dva korisnika:
+`Followers/{userId}`, `Following/{userId}` i `Blocked` vraćaju stranične spiskove korisnika,
+`Relationship/{userId}` jedan `UserRelationshipResponse` sa oba smjera praćenja i blokiranja,
+a `Follow`/`Block` se dodaju `POST`-om i skidaju `DELETE`-om. Svaki od tih poziva vraća
+osvježen odnos, pa ekran ne mora ponovo pitati.
+
+Pravila stoje u `UserNetworkService`, ne u UI-ju: prati se ne može ni u jednom smjeru gdje
+postoji blokada, blokiranje briše praćenja u oba smjera, a praćenje upisuje `FollowedUser`
+aktivnost koju prestanak praćenja i blokiranje uklanjaju. Kada se dva korisnika prate uzajamno,
+`SyncFriendshipAsync` obilježava oba `UserFollow` reda kao `IsFriend`. `UserResponse` nosi
+`FollowerCount` i `FollowingCount`, pa se brojevi na profilu čitaju bez dodatnog poziva.
+
+Na mobilnom je to dugme *Follow*/*Following* na profilu, brojevi koji otvaraju
+`screens/user_profile/user_network.dart` (tabovi *Followers*, *Following*, i *Blocked* samo na
+vlastitom profilu) i meni u zaglavlju tuđeg profila sa blokiranjem i prijavom. Blokirani
+korisnik umjesto dugmeta dobija tekst, jer se blokada skida iz tog istog menija.
+
+Prijava korisnika (`POST /UserNetwork/Report`, `screens/user_profile/report_user.dart`) je
+padajuća lista razloga plus opcioni opis, i po uzoru na prijave grešaka u katalogu ostaje
+`Open` dok je admin ne zatvori. Isti korisnik se ne može prijaviti dva puta dok prethodna
+prijava stoji otvorena. Ekrana za pregled poslanih prijava korisnika još nema — stavka u
+postavkama zasad javlja da stiže.
+
+## Postavke naloga
+
+`screens/user_profile/user_settings.dart` je forma iza `PUT /User/{id}` — ime, korisničko ime,
+email, telefon, država, bio i profilna slika, uz linkove ka prijavama korisnika. Lozinka se
+mijenja u istoj formi, a prazna polja znače da ostaje postojeća, jer API rehashuje samo lozinku
+koju je dobio. Ograničenja polja prepisana su iz `UserUpdateRequestValidator` da forma padne
+prije poziva.
 
 ## Napomene
 
@@ -171,14 +227,17 @@ films, keeping a diary and building lists.
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API on SQL Server, images in Azure Blob Storage. Four layered projects: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin client — movies, cast, users, reviews and clashes, full CRUD. |
-| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile, diary, watchlist, lists, movie requests, catalog issue reports. |
-| `docker-compose.yml` | SQL Server + RabbitMQ + the API. |
+| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile and account settings, diary, watchlist, lists, following and blocking, movie requests, catalog issue reports and user reports. |
+| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + the API; the `Dockerfile` sits next to it. |
 
 ## Running it
 
 ### Everything in Docker
 
+The compose file and the `Dockerfile` live in `Flix.Backend/`, so that is where this runs from:
+
 ```powershell
+cd Flix.Backend
 docker compose up -d --build
 ```
 
@@ -288,6 +347,11 @@ because every entry after the first viewing is one. *Watchlist* goes to
 `POST /List/AddToList` and `DELETE /List/Watchlist/{movieId}`, and logging a movie takes it off
 the watchlist by itself.
 
+An entry writes activities as well as the `Reviews` row: `WatchedMovie` always, `ReviewedMovie`
+when the entry carries text and `LikedMovie` when it carries a like. Each of them is written at
+most once per review, so filling an existing entry in with text or a like adds the activity that
+was missing rather than a duplicate of one already there.
+
 *Add to a list…* opens a sheet over the user's custom lists
 (`screens/movie_details/add_to_list_sheet.dart`) — the watchlist is not among them because it
 is the toggle above, and clash lists belong to their clash. The write goes to
@@ -305,8 +369,59 @@ stay inside what the caller filed. An owner can edit a report only while it is s
 admin closes it with a `PUT` carrying the status and a comment, which records who resolved it
 and when.
 
-Nothing reads the reports back yet — there is no list of filed reports on mobile and no admin
-screen on the desktop — so for now they are only sent.
+A user reads their filed reports back under *Settings → My movie reports*
+(`screens/user_profile/my_issue_reports.dart`) — a read-only list carrying the status, the
+admin's comment and the date it was resolved. There is still no admin screen on the desktop, so
+nothing closes a report through a UI.
+
+## Lists
+
+Creating and editing a list are the same screen (`screens/user_profile/list_form.dart`): a name,
+an optional description and a debounced movie search whose picks are held in a list sent as
+`movieIds`. That screen drives both `POST /List` and `PUT /List/{id}`, depending on whether it
+was handed a list, and it also deletes (`DELETE /List/{id}`, behind a confirmation, because a
+clash the list was entered in goes with it). Filling the list is optional — a film can be added
+later from *Add to a list…* on its details screen.
+
+Editing follows ownership rather than the screen you came from: on your own profile tapping a
+list opens the form, on somebody else's it opens `screens/user_profile/list_details.dart`, which
+shows the same list read-only. A newly created list writes a `CreatedList` activity, so it turns
+up in the feed.
+
+## Following, blocking and reporting users
+
+`UserNetworkController` (`/UserNetwork`) holds everything about the relationship between two
+users: `Followers/{userId}`, `Following/{userId}` and `Blocked` return paged lists of users,
+`Relationship/{userId}` returns one `UserRelationshipResponse` carrying both directions of
+following and blocking, and `Follow`/`Block` are added with `POST` and taken off with `DELETE`.
+Every one of those calls returns the refreshed relationship, so the screen never has to ask
+again.
+
+The rules live in `UserNetworkService`, not in the UI: a follow is refused in either direction
+where a block exists, blocking removes the follows both ways, and a follow writes a
+`FollowedUser` activity that unfollowing and blocking remove again. When two users follow each
+other, `SyncFriendshipAsync` marks both `UserFollow` rows `IsFriend`. `UserResponse` carries
+`FollowerCount` and `FollowingCount`, so the numbers on a profile cost no extra call.
+
+On mobile that is the *Follow*/*Following* button on a profile, the counts that open
+`screens/user_profile/user_network.dart` (tabs *Followers*, *Following*, and *Blocked* only on
+your own profile), and the menu in another user's header carrying blocking and reporting. A
+blocked user gets a line of text instead of the button, since the block is lifted from that same
+menu.
+
+Reporting a user (`POST /UserNetwork/Report`, `screens/user_profile/report_user.dart`) is a
+dropdown of reasons plus an optional description and, like a catalog issue report, stays `Open`
+until an admin closes it. The same user cannot be reported twice while an earlier report is
+still open. There is no screen for reading filed user reports yet — the settings entry says as
+much.
+
+## Account settings
+
+`screens/user_profile/user_settings.dart` is the form behind `PUT /User/{id}` — name, username,
+email, phone, country, bio and profile photo, along with the links to the user's reports. The
+password is changed in the same form, where leaving the fields empty keeps the current one,
+because the API only rehashes a password it was actually sent. The field limits are copied from
+`UserUpdateRequestValidator` so the form fails before the round trip.
 
 ## Notes
 

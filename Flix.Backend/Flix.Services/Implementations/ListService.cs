@@ -47,6 +47,19 @@ namespace Flix.Services.Implementations
             _addToListValidator = addToListValidator;
         }
 
+        public override async Task<ListResponse> InsertAsync(ListInsertRequest request)
+        {
+            var response = await base.InsertAsync(request);
+
+            await _activityService.InsertAsync(_currentUserService.GetUserId(), new ActivityInsertRequest
+            {
+                Type = ActivityType.CreatedList,
+                MovieListId = response.Id
+            });
+
+            return response;
+        }
+
         // The list carries no image itself, but the owner's avatar and the posters of the movies
         // on it are stored blob paths until they go through the resolver.
         protected override ListResponse MapToResponse(MovieList entity)

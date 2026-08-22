@@ -32,6 +32,29 @@ class ListProvider extends BaseProvider<MovieListDetails> {
     });
   }
 
+  Future<MovieListDetails> createList({
+    required String name,
+    String? description,
+    List<int> movieIds = const [],
+  }) =>
+      insertJson({
+        "name": name,
+        "description": description,
+        "movieIds": movieIds,
+      });
+
+  Future<MovieListDetails> updateList({
+    required int id,
+    required String name,
+    String? description,
+    List<int> movieIds = const [],
+  }) =>
+      updateJson(id, {
+        "name": name,
+        "description": description,
+        "movieIds": movieIds,
+      });
+
   Future<void> addToList(
     int movieId, {
     int? listId,

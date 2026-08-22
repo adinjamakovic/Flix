@@ -52,7 +52,7 @@ services:
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=230120;User Id=sa;Password=YourStrong!Passw0rd1;TrustServerCertificate=True;MultipleActiveResultSets=True
       - ConnectionStrings__RabbitMQ=host=rabbitmq;username=admin;password=admin
     env_file:
-      - path: Flix.Backend/Flix.WebApi/.env
+      - path: Flix.WebApi/.env
         required: false
     ports:
       - "5071:5121"
