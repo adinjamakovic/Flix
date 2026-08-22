@@ -16,8 +16,10 @@ namespace Flix.Services.Database
         [ForeignKey(nameof(ReportedUserId))]
         public User ReportedUser { get; set; } = null!;
         [Required]
-        [MaxLength(1000)]
-        public string Reason { get; set; } = string.Empty;
+        [MaxLength(150)]
+        public string Header { get; set; } = string.Empty;
+        [MaxLength(2000)]
+        public string? Description { get; set; }
         public ReportStatus Status { get; set; } = ReportStatus.Open;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int? ReviewedByUserId { get; set; }

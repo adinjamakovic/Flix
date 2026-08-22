@@ -23,6 +23,8 @@ class User {
       this.bio,
       this.moviesWatched,
       this.reviewsWritten,
+      this.followerCount,
+      this.followingCount,
       this.country,
       this.reviews
       );
@@ -43,6 +45,8 @@ class User {
   final String? bio;
   final int? moviesWatched;
   final int? reviewsWritten;
+  final int? followerCount;
+  final int? followingCount;
   final Country? country;
   final List<Review>? reviews;
 
