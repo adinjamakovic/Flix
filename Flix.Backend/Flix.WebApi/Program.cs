@@ -222,6 +222,7 @@ builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
+builder.Services.AddScoped<IUserReportService, UserReportService>();
 
 var app = builder.Build();
 

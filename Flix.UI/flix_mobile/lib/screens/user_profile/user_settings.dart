@@ -5,6 +5,7 @@ import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/user_provider.dart';
 import 'package:flix_mobile/screens/user_profile/my_issue_reports.dart';
+import 'package:flix_mobile/screens/user_profile/my_user_reports.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/image_input.dart';
 import 'package:flutter/material.dart';
@@ -234,7 +235,10 @@ class _UserSettingsState extends State<UserSettings> {
             icon: Icons.person_off_outlined,
             label: "My user reports",
             subtitle: "Reports you made on other users",
-            onTap: () => showSnack(context, "User reports are coming soon."),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyUserReports()),
+            ),
           ),
           const SizedBox(height: 20),
           const Divider(),
