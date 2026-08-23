@@ -1,6 +1,7 @@
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Requests;
 using DotNetEnv;
+using Flix.Services.BackgroundServices;
 using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
@@ -223,6 +224,7 @@ builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
+builder.Services.AddHostedService<ClashStateWorkerService>();
 
 var app = builder.Build();
 

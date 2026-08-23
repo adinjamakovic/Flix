@@ -1,4 +1,5 @@
 import 'package:flix_mobile/models/movie_list.dart';
+import 'package:flix_mobile/models/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // To generate run command: "dart run build_runner build"
@@ -12,6 +13,7 @@ class ClashEntry {
     this.votes,
     this.isWinner,
     this.createdAt,
+    this.user,
     this.movieList,
   );
 
@@ -20,6 +22,7 @@ class ClashEntry {
   final int? votes;
   final bool? isWinner;
   final DateTime? createdAt;
+  final User? user;
   final MovieList? movieList;
 
   factory ClashEntry.fromJson(Map<String, dynamic> json) =>

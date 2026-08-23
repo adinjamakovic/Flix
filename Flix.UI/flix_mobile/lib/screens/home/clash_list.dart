@@ -1,10 +1,13 @@
 import 'package:flix_mobile/enums/clash_status.dart';
 import 'package:flix_mobile/models/clash.dart';
 import 'package:flix_mobile/models/clash_entry.dart';
+import 'package:flix_mobile/models/clash_vote_state.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/clash_entry_provider.dart';
 import 'package:flix_mobile/providers/clash_provider.dart';
+import 'package:flix_mobile/screens/home/clash_details.dart';
+import 'package:flix_mobile/screens/home/participate_sheet.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,11 +29,6 @@ class _ClashListState extends State<ClashList> {
   static const double _cardAccentHeight = 3;
   static const double _actionWidth = 140;
 
-  // The API has no voting endpoint yet, so there is nothing to read a
-  // remaining-vote count off - this is the per-clash allowance, not a live
-  // count, until one exists.
-  static const int _votesPerClash = 5;
-
   late ClashProvider _clashProvider;
   late ClashEntryProvider _clashEntryProvider;
   late AuthProvider _authProvider;
@@ -42,6 +40,8 @@ class _ClashListState extends State<ClashList> {
   /// The user's own entries, keyed by the clash they were made in. Drives both
   /// which completed clashes count as "previous" and which of them was won.
   Map<int, ClashEntry> _entriesByClashId = const {};
+
+  ClashVoteState? _voteState;
 
   bool _isLoading = true;
   String? _error;
@@ -75,16 +75,24 @@ class _ClashListState extends State<ClashList> {
       final List<SearchResult<Clash>> clashes = await clashRequests;
       final Map<int, ClashEntry> entries = await entriesRequest;
 
+      final Clash? current = _soonest(
+        itemsOf(clashes[0]),
+        (clash) => clash.endDate,
+      );
+
+      final ClashVoteState? voteState = await _loadVoteState(current);
+
       if (!mounted) return;
 
       setState(() {
-        _currentClash = _soonest(itemsOf(clashes[0]), (clash) => clash.endDate);
+        _currentClash = current;
         _upcomingClash = _soonest(
           itemsOf(clashes[1]),
           (clash) => clash.startDate,
         );
         _previousClashes = _participatedIn(itemsOf(clashes[2]), entries);
         _entriesByClashId = entries;
+        _voteState = voteState;
         _isLoading = false;
       });
       // Everything, not just Exception: a payload the models cannot parse throws
@@ -124,6 +132,13 @@ class _ClashListState extends State<ClashList> {
     return byClashId;
   }
 
+  Future<ClashVoteState?> _loadVoteState(Clash? clash) async {
+    final int? clashId = clash?.id;
+    if (clashId == null || _authProvider.userId == null) return null;
+
+    return _clashEntryProvider.getVoteState(clashId);
+  }
+
   /// Nothing orders clashes on the API side, so the one that matters is picked
   /// here: the active clash closing first, the upcoming one starting soonest.
   Clash? _soonest(List<Clash> clashes, DateTime? Function(Clash) dateOf) {
@@ -155,12 +170,40 @@ class _ClashListState extends State<ClashList> {
 
   bool _hasWon(Clash clash) => _entriesByClashId[clash.id]?.isWinner == true;
 
-  // Neither voting nor entering a clash has an endpoint on the API yet, so the
-  // buttons the design calls for are here but say so when tapped.
-  void _onVote() => showSnack(context, "Voting isn't available yet.");
+  Future<void> _onVote() async {
+    final Clash? clash = _currentClash;
+    if (clash == null) return;
 
-  void _onParticipate() =>
-      showSnack(context, "Entering a clash isn't available yet.");
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ClashDetails(clash: clash)),
+    );
+
+    if (!mounted) return;
+
+    try {
+      final ClashVoteState? voteState = await _loadVoteState(clash);
+
+      if (!mounted) return;
+
+      setState(() => _voteState = voteState);
+    } catch (e) {
+      if (!mounted) return;
+
+      showSnack(context, errorText(e));
+    }
+  }
+
+  Future<void> _onParticipate() async {
+    final Clash? clash = _currentClash;
+    if (clash == null) return;
+
+    final bool? entered = await showParticipateSheet(context, clash);
+
+    if (!mounted || entered != true) return;
+
+    await _load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -339,11 +382,13 @@ class _ClashListState extends State<ClashList> {
   }
 
   Widget _buildActions() {
+    final int? votesLeft = _voteState?.votesRemaining;
+
     return Column(
       children: [
         _buildActionButton(
           label: "Vote",
-          caption: "Votes left: $_votesPerClash",
+          caption: votesLeft == null ? null : "Votes left: $votesLeft",
           onPressed: _onVote,
         ),
         const SizedBox(height: 10),
