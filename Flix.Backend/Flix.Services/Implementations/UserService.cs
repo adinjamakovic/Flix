@@ -259,6 +259,8 @@ namespace Flix.Services.Implementations
                     .ThenInclude(ur => ur.Role)
                 .Include(x=>x.Reviews)
                 .ThenInclude(x=>x.Movie)
+                .Include(x => x.Followers)
+                .Include(x => x.Following)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (entity is null)

@@ -160,17 +160,23 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  Future<void> postJson(String action, Map<String, dynamic> body) async {
+  Future<dynamic> postJson(String action, [Map<String, dynamic>? body]) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    isValidResponse(await http.post(uri,
-        headers: createHeaders(), body: jsonEncode(body)));
+    return _decode(await http.post(uri,
+        headers: createHeaders(), body: body == null ? null : jsonEncode(body)));
   }
 
-  Future<void> deleteAction(String action) async {
+  Future<dynamic> deleteAction(String action) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    isValidResponse(await http.delete(uri, headers: createHeaders()));
+    return _decode(await http.delete(uri, headers: createHeaders()));
+  }
+
+  dynamic _decode(http.Response response) {
+    isValidResponse(response);
+
+    return response.body.isEmpty ? null : jsonDecode(response.body);
   }
 
   Future<T> _send(

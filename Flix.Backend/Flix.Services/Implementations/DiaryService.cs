@@ -120,13 +120,14 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            if (isNewEntry || !await HasWatchedActivityAsync(entity.Id))
-                await _activityService.InsertAsync(userId, new ActivityInsertRequest
-                {
-                    Type = ActivityType.WatchedMovie,
-                    MovieId = entity.MovieId,
-                    ReviewId = entity.Id
-                });
+            if (isNewEntry || !await HasActivityAsync(entity.Id, ActivityType.WatchedMovie))
+                await LogAsync(userId, entity, ActivityType.WatchedMovie);
+
+            if (entity.Content.Length > 0 && !await HasActivityAsync(entity.Id, ActivityType.ReviewedMovie))
+                await LogAsync(userId, entity, ActivityType.ReviewedMovie);
+
+            if (entity.IsLiked && !await HasActivityAsync(entity.Id, ActivityType.LikedMovie))
+                await LogAsync(userId, entity, ActivityType.LikedMovie);
 
             await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
 
@@ -135,10 +136,19 @@ namespace Flix.Services.Implementations
             return MapToResponse(entity);
         }
 
-        private Task<bool> HasWatchedActivityAsync(int reviewId)
+        private Task LogAsync(int userId, Review entity, ActivityType type)
         {
-            return _context.Activities.AnyAsync(x => x.ReviewId == reviewId
-                && x.Type == ActivityType.WatchedMovie);
+            return _activityService.InsertAsync(userId, new ActivityInsertRequest
+            {
+                Type = type,
+                MovieId = entity.MovieId,
+                ReviewId = entity.Id
+            });
+        }
+
+        private Task<bool> HasActivityAsync(int reviewId, ActivityType type)
+        {
+            return _context.Activities.AnyAsync(x => x.ReviewId == reviewId && x.Type == type);
         }
 
         private Task<bool> HasWatchedBeforeAsync(int userId, int movieId, DateTime watchedOn)

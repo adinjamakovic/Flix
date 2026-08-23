@@ -1,4 +1,3 @@
-Flix.UI/
 .git/
 .gitignore
 .gitattributes
@@ -8,7 +7,6 @@ Flix.UI/
 .idea/
 .history/
 .claude/
-CLAUDE.md
 .mcp.json
 *.user
 *.suo
@@ -36,6 +34,4 @@ project.fragment.lock.json
 **/*.mdf
 **/*.ldf
 **/*.ndf
-README.md
 **/*.md
-!Flix.Backend/**/*.md

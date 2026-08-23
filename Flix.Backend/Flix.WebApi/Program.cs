@@ -79,13 +79,17 @@ TypeAdapterConfig<User, UserResponse>.NewConfig()
     // author on the way so the cycle cannot come back through the nested responses.
     .Ignore(dest => dest.Reviews)
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
-    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
+    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
+    .Map(dest => dest.FollowerCount, src => src.Followers.Count)
+    .Map(dest => dest.FollowingCount, src => src.Following.Count);
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
     .IgnoreNullValues(true)
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
     .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
-    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)));
+    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
+    .Map(dest => dest.FollowerCount, src => src.Followers.Count)
+    .Map(dest => dest.FollowingCount, src => src.Following.Count);
 TypeAdapterConfig<Role, RoleResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
     .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())
@@ -190,6 +194,7 @@ builder.Services.AddScoped<IValidator<StudioUpdateRequest>, StudioUpdateRequestV
 builder.Services.AddScoped<IValidator<AddToListRequest>, AddToListRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieIssueReportInsertRequest>, MovieIssueReportInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieIssueReportUpdateRequest>, MovieIssueReportUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<UserReportInsertRequest>, UserReportInsertRequestValidator>();
 
 //Services
 builder.Services.AddHttpContextAccessor();
@@ -198,6 +203,7 @@ builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserNetworkService, UserNetworkService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddScoped<IAccessManager, AccessManager>();
@@ -216,6 +222,7 @@ builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
+builder.Services.AddScoped<IUserReportService, UserReportService>();
 
 var app = builder.Build();
 

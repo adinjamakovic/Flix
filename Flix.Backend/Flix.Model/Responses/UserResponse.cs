@@ -17,6 +17,8 @@ namespace Flix.Model.Responses
         public string? Bio { get; set; }
         public int MoviesWatched { get; set; }
         public int ReviewsWritten { get; set; }
+        public int FollowerCount { get; set; }
+        public int FollowingCount { get; set; }
         public CountryResponse? Country {get; set;}
         public List<ReviewResponse>? Reviews {get; set;}
     }
