@@ -276,16 +276,22 @@ namespace Flix.Services.Implementations
         // The profile screen shows the newest few reviews a user wrote. Mapster cannot do this leg of
         // the mapping - UserResponse.Reviews and ReviewResponse.User reference each other, so following
         // it recurses forever (see the User -> UserResponse config in Program.cs) - hence the by hand
-        // mapping
+        // mapping. The author is the profile being read, but it goes on every review anyway: a client
+        // that opens one of these has the whole review without having to carry the profile into it.
+        // It is mapped once rather than followed off each review, so the cycle cannot come back.
         private void AttachLatestReviews(UserResponse response, User entity)
         {
+            var author = _mapper.Map<UserResponse>(entity);
+
+            _imageUrlResolver.Resolve(author);
+
             response.Reviews = entity.Reviews
                 .OrderByDescending(x => x.CreatedAt)
                 .Take(LatestReviewsOnProfile)
                 .Select(review =>
                 {
                     var reviewResponse = _mapper.Map<ReviewResponse>(review);
-                    reviewResponse.User = null;
+                    reviewResponse.User = author;
 
                     _imageUrlResolver.Resolve(reviewResponse);
 

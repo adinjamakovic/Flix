@@ -1,3 +1,4 @@
+import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/review_count.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/models/user_relationship.dart';
@@ -5,6 +6,7 @@ import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/providers/user_network_provider.dart';
 import 'package:flix_mobile/screens/activity.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/screens/user_profile/user_network.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/rating_count.dart';
@@ -81,6 +83,13 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
+  void _onReviewTapped(Review review) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReviewDetails(review: review)),
+    );
+  }
+
   void _redirectToActivity() {
     Navigator.push(
       context,
@@ -146,7 +155,7 @@ class _UserProfileState extends State<UserProfile> {
         SizedBox(height: 16,),
         Divider(),
         SizedBox(height: 8,),
-        ReviewSideScroll(title: "RECENT ACTIVITY", reviews: widget.user.reviews ?? const [], isUserProfile: true,),
+        ReviewSideScroll(title: "RECENT ACTIVITY", reviews: widget.user.reviews ?? const [], onReviewTap: _onReviewTapped, isUserProfile: true,),
         if (_isCurrentUser)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

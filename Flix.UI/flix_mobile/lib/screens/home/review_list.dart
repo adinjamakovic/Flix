@@ -3,6 +3,7 @@ import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -154,8 +155,10 @@ class _ReviewListState extends State<ReviewList> {
   bool _isBy(Review review, int userId) => review.user?.id == userId;
 
   void _onReviewTapped(Review review) {
-    // TODO: open the review details screen once it exists.
-    debugPrint("TODO: open review ${review.id}");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReviewDetails(review: review)),
+    );
   }
 
   void _toggleSpoilers(Review review) {
