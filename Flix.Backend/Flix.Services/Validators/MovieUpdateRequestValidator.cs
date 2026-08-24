@@ -30,6 +30,10 @@ namespace Flix.Services.Validators
                 .GreaterThan(0)
                 .When(x => x.GenreIds != null);
 
+            RuleForEach(x => x.StudioIds)
+                .GreaterThan(0)
+                .When(x => x.StudioIds != null);
+
             RuleForEach(x => x.Credits)
                 .SetValidator(new MovieCreditRequestValidator())
                 .When(x => x.Credits != null);

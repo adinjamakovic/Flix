@@ -1,18 +1,22 @@
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
+using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
+using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Implementations
 {
-    // Reports are written through UserNetworkService.ReportAsync, so this side only reads them.
+    // Reports are created through UserNetworkService.ReportAsync, so the only write
+    // this side carries is the admin's review of one.
     public class UserReportService(
         FlixDbContext context,
         IMapper mapper,
+        IValidator<UserReportUpdateRequest> updateValidator,
         ICurrentUserService currentUserService,
         IResponseImageUrlResolver imageUrlResolver) :
         BaseReadService<
@@ -21,6 +25,7 @@ namespace Flix.Services.Implementations
             UserReportSearchObject
             >(context, mapper), IUserReportService
     {
+        private readonly IValidator<UserReportUpdateRequest> _updateValidator = updateValidator;
         private readonly ICurrentUserService _currentUserService = currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver = imageUrlResolver;
 
@@ -82,6 +87,28 @@ namespace Flix.Services.Implementations
             return query;
         }
 
+        public async Task<UserReportResponse> ReviewAsync(int id, UserReportUpdateRequest request)
+        {
+            await _updateValidator.ValidateAndThrowAsync(request);
+
+            var entity = await _context.UserReports.FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new ClientException($"{nameof(UserReport)} with Id {id} not found.");
+
+            if (request.AdminComment != null)
+                entity.AdminComment = Normalize(request.AdminComment);
+
+            if (request.Status is ReportStatus status && status != entity.Status)
+            {
+                entity.Status = status;
+                entity.ReviewedByUserId = _currentUserService.GetUserId();
+                entity.ResolvedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return await GetByIdAsync(id);
+        }
+
         public override async Task<UserReportResponse> GetByIdAsync(int id)
         {
             var entity = await GetDataSource()
@@ -93,5 +120,8 @@ namespace Flix.Services.Implementations
 
             return MapToResponse(entity);
         }
+
+        private static string? Normalize(string? value)
+            => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     }
 }

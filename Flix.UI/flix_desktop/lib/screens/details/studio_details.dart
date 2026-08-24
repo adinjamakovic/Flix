@@ -1,5 +1,7 @@
+import 'package:flix_desktop/models/movie.dart';
 import 'package:flix_desktop/models/picked_image.dart';
 import 'package:flix_desktop/models/studio.dart';
+import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/providers/studio_provider.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/image_input.dart';
@@ -18,12 +20,20 @@ class StudioDetails extends StatefulWidget {
 class _StudioDetailsState extends State<StudioDetails> {
   static const int _nameMaxLength = 100;
 
+  static const int _filmographyPageSize = 100;
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   late StudioProvider _studioProvider;
+  late MovieProvider _movieProvider;
+
+  List<Movie> _movies = List.empty();
+  int _movieCount = 0;
+  bool _moviesLoading = false;
+  bool _moviesFailed = false;
 
   PickedImage? _logo;
   bool _isSaving = false;
@@ -38,6 +48,56 @@ class _StudioDetailsState extends State<StudioDetails> {
     _descriptionController.text = widget.studio?.description ?? "";
 
     _studioProvider = context.read<StudioProvider>();
+    _movieProvider = context.read<MovieProvider>();
+
+    if (!_isNewStudio) _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    setState(() {
+      _moviesLoading = true;
+      _moviesFailed = false;
+    });
+
+    try {
+      final data = await _movieProvider.get(filter: {
+        "page": 1,
+        "pageSize": _filmographyPageSize,
+        "includeTotalCount": true,
+        "studioId": widget.studio!.id,
+        "includeCast": true,
+        "includeReviews": true,
+      });
+
+      if (!mounted) return;
+
+      final List<Movie> movies = data.items ?? List.empty();
+      // Newest first, with the undated ones after everything that has a date.
+      movies.sort((a, b) {
+        final DateTime? left = a.releaseDate;
+        final DateTime? right = b.releaseDate;
+
+        if (left == null && right == null) return 0;
+        if (left == null) return 1;
+        if (right == null) return -1;
+
+        return right.compareTo(left);
+      });
+
+      setState(() {
+        _movies = movies;
+        _movieCount = data.totalCount ?? movies.length;
+        _moviesLoading = false;
+      });
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _moviesLoading = false;
+        _moviesFailed = true;
+      });
+      alertBox(context, "Error", e.toString());
+    }
   }
 
   @override
@@ -62,11 +122,25 @@ class _StudioDetailsState extends State<StudioDetails> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 900),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(28),
-                child: _buildForm(),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: _buildForm(),
+                  ),
+                ),
+                if (!_isNewStudio) ...[
+                  const SizedBox(height: 20),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(28),
+                      child: _buildFilmography(),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
@@ -140,6 +214,200 @@ class _StudioDetailsState extends State<StudioDetails> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilmography() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Movies",
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(width: 10),
+            if (!_moviesLoading && !_moviesFailed)
+              Text(
+                formatCount(_movieCount),
+                style: TextStyle(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          "Everything ${widget.studio?.name ?? "this studio"} is credited on.",
+          style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
+        ),
+        const SizedBox(height: 18),
+        _buildFilmographyBody(),
+      ],
+    );
+  }
+
+  Widget _buildFilmographyBody() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    if (_moviesLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(
+          child: SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    if (_moviesFailed) {
+      return Row(
+        children: [
+          Text(
+            "The movies could not be loaded.",
+            style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
+          ),
+          const SizedBox(width: 8),
+          TextButton(onPressed: _loadMovies, child: const Text("Try again")),
+        ],
+      );
+    }
+
+    if (_movies.isEmpty) {
+      return Text(
+        "No movies are credited to this studio yet.",
+        style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
+      );
+    }
+
+    final int notShown = _movieCount - _movies.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < _movies.length; i++) ...[
+          if (i > 0) Divider(height: 1, color: colors.outlineVariant),
+          _buildMovieRow(_movies[i]),
+        ],
+        if (notShown > 0) ...[
+          const SizedBox(height: 12),
+          Text(
+            "and ${formatCount(notShown)} more",
+            style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildMovieRow(Movie movie) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final int? year = movie.releaseDate?.year;
+    final String director = movie.directorName ?? "-";
+    final double? rating = movie.rating;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          _buildPoster(movie),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  movie.title ?? "-",
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  "${year?.toString() ?? "Unreleased"} · $director",
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (movie.isEnabled == false) ...[
+            Text(
+              "Disabled",
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+          Row(
+            children: [
+              Icon(Icons.star_rounded, size: 18, color: colors.primary),
+              const SizedBox(width: 4),
+              Text(
+                rating == null ? "-" : formatRating(rating),
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPoster(Movie movie) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final Uri? uri = Uri.tryParse(movie.poster ?? "");
+    final bool isNetworkImage =
+        uri != null && (uri.scheme == "http" || uri.scheme == "https");
+
+    final Widget placeholder = Icon(
+      Icons.movie_outlined,
+      size: 18,
+      color: colors.onSurfaceVariant,
+    );
+
+    return Container(
+      width: 40,
+      height: 58,
+      alignment: Alignment.center,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: isNetworkImage
+          ? Image.network(
+              uri.toString(),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => placeholder,
+            )
+          : placeholder,
     );
   }
 

@@ -83,6 +83,9 @@ namespace Flix.Services.Implementations
 
             foreach (var credit in response.Cast)
                 Resolve(credit);
+
+            foreach (var studio in response.Studios)
+                Resolve(studio);
         }
 
         public void Resolve(MovieCreditResponse? response)

@@ -19,5 +19,6 @@ namespace Flix.Model.Responses
         public List<CastMemberResponse> Directors { get; set; } = new List<CastMemberResponse>();
         public List<MovieCreditResponse> Cast { get; set; } = new List<MovieCreditResponse>();
         public List<GenreResponse> Genres { get; set; } = new List<GenreResponse>();
+        public List<StudioResponse> Studios { get; set; } = new List<StudioResponse>();
     }
 }

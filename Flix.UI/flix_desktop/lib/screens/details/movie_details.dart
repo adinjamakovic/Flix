@@ -5,21 +5,30 @@ import 'package:flix_desktop/models/genre.dart';
 import 'package:flix_desktop/models/language.dart';
 import 'package:flix_desktop/models/movie.dart';
 import 'package:flix_desktop/models/movie_credit.dart';
+import 'package:flix_desktop/models/movie_request.dart';
 import 'package:flix_desktop/models/picked_image.dart';
+import 'package:flix_desktop/models/studio.dart';
 import 'package:flix_desktop/providers/cast_provider.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/genre_provider.dart';
 import 'package:flix_desktop/providers/language_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
+import 'package:flix_desktop/providers/movie_request_provider.dart';
+import 'package:flix_desktop/providers/studio_provider.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MovieDetails extends StatefulWidget {
-  const MovieDetails({super.key, this.movie});
+  const MovieDetails({super.key, this.movie}) : request = null;
+
+  MovieDetails.review({super.key, required MovieRequest submission})
+      : request = submission,
+        movie = submission.movie;
 
   final Movie? movie;
+  final MovieRequest? request;
 
   @override
   State<MovieDetails> createState() => _MovieDetailsState();
@@ -44,6 +53,8 @@ class _MovieDetailsState extends State<MovieDetails> {
   static final DateTime _minSelectableDate = DateTime(1900, 1, 1);
   static final DateTime _maxSelectableDate = DateTime(2100, 12, 31);
 
+  static const int _directorNameMaxLength = 50;
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -52,9 +63,11 @@ class _MovieDetailsState extends State<MovieDetails> {
   final TextEditingController _durationController = TextEditingController();
 
   late MovieProvider _movieProvider;
+  late final MovieRequestProvider _movieRequestProvider;
   late CountryProvider _countryProvider;
   late LanguageProvider _languageProvider;
   late GenreProvider _genreProvider;
+  late StudioProvider _studioProvider;
   late CastProvider _castProvider;
 
   List<Country> _countries = List.empty();
@@ -69,12 +82,27 @@ class _MovieDetailsState extends State<MovieDetails> {
   bool _genresLoading = true;
   final Set<int> _selectedGenreIds = <int>{};
 
+  List<Studio> _studios = List.empty();
+  bool _studiosLoading = true;
+  final Set<int> _selectedStudioIds = <int>{};
+
   List<CastMember> _castMembers = List.empty();
   bool _castMembersLoading = true;
 
   int? _directorId;
   final TextEditingController _directorNameController = TextEditingController();
   final FocusNode _directorFocusNode = FocusNode();
+
+  int? _requestedDirectorId;
+  final TextEditingController _directorFirstNameController =
+      TextEditingController();
+  final TextEditingController _directorLastNameController =
+      TextEditingController();
+  final TextEditingController _directorBiographyController =
+      TextEditingController();
+  int? _directorCountryId;
+  DateTime? _directorBirthDate;
+  PickedImage? _directorPhoto;
 
   final List<_CastCreditRow> _castRows = <_CastCreditRow>[];
 
@@ -91,6 +119,11 @@ class _MovieDetailsState extends State<MovieDetails> {
 
   bool get _isNewMovie => widget.movie?.id == null;
 
+  bool get _isReview => widget.request != null;
+
+  bool get _editsRequestedDirector =>
+      _requestedDirectorId != null && _directorId == _requestedDirectorId;
+
   @override
   void initState() {
     super.initState();
@@ -100,12 +133,17 @@ class _MovieDetailsState extends State<MovieDetails> {
     _trailerUrlController.text = widget.movie?.trailerUrl ?? "";
     _durationController.text = widget.movie?.durationMinutes?.toString() ?? "";
     _releaseDate = widget.movie?.releaseDate;
-    _isEnabled = widget.movie?.isEnabled ?? true;
+    _isEnabled = _isReview ? true : (widget.movie?.isEnabled ?? true);
     _selectedCountryId = widget.movie?.country?.id;
     _selectedLanguageId = widget.movie?.language?.id;
     _selectedGenreIds.addAll(
       (widget.movie?.genres ?? const <Genre>[])
           .map((genre) => genre.id)
+          .whereType<int>(),
+    );
+    _selectedStudioIds.addAll(
+      (widget.movie?.studios ?? const <Studio>[])
+          .map((studio) => studio.id)
           .whereType<int>(),
     );
 
@@ -129,15 +167,20 @@ class _MovieDetailsState extends State<MovieDetails> {
       )));
     }
 
+    _prefillRequestedDirector();
+
     _movieProvider = context.read<MovieProvider>();
+    if (_isReview) _movieRequestProvider = context.read<MovieRequestProvider>();
     _countryProvider = context.read<CountryProvider>();
     _languageProvider = context.read<LanguageProvider>();
     _genreProvider = context.read<GenreProvider>();
+    _studioProvider = context.read<StudioProvider>();
     _castProvider = context.read<CastProvider>();
 
     _loadCountries();
     _loadLanguages();
     _loadGenres();
+    _loadStudios();
     _loadCastMembers();
   }
 
@@ -149,10 +192,26 @@ class _MovieDetailsState extends State<MovieDetails> {
     _durationController.dispose();
     _directorNameController.dispose();
     _directorFocusNode.dispose();
+    _directorFirstNameController.dispose();
+    _directorLastNameController.dispose();
+    _directorBiographyController.dispose();
     for (final _CastCreditRow row in _castRows) {
       row.dispose();
     }
     super.dispose();
+  }
+
+  void _prefillRequestedDirector() {
+    final CastMember? director = widget.request?.requestedDirector;
+
+    if (director == null) return;
+
+    _requestedDirectorId = director.id;
+    _directorFirstNameController.text = director.firstName ?? "";
+    _directorLastNameController.text = director.lastName ?? "";
+    _directorBiographyController.text = director.biography ?? "";
+    _directorCountryId = director.country?.id;
+    _directorBirthDate = director.birthDate;
   }
 
   void _rememberName(CastMember? member) {
@@ -246,6 +305,34 @@ class _MovieDetailsState extends State<MovieDetails> {
     }
   }
 
+  Future<void> _loadStudios() async {
+    try {
+      final data = await _studioProvider.get(
+        filter: {"page": 1, "pageSize": _lookupPageSize},
+      );
+
+      if (!mounted) return;
+
+      final List<Studio> studios = data.items ?? List.empty();
+      studios.sort(
+        (a, b) =>
+            (a.name ?? "").toLowerCase().compareTo((b.name ?? "").toLowerCase()),
+      );
+
+      setState(() {
+        _studios = studios;
+        _studiosLoading = false;
+      });
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _studiosLoading = false;
+      });
+      alertBox(context, "Error", e.toString());
+    }
+  }
+
   // Deliberately unfiltered by role: the API derives a cast member's roles from
   // the credits they already have, so filtering on Director would hide anyone
   // directing for the first time — the credit created here is what makes them
@@ -283,9 +370,7 @@ class _MovieDetailsState extends State<MovieDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _isNewMovie ? "New Movie" : "Update movie: ${widget.movie!.title}",
-        ),
+        title: Text(_appBarTitle()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(32, 8, 32, 32),
@@ -304,6 +389,14 @@ class _MovieDetailsState extends State<MovieDetails> {
     );
   }
 
+  String _appBarTitle() {
+    final String title = widget.movie?.title ?? "";
+
+    if (_isReview) return "Review submission: $title";
+
+    return _isNewMovie ? "New Movie" : "Update movie: $title";
+  }
+
   Widget _buildForm() {
     return Form(
       key: _formKey,
@@ -311,6 +404,10 @@ class _MovieDetailsState extends State<MovieDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (_isReview) ...[
+            _buildSubmissionBanner(),
+            const SizedBox(height: 24),
+          ],
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -339,7 +436,14 @@ class _MovieDetailsState extends State<MovieDetails> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(child: _buildReleaseDateField()),
+                        Expanded(
+                          child: _buildDateField(
+                            label: "Release date",
+                            value: _releaseDate,
+                            onChanged: (date) =>
+                                setState(() => _releaseDate = date),
+                          ),
+                        ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: _buildTextField(
@@ -383,6 +487,8 @@ class _MovieDetailsState extends State<MovieDetails> {
           ),
           const SizedBox(height: 16),
           _buildGenrePicker(),
+          const SizedBox(height: 16),
+          _buildStudioPicker(),
           const SizedBox(height: 24),
           _buildCastAndCrew(),
           const SizedBox(height: 24),
@@ -399,28 +505,55 @@ class _MovieDetailsState extends State<MovieDetails> {
           const SizedBox(height: 16),
           _buildEnabledSwitch(),
           const SizedBox(height: 28),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: _isSaving ? null : () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton(
-                onPressed: _isSaving ? null : _save,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_isNewMovie ? "Create movie" : "Save changes"),
-              ),
-            ],
-          ),
+          _buildActions(),
         ],
       ),
+    );
+  }
+
+  Widget _buildActions() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: _isSaving ? null : () => Navigator.pop(context),
+          child: const Text("Cancel"),
+        ),
+        const SizedBox(width: 12),
+        if (_isReview) ...[
+          OutlinedButton.icon(
+            onPressed: _isSaving ? null : () => _submitReview(false),
+            icon: const Icon(Icons.block, size: 18),
+            label: const Text("Reject"),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.error,
+              side: BorderSide(color: colors.error),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+        ElevatedButton(
+          onPressed:
+              _isSaving ? null : (_isReview ? () => _submitReview(true) : _save),
+          child: _isSaving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(_isReview
+                  ? "Approve"
+                  : _isNewMovie
+                      ? "Create movie"
+                      : "Save changes"),
+        ),
+      ],
     );
   }
 
@@ -465,22 +598,29 @@ class _MovieDetailsState extends State<MovieDetails> {
     );
   }
 
-  Widget _buildReleaseDateField() {
+  Widget _buildDateField({
+    required String label,
+    required DateTime? value,
+    required void Function(DateTime?) onChanged,
+    DateTime? maxDate,
+  }) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel("Release date"),
+        _buildFieldLabel(label),
         const SizedBox(height: 6),
         FormField<DateTime>(
-          initialValue: _releaseDate,
+          initialValue: value,
           builder: (field) => InkWell(
-            onTap: _isSaving ? null : () => _pickReleaseDate(field),
+            onTap: _isSaving
+                ? null
+                : () => _pickDate(field, value, onChanged, maxDate),
             child: InputDecorator(
               decoration: InputDecoration(
                 errorText: field.errorText,
-                suffixIcon: _releaseDate == null
+                suffixIcon: value == null
                     ? Icon(
                         Icons.calendar_today_outlined,
                         size: 20,
@@ -489,19 +629,19 @@ class _MovieDetailsState extends State<MovieDetails> {
                     : IconButton(
                         icon: const Icon(Icons.close, size: 20),
                         color: colors.onSurfaceVariant,
-                        tooltip: "Clear the release date",
+                        tooltip: "Clear the ${label.toLowerCase()}",
                         onPressed: _isSaving
                             ? null
                             : () {
-                                setState(() => _releaseDate = null);
+                                onChanged(null);
                                 field.didChange(null);
                               },
                       ),
               ),
               child: Text(
-                _releaseDate == null ? "Optional" : formatDate(_releaseDate),
+                value == null ? "Optional" : formatDate(value),
                 style: TextStyle(
-                  color: _releaseDate == null
+                  color: value == null
                       ? colors.onSurfaceVariant
                       : colors.onSurface,
                   fontSize: 14,
@@ -514,19 +654,22 @@ class _MovieDetailsState extends State<MovieDetails> {
     );
   }
 
-  Future<void> _pickReleaseDate(FormFieldState<DateTime> field) async {
+  Future<void> _pickDate(
+    FormFieldState<DateTime> field,
+    DateTime? value,
+    void Function(DateTime?) onChanged,
+    DateTime? maxDate,
+  ) async {
     final DateTime? date = await showDatePickerDialog(
       context: context,
       minDate: _minSelectableDate,
-      maxDate: _maxSelectableDate,
-      selectedDate: _releaseDate,
+      maxDate: maxDate ?? _maxSelectableDate,
+      selectedDate: value,
     );
 
     if (date == null || !mounted) return;
 
-    setState(() {
-      _releaseDate = date;
-    });
+    onChanged(date);
 
     field.didChange(date);
   }
@@ -535,7 +678,7 @@ class _MovieDetailsState extends State<MovieDetails> {
     return _buildDropdownField(
       label: "Country of origin",
       value: _selectedCountryId,
-      items: _buildCountryItems(),
+      items: _buildCountryItems(widget.movie?.country),
       hint: _countriesLoading ? "Loading countries..." : "Optional",
       enabled: !_countriesLoading,
       onChanged: (value) => setState(() => _selectedCountryId = value),
@@ -555,9 +698,11 @@ class _MovieDetailsState extends State<MovieDetails> {
 
   // The lookup lists are paged, so the value already on the movie is prepended
   // when it did not come back with the page the dropdown loaded.
-  List<DropdownMenuItem<int?>> _buildCountryItems() {
+  List<DropdownMenuItem<int?>> _buildCountryItems(
+    Country? current, {
+    String emptyLabel = "No country",
+  }) {
     final List<Country> countries = List<Country>.from(_countries);
-    final Country? current = widget.movie?.country;
 
     if (current?.id != null &&
         !countries.any((country) => country.id == current!.id)) {
@@ -565,7 +710,7 @@ class _MovieDetailsState extends State<MovieDetails> {
     }
 
     return [
-      const DropdownMenuItem<int?>(value: null, child: Text("No country")),
+      DropdownMenuItem<int?>(value: null, child: Text(emptyLabel)),
       ...countries.map(
         (country) => DropdownMenuItem<int?>(
           value: country.id,
@@ -628,26 +773,55 @@ class _MovieDetailsState extends State<MovieDetails> {
   // untouched when the list is missing, so there is no way to clear them once
   // set — the form keeps at least one selected instead.
   Widget _buildGenrePicker() {
+    return _buildChipPicker(
+      label: "Genres",
+      options: _genres.map((genre) => (id: genre.id, name: genre.name)).toList(),
+      selected: _selectedGenreIds,
+      isLoading: _genresLoading,
+      loadingLabel: "Loading genres...",
+      validator: (value) =>
+          (value == null || value.isEmpty) ? "Select at least one genre" : null,
+    );
+  }
+
+  Widget _buildStudioPicker() {
+    return _buildChipPicker(
+      label: "Studios",
+      options:
+          _studios.map((studio) => (id: studio.id, name: studio.name)).toList(),
+      selected: _selectedStudioIds,
+      isLoading: _studiosLoading,
+      loadingLabel: "Loading studios...",
+    );
+  }
+
+  Widget _buildChipPicker({
+    required String label,
+    required List<({int? id, String? name})> options,
+    required Set<int> selected,
+    required bool isLoading,
+    required String loadingLabel,
+    String? Function(Set<int>?)? validator,
+  }) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel("Genres"),
+        _buildFieldLabel(label),
         const SizedBox(height: 6),
         FormField<Set<int>>(
-          initialValue: _selectedGenreIds,
-          validator: (value) =>
-              (value == null || value.isEmpty) ? "Select at least one genre" : null,
+          initialValue: selected,
+          validator: validator,
           builder: (field) => InputDecorator(
             decoration: InputDecoration(
               errorText: field.errorText,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
-            child: _genresLoading
+            child: isLoading
                 ? Text(
-                    "Loading genres...",
+                    loadingLabel,
                     style: TextStyle(
                       color: colors.onSurfaceVariant,
                       fontSize: 14,
@@ -656,36 +830,36 @@ class _MovieDetailsState extends State<MovieDetails> {
                 : Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: _genres.map((genre) {
-                      final int? id = genre.id;
-                      final bool selected =
-                          id != null && _selectedGenreIds.contains(id);
+                    children: options.map((option) {
+                      final int? id = option.id;
+                      final bool isSelected =
+                          id != null && selected.contains(id);
 
                       return FilterChip(
-                        label: Text(genre.name ?? "-"),
-                        selected: selected,
+                        label: Text(option.name ?? "-"),
+                        selected: isSelected,
                         showCheckmark: false,
                         selectedColor: colors.primary.withValues(alpha: 0.12),
                         side: BorderSide(
-                          color: selected ? colors.primary : colors.outline,
+                          color: isSelected ? colors.primary : colors.outline,
                         ),
                         labelStyle: TextStyle(
-                          color: selected ? colors.primary : colors.onSurface,
+                          color: isSelected ? colors.primary : colors.onSurface,
                           fontSize: 13,
                           fontWeight:
-                              selected ? FontWeight.w600 : FontWeight.w400,
+                              isSelected ? FontWeight.w600 : FontWeight.w400,
                         ),
                         onSelected: (id == null || _isSaving)
                             ? null
                             : (value) {
                                 setState(() {
                                   if (value) {
-                                    _selectedGenreIds.add(id);
+                                    selected.add(id);
                                   } else {
-                                    _selectedGenreIds.remove(id);
+                                    selected.remove(id);
                                   }
                                 });
-                                field.didChange(_selectedGenreIds);
+                                field.didChange(selected);
                               },
                       );
                     }).toList(),
@@ -714,6 +888,10 @@ class _MovieDetailsState extends State<MovieDetails> {
         ),
         const SizedBox(height: 12),
         _buildDirectorPicker(),
+        if (_editsRequestedDirector) ...[
+          const SizedBox(height: 16),
+          _buildRequestedDirectorFields(),
+        ],
         const SizedBox(height: 16),
         _buildFieldLabel("Cast"),
         const SizedBox(height: 6),
@@ -764,6 +942,176 @@ class _MovieDetailsState extends State<MovieDetails> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSubmissionBanner() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    final MovieRequest request = widget.request!;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.fact_check_outlined, size: 22, color: colors.primary),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Submitted by ${request.requestedByUser?.username ?? "-"} "
+                  "on ${formatDate(request.createdAt)}",
+                  style: TextStyle(
+                    color: colors.onSurface,
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Everything below is what they sent in, and only partially "
+                  "correct by design. Approving saves these fields onto the "
+                  "movie the catalogue gets.",
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 13,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRequestedDirectorFields() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    final CastMember director = widget.request!.requestedDirector!;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "New cast member",
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "\"${director.fullName ?? "-"}\" matched nobody in the catalogue, "
+            "so the submission created them. Fill them in, or pick an existing "
+            "director above and they are dropped with the credit.",
+            style: TextStyle(
+              color: colors.onSurfaceVariant,
+              fontSize: 13,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ImageInput(
+                label: "Photo",
+                helperText: "JPG, PNG, GIF or WEBP, up to 5 MB.",
+                placeholderIcon: Icons.person_outline,
+                enabled: !_isSaving,
+                size: 132,
+                onChanged: (image) => _directorPhoto = image,
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            label: "First name",
+                            controller: _directorFirstNameController,
+                            validator: (value) =>
+                                requiredValidator(value) ??
+                                maxLengthValidator(
+                                    value, _directorNameMaxLength),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(
+                            label: "Last name",
+                            controller: _directorLastNameController,
+                            validator: (value) =>
+                                maxLengthValidator(value, _directorNameMaxLength),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildDropdownField(
+                            label: "Nationality",
+                            value: _directorCountryId,
+                            items: _buildCountryItems(
+                              director.country,
+                              emptyLabel: "Leave as it is",
+                            ),
+                            hint: _countriesLoading
+                                ? "Loading countries..."
+                                : "Optional",
+                            enabled: !_countriesLoading,
+                            onChanged: (value) =>
+                                setState(() => _directorCountryId = value),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildDateField(
+                            label: "Birth date",
+                            value: _directorBirthDate,
+                            maxDate: DateTime.now(),
+                            onChanged: (date) =>
+                                setState(() => _directorBirthDate = date),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildTextField(
+            label: "Biography",
+            hint: "Optional",
+            controller: _directorBiographyController,
+            maxLines: 3,
+            validator: (_) => null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -967,7 +1315,7 @@ class _MovieDetailsState extends State<MovieDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Enabled",
+              _isReview ? "Publish on approval" : "Enabled",
               style: TextStyle(
                 color: colors.onSurface,
                 fontSize: 14,
@@ -975,7 +1323,10 @@ class _MovieDetailsState extends State<MovieDetails> {
               ),
             ),
             Text(
-              "Disabled movies stay in the catalogue but are hidden from users.",
+              _isReview
+                  ? "Turn this off to approve the movie into the catalogue but "
+                      "keep it hidden from users for now."
+                  : "Disabled movies stay in the catalogue but are hidden from users.",
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
             ),
           ],
@@ -1021,23 +1372,8 @@ class _MovieDetailsState extends State<MovieDetails> {
       _isSaving = true;
     });
 
-    final Map<String, dynamic> fields = {
-      "title": _titleController.text.trim(),
-      "description": _nullIfBlank(_descriptionController.text),
-      "trailerUrl": _nullIfBlank(_trailerUrlController.text),
-      "releaseDate": _releaseDate,
-      "durationMinutes": _nullIfBlank(_durationController.text),
-      "isEnabled": _isEnabled,
-      "countryId": _selectedCountryId,
-      "languageId": _selectedLanguageId,
-      "genreIds": _selectedGenreIds.toList(),
-      "credits": _buildCredits(),
-    };
-
-    final Map<String, PickedImage> files = {
-      "moviePoster": ?_poster,
-      "headerImage": ?_headerImage,
-    };
+    final Map<String, dynamic> fields = _buildMovieFields();
+    final Map<String, PickedImage> files = _buildMovieFiles();
 
     try {
       if (_isNewMovie) {
@@ -1056,6 +1392,93 @@ class _MovieDetailsState extends State<MovieDetails> {
       });
       alertBox(context, "Error", e.toString());
     }
+  }
+
+  Future<void> _submitReview(bool approved) async {
+    if (approved && !(_formKey.currentState?.validate() ?? false)) return;
+
+    if (!approved) {
+      final String title = _titleController.text.trim();
+
+      final bool confirmed = await confirmBox(
+        context,
+        "Reject submission",
+        "Reject ${title.isEmpty ? "this submission" : title}? It stays out of "
+            "the catalogue, and the requester cannot send it again for review.",
+        confirmLabel: "Reject",
+      );
+
+      if (!confirmed || !mounted) return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    final Map<String, dynamic> fields = {
+      ..._buildMovieFields(),
+      "isApproved": approved,
+      ..._buildRequestedDirectorFieldValues(),
+    };
+
+    final Map<String, PickedImage> files = {
+      ..._buildMovieFiles(),
+      if (_editsRequestedDirector && _directorPhoto != null)
+        "directorPhoto": _directorPhoto!,
+    };
+
+    try {
+      await _movieRequestProvider.review(
+        widget.request!.id!,
+        fields,
+        files: files,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isSaving = false;
+      });
+      alertBox(context, "Error", e.toString());
+    }
+  }
+
+  Map<String, dynamic> _buildMovieFields() {
+    return {
+      "title": _titleController.text.trim(),
+      "description": _nullIfBlank(_descriptionController.text),
+      "trailerUrl": _nullIfBlank(_trailerUrlController.text),
+      "releaseDate": _releaseDate,
+      "durationMinutes": _nullIfBlank(_durationController.text),
+      "isEnabled": _isEnabled,
+      "countryId": _selectedCountryId,
+      "languageId": _selectedLanguageId,
+      "genreIds": _selectedGenreIds.toList(),
+      "studioIds": _selectedStudioIds.toList(),
+      "credits": _buildCredits(),
+    };
+  }
+
+  Map<String, PickedImage> _buildMovieFiles() {
+    return {
+      "moviePoster": ?_poster,
+      "headerImage": ?_headerImage,
+    };
+  }
+
+  Map<String, dynamic> _buildRequestedDirectorFieldValues() {
+    if (!_editsRequestedDirector) return const {};
+
+    return {
+      "directorFirstName": _directorFirstNameController.text.trim(),
+      "directorLastName": _directorLastNameController.text.trim(),
+      "directorCountryId": _directorCountryId,
+      "directorBirthDate": _directorBirthDate,
+      "directorBiography": _nullIfBlank(_directorBiographyController.text),
+    };
   }
 
   // The director is just another credit, so it goes out in the same list as the

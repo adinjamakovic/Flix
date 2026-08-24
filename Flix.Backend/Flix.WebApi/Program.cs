@@ -120,6 +120,9 @@ TypeAdapterConfig<Movie, MovieResponse>.NewConfig()
     .Map(dest => dest.Cast, src => src.Credits
                                                                 .Where(x => x.Role != CastRole.Director)
                                                                 .OrderBy(x => x.OrderOfAppearence)
+                                                                .ToList())
+    .Map(dest => dest.Studios, src => src.Studios
+                                                                .Select(x => x.Studio)
                                                                 .ToList());
 TypeAdapterConfig<Clash, ClashResponse>.NewConfig()
     .Map(dest => dest.Participants, src => src.Entries.Count)
@@ -157,8 +160,8 @@ TypeAdapterConfig<ClashInsertRequest, Clash>.NewConfig().Ignore(dest => dest.Ban
 TypeAdapterConfig<ClashUpdateRequest, Clash>.NewConfig().Ignore(dest => dest.BannerImage!);
 TypeAdapterConfig<CountryInsertRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
 TypeAdapterConfig<CountryUpdateRequest, Country>.NewConfig().Ignore(dest => dest.FlagImage!);
-TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
-TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!);
+TypeAdapterConfig<MovieInsertRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!, dest => dest.Studios!);
+TypeAdapterConfig<MovieUpdateRequest, Movie>.NewConfig().Ignore(dest => dest.Poster!, dest => dest.HeaderImage!, dest => dest.Credits!, dest => dest.Studios!);
 TypeAdapterConfig<StudioInsertRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
 TypeAdapterConfig<StudioUpdateRequest, Studio>.NewConfig().Ignore(dest => dest.Logo!);
 TypeAdapterConfig<UserInsertRequest, User>.NewConfig().Ignore(dest => dest.ProfileImage!);
@@ -196,6 +199,7 @@ builder.Services.AddScoped<IValidator<AddToListRequest>, AddToListRequestValidat
 builder.Services.AddScoped<IValidator<MovieIssueReportInsertRequest>, MovieIssueReportInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<MovieIssueReportUpdateRequest>, MovieIssueReportUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<UserReportInsertRequest>, UserReportInsertRequestValidator>();
+builder.Services.AddScoped<IValidator<UserReportUpdateRequest>, UserReportUpdateRequestValidator>();
 
 //Services
 builder.Services.AddHttpContextAccessor();

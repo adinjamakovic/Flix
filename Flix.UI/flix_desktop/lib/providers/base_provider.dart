@@ -76,8 +76,9 @@ abstract class BaseProvider<T> with ChangeNotifier {
     int id,
     Map<String, dynamic> fields, {
     Map<String, PickedImage> files = const {},
+    String? action,
   }) async {
-    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+    var uri = Uri.parse("$_baseUrl$_endpoint/${action == null ? "" : "$action/"}$id");
 
     return _send(http.MultipartRequest("PUT", uri), fields, files);
   }

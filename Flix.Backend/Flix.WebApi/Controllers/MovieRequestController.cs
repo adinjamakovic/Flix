@@ -41,6 +41,17 @@ namespace Flix.WebApi.Controllers
             var result = await _service.UserRequest(request);
             return Ok(result);
         }
+
+        [HttpPut("AdminReview/{id}")]
+        [Authorization("Admin")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MovieRequestResponse>> AdminReview(int id, [FromForm] MovieRequestUpdateRequest request)
+        {
+            var result = await _service.AdminReview(id, request);
+            return Ok(result);
+        }
     }
 
 }

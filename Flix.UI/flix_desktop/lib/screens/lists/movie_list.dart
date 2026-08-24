@@ -5,6 +5,7 @@ import 'package:flix_desktop/models/search_result.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/screens/details/movie_details.dart';
+import 'package:flix_desktop/screens/lists/movie_request_list.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/paged_table.dart';
 import 'package:flutter/material.dart';
@@ -121,6 +122,7 @@ class _MovieListState extends State<MovieList> {
       // collections, which the API only loads when these are set.
       "includeCast": true,
       "includeReviews": true,
+      "isEnabled": true,
     };
 
     if(_directorController.text.trim().isNotEmpty) {
@@ -209,14 +211,13 @@ class _MovieListState extends State<MovieList> {
     if (choice == null || !mounted) return;
 
     switch (choice) {
-      // Submissions are not built yet; the button is here so the flow reads
-      // the way it will once they are.
       case _AddMovieChoice.reviewSubmissions:
-        alertBox(
+        await Navigator.push(
           context,
-          "Submissions",
-          "Reviewing user submissions is not available yet.",
+          MaterialPageRoute(builder: (context) => const MovieRequestList()),
         );
+
+        if (mounted) await _search();
       case _AddMovieChoice.blankForm:
         await _openDetails();
     }

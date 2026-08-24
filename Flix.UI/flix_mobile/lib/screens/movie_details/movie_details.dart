@@ -329,47 +329,51 @@ class _MovieDetailsState extends State<MovieDetails>
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          movie.title ?? "-",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 24,
-                          ),
-                        ),
-                        Text(
-                          "${movie.releaseDate?.year.toString() ?? ""}   DIRECTED BY",
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            debugPrint("TODO: cast screen");
-                          },
-                          child: Text(
-                            movie.director?.fullName ?? "Unknown",
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            movie.title ?? "-",
                             style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 24,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          "Duration: ${_movie?.durationMinutes ?? "unknown"} minutes",
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w400,
+                          Text(
+                            "${movie.releaseDate?.year.toString() ?? ""}   DIRECTED BY",
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                        ),
-                      ],
+                          GestureDetector(
+                            onTap: () {
+                              debugPrint("TODO: cast screen");
+                            },
+                            child: Text(
+                              movie.director?.fullName ?? "Unknown",
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            "Duration: ${_movie?.durationMinutes ?? "unknown"} minutes",
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
+                      flex: 1,
                       child: ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

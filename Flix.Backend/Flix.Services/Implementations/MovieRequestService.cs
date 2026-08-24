@@ -26,6 +26,7 @@ namespace Flix.Services.Implementations
         private readonly ICurrentUserService _currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly IMovieService _movieService;
         private readonly string _rabbitMqConnectionString;
         protected readonly IValidator<MovieRequestInsertRequest> _insertValidator;
         protected readonly IValidator<MovieRequestUpdateRequest> _updateValidator;
@@ -36,6 +37,7 @@ namespace Flix.Services.Implementations
             ICurrentUserService currentUserService,
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
+            IMovieService movieService,
             IConfiguration configuration,
             IValidator<MovieRequestInsertRequest> insertValidator,
             IValidator<MovieRequestUpdateRequest> updateValidator)
@@ -45,6 +47,7 @@ namespace Flix.Services.Implementations
             _currentUserService = currentUserService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _movieService = movieService;
             _rabbitMqConnectionString = configuration.GetConnectionString("RabbitMQ")
                 ?? throw new InvalidOperationException("Connection string 'RabbitMQ' is not configured.");
             _insertValidator = insertValidator;
@@ -60,9 +63,104 @@ namespace Flix.Services.Implementations
 
             return response;
         }
-        public Task<MovieRequestResponse> AdminReview(MovieRequestUpdateRequest request)
+        
+        public async Task<MovieRequestResponse> AdminReview(int id, MovieRequestUpdateRequest request)
         {
-            throw new NotImplementedException();
+            await _updateValidator.ValidateAndThrowAsync(request);
+
+            var reviewedByUserId = _currentUserService.GetUserId();
+
+            var entity = await IncludeCreatedMovie(IncludeRequestedBy(GetDataSource()))
+                .FirstOrDefaultAsync(x => x.Id == id)
+                ?? throw new ClientException($"{nameof(MovieRequest)} with Id {id} not found.");
+
+            if (entity.Status != MovieRequestStatus.Pending)
+                throw new ClientException("This request has already been reviewed.");
+
+            var movie = entity.CreatedMovie
+                ?? throw new ClientException("This request has no movie to review.");
+
+            var placeholderDirector = await FindPlaceholderDirectorAsync(movie);
+
+            var keepsPlaceholder = placeholderDirector is not null
+                && (request.Credits is null || request.Credits.Any(x => x.CastMemberId == placeholderDirector.Id));
+
+            if (HasDirectorEdit(request))
+            {
+                if (!keepsPlaceholder)
+                    throw new ClientException(
+                        "Only a director the requester typed in can be modified here. Pick one from the cast list through the movie's credits instead.");
+
+                await ApplyDirectorEditAsync(placeholderDirector!, request);
+            }
+
+            await _movieService.UpdateAsync(movie.Id, request);
+
+            movie.IsEnabled = request.IsApproved && request.IsEnabled;
+
+            if (placeholderDirector is not null && !keepsPlaceholder)
+                _context.CastMembers.Remove(placeholderDirector);
+
+            entity.Status = request.IsApproved ? MovieRequestStatus.Approved : MovieRequestStatus.Rejected;
+            entity.ReviewedByUserId = reviewedByUserId;
+            entity.ReviewedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return MapToResponse(entity);
+        }
+
+        private static bool HasDirectorEdit(MovieRequestUpdateRequest request)
+            => request.DirectorFirstName is not null
+                || request.DirectorLastName is not null
+                || request.DirectorCountryId.HasValue
+                || request.DirectorBirthDate.HasValue
+                || request.DirectorBiography is not null
+                || request.DirectorPhoto is not null;
+
+        private async Task<CastMember?> FindPlaceholderDirectorAsync(Movie movie)
+        {
+            var director = movie.Credits.FirstOrDefault(x => x.Role == CastRole.Director)?.CastMember;
+
+            if (director is null)
+                return null;
+
+            if (!string.IsNullOrEmpty(director.Biography) || director.BirthDate is not null || director.Photo is not null)
+                return null;
+
+            var creditCount = await _context.MovieCasts.CountAsync(x => x.CastMemberId == director.Id);
+
+            return creditCount == 1 ? director : null;
+        }
+
+        private async Task ApplyDirectorEditAsync(CastMember director, MovieRequestUpdateRequest request)
+        {
+            if (request.DirectorFirstName is not null)
+                director.FirstName = request.DirectorFirstName.Trim();
+
+            if (request.DirectorLastName is not null)
+                director.LastName = request.DirectorLastName.Trim();
+
+            if (request.DirectorCountryId.HasValue)
+            {
+                var country = await _context.Countries.FindAsync(request.DirectorCountryId.Value)
+                    ?? throw new ClientException($"Country with Id {request.DirectorCountryId.Value} not found.");
+
+                director.CountryId = country.Id;
+                director.Country = country;
+            }
+
+            if (request.DirectorBirthDate.HasValue)
+                director.BirthDate = request.DirectorBirthDate.Value;
+
+            if (request.DirectorBiography is not null)
+                director.Biography = request.DirectorBiography.Trim();
+
+            if (request.DirectorPhoto is not null)
+                director.Photo = await _imageStorageService.ReplaceIfUploadedAsync(
+                    ImageStorageCategory.CastMember,
+                    director.Photo,
+                    request.DirectorPhoto);
         }
 
         public async Task<CastMember?> CreateDraftDirectorAsync(string? directorName)
@@ -249,6 +347,7 @@ namespace Flix.Services.Implementations
                 .Include(x => x.CreatedMovie!).ThenInclude(m => m.Country)
                 .Include(x => x.CreatedMovie!).ThenInclude(m => m.Language)
                 .Include(x => x.CreatedMovie!).ThenInclude(m => m.Genres)
+                .Include(x => x.CreatedMovie!).ThenInclude(m => m.Studios).ThenInclude(ms => ms.Studio)
                 .Include(x => x.CreatedMovie!).ThenInclude(m => m.Credits).ThenInclude(c => c.CastMember);
     }
 }

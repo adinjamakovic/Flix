@@ -1,4 +1,6 @@
 import 'package:flix_mobile/models/movie.dart';
+import 'package:flix_mobile/models/studio.dart';
+import 'package:flix_mobile/screens/studio_profile.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,6 +17,9 @@ class DetailsTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildLabel(context, "Studio"),
+        _buildStudios(context),
+        const SizedBox(height: 20),
         _buildLabel(context, "Trailer"),
         _buildTrailer(context),
         const SizedBox(height: 20),
@@ -62,6 +67,61 @@ class DetailsTab extends StatelessWidget {
           fontWeight: FontWeight.w700,
           letterSpacing: 0.8,
         ),
+      ),
+    );
+  }
+
+  Widget _buildStudios(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final List<Studio> studios = (movie.studios ?? const [])
+        .where((studio) => studio.id != null)
+        .toList();
+
+    if (studios.isEmpty) {
+      return buildEmpty(context, "No studio listed for this movie.");
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final Studio studio in studios)
+          InkWell(
+            onTap: () => _openStudio(context, studio),
+            borderRadius: BorderRadius.circular(4),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    studio.name ?? "-",
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(Icons.chevron_right, size: 18, color: colors.primary),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _openStudio(BuildContext context, Studio studio) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudioProfile(studioId: studio.id),
       ),
     );
   }

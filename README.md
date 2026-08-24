@@ -2,7 +2,7 @@
 
 **English below — [skoči na englesku verziju](#english) / [jump to the English version](#english)**
 
-Platforma za katalog filmova po uzoru na Letterboxd: ASP.NET Core API, Flutter desktop klijent
+Platforma za katalog filmova: ASP.NET Core API, Flutter desktop klijent
 za administraciju kataloga i Flutter mobilni klijent za pregled filmova, ocjenjivanje, vođenje
 dnevnika i pravljenje lista.
 
@@ -217,7 +217,7 @@ prije poziva.
 
 # Flix (English)
 
-A movie-catalog platform in the shape of Letterboxd: an ASP.NET Core API with a Flutter
+A movie-catalog platform: an ASP.NET Core API with a Flutter
 admin client for managing the catalog and a Flutter mobile client for browsing it, rating
 films, keeping a diary and building lists.
 

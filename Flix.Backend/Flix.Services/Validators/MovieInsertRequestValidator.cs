@@ -29,6 +29,9 @@ namespace Flix.Services.Validators
             RuleForEach(x => x.GenreIds)
                 .GreaterThan(0);
 
+            RuleForEach(x => x.StudioIds)
+                .GreaterThan(0);
+
             RuleForEach(x => x.Credits)
                 .SetValidator(new MovieCreditRequestValidator());
 
