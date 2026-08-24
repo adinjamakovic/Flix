@@ -3,13 +3,14 @@ import 'package:flix_desktop/screens/lists/cast_list.dart';
 import 'package:flix_desktop/screens/lists/clash_list.dart';
 import 'package:flix_desktop/screens/lists/review_list.dart';
 import 'package:flix_desktop/screens/login.dart';
+import 'package:flix_desktop/screens/miscellaneous.dart';
 import 'package:flix_desktop/screens/statistics.dart';
 import 'package:flix_desktop/screens/lists/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../screens/lists/movie_list.dart';
 
-enum DrawerDestination { movies, cast, users, reviews, clashes, statistics }
+enum DrawerDestination { movies, cast, users, reviews, clashes, statistics, cruds }
 
 class MasterScreen extends StatefulWidget {
   const MasterScreen({
@@ -34,6 +35,7 @@ class _MasterScreenState extends State<MasterScreen> {
     _DrawerItem(DrawerDestination.reviews, Icons.star_border, "Reviews", ReviewList()),
     _DrawerItem(DrawerDestination.clashes, Icons.emoji_events_outlined, "Clashes", ClashList()),
     _DrawerItem(DrawerDestination.statistics, Icons.bar_chart, "Statistics", Statistics()),
+    _DrawerItem(DrawerDestination.cruds, Icons.more, "Miscellaneous CRUDs", Miscellaneous()),
   ];
 
   @override

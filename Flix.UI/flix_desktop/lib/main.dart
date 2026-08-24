@@ -8,6 +8,7 @@ import 'package:flix_desktop/providers/language_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
 import 'package:flix_desktop/providers/review_provider.dart';
 import 'package:flix_desktop/providers/role_provider.dart';
+import 'package:flix_desktop/providers/studio_provider.dart';
 import 'package:flix_desktop/providers/user_provider.dart';
 import 'package:flix_desktop/screens/login.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,8 @@ void main() {
             ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
             ChangeNotifierProvider(create: (_) => RoleProvider()),
             ChangeNotifierProvider(create: (_) => GenreProvider()),
-            ChangeNotifierProvider(create: (_) => LanguageProvider())
+            ChangeNotifierProvider(create: (_) => LanguageProvider()),
+            ChangeNotifierProvider(create: (_) => StudioProvider())
           ],
         child: const MyApp()));
 }

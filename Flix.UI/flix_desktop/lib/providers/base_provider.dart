@@ -66,6 +66,28 @@ abstract class BaseProvider<T> with ChangeNotifier {
     return _send(http.MultipartRequest("PUT", uri), fields, files);
   }
 
+  Future<T> insertJson(Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint");
+
+    return _parse(
+        await http.post(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  Future<T> updateJson(int id, Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    return _parse(
+        await http.put(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  T _parse(http.Response response) {
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   Future<void> delete(int id) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$id");
 
