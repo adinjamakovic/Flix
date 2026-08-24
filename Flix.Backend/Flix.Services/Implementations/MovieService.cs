@@ -26,6 +26,7 @@ namespace Flix.Services.Implementations
         // The friends list feeds a single home-screen row, so it is capped the same way
         // the weekly popular row is rather than taking a count from the caller.
         private const int PopularWithFriendsCount = 7;
+        private const int PopularMoviesCount = 20;
 
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
@@ -124,6 +125,7 @@ namespace Flix.Services.Implementations
         protected override async Task BeforeInsertAsync(Movie entity, MovieInsertRequest request)
         {
             entity.Views = 0;
+            entity.CreatedAt = DateTime.UtcNow;
             entity.Genres = await LoadGenresAsync(request.GenreIds);
             entity.Credits = await BuildCreditsAsync(request.Credits);
             var moviePosterImagePath = await _imageStorageService.SaveAsync(ImageStorageCategory.Movie, request.MoviePoster);
@@ -351,6 +353,18 @@ namespace Flix.Services.Implementations
                 Items = movies,
                 TotalCount = movies.Count
             };
+        }
+
+        public async Task<List<MovieResponse>> GetPopularMoviesAsync()
+        {
+            var movies = await GetDataSource()
+                .Include(x => x.Reviews)
+                .Where(x => x.IsEnabled)
+                .OrderByDescending(x => x.Reviews.Count())
+                .Take(PopularMoviesCount)
+                .ToListAsync();
+
+            return movies.Select(MapToResponse).ToList();
         }
     }
 }

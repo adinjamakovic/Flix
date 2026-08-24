@@ -19,6 +19,7 @@ namespace Flix.Services.Implementations
         // As many as the profile screen can comfortably show.
         private const int LatestReviewsOnProfile = 4;
         private const string WatchlistName = "Watchlist";
+        private const int MostActiveUsersCount = 20;
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageStorageService _imageStorageService;
@@ -317,5 +318,17 @@ namespace Flix.Services.Implementations
                 .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastLoginAt, DateTime.UtcNow));
         }
 
+        public async Task<List<UserResponse>> GetMostActiveUsersAsync()
+        {
+            var users = await GetDataSource()
+                .Include(x => x.Country)
+                .Include(x => x.Reviews)
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.Reviews.Count())
+                .Take(MostActiveUsersCount)
+                .ToListAsync();
+
+            return users.Select(MapToResponse).ToList();
+        }
     }
 }

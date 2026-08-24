@@ -4,6 +4,7 @@ using Flix.Services.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Flix.Services.Database.Migrations
 {
     [DbContext(typeof(FlixDbContext))]
-    partial class FlixDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260824120843_MovieCreatedAt")]
+    partial class MovieCreatedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1094,7 +1097,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1972, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Godfather",
                             TrailerUrl = "https://www.youtube.com/watch?v=sY1S34973zA",
-                            Views = 45
+                            Views = 184320
                         },
                         new
                         {
@@ -1110,7 +1113,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1994, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Pulp Fiction",
                             TrailerUrl = "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
-                            Views = 43
+                            Views = 167845
                         },
                         new
                         {
@@ -1126,7 +1129,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2001, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Spirited Away",
                             TrailerUrl = "https://www.youtube.com/watch?v=ByXuk9QqQkk",
-                            Views = 40
+                            Views = 142190
                         },
                         new
                         {
@@ -1142,7 +1145,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2019, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Parasite",
                             TrailerUrl = "https://www.youtube.com/watch?v=5xH0HfJHsaY",
-                            Views = 40
+                            Views = 158073
                         },
                         new
                         {
@@ -1158,7 +1161,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2010, 7, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Inception",
                             TrailerUrl = "https://www.youtube.com/watch?v=YoHD9XEInc0",
-                            Views = 42
+                            Views = 203557
                         },
                         new
                         {
@@ -1174,7 +1177,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2008, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Dark Knight",
                             TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY",
-                            Views = 37
+                            Views = 221408
                         },
                         new
                         {
@@ -1190,7 +1193,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2001, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Amelie",
                             TrailerUrl = "https://www.youtube.com/watch?v=HUECWi5pX7o",
-                            Views = 34
+                            Views = 96412
                         },
                         new
                         {
@@ -1206,7 +1209,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1988, 11, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Cinema Paradiso",
                             TrailerUrl = "https://www.youtube.com/watch?v=Ah0kPnzzrs4",
-                            Views = 34
+                            Views = 74265
                         },
                         new
                         {
@@ -1222,7 +1225,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2022, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Everything Everywhere All at Once",
                             TrailerUrl = "https://www.youtube.com/watch?v=wxN1T1uxQ2g",
-                            Views = 31
+                            Views = 131776
                         },
                         new
                         {
@@ -1238,7 +1241,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2015, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Mad Max: Fury Road",
                             TrailerUrl = "https://www.youtube.com/watch?v=hEJnMQG9ev8",
-                            Views = 34
+                            Views = 148903
                         },
                         new
                         {
@@ -1254,7 +1257,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1981, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Das Boot",
                             TrailerUrl = "https://www.youtube.com/watch?v=zTaS7OFHM6M",
-                            Views = 30
+                            Views = 52338
                         },
                         new
                         {
@@ -1270,7 +1273,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1954, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Seven Samurai",
                             TrailerUrl = "https://www.youtube.com/watch?v=wErvXaYtDGE",
-                            Views = 28
+                            Views = 68150
                         });
                 });
 

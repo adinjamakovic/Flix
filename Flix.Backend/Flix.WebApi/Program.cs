@@ -225,6 +225,7 @@ builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddHostedService<ClashStateWorkerService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 var app = builder.Build();
 

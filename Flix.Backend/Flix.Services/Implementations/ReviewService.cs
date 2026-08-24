@@ -220,6 +220,8 @@ namespace Flix.Services.Implementations
                 };
 
                 _context.Reviews.Add(opinion);
+
+                movie.Views++;
             }
             else
             {
@@ -304,6 +306,11 @@ namespace Flix.Services.Implementations
 
             _context.Activities.RemoveRange(activities);
             _context.Reviews.Remove(entity);
+
+            var movie = await _context.Movies.FirstOrDefaultAsync(x => x.Id == entity.MovieId);
+
+            if (movie is not null && movie.Views > 0)
+                movie.Views--;
 
             await _context.SaveChangesAsync();
         }

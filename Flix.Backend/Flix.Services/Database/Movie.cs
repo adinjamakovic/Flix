@@ -19,6 +19,7 @@ namespace Flix.Services.Database
         public int? DurationMinutes { get; set; }
         public int Views { get; set; }
         public bool IsEnabled { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int? CountryId { get; set; }
         [ForeignKey(nameof(CountryId))]
         public Country? Country { get; set; }

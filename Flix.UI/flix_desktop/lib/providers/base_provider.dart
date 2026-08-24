@@ -44,6 +44,22 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  Future<dynamic> getObject({dynamic filter, String? action}) async {
+    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
+
+    if (filter != null) {
+      url = "$url?${getQueryString(filter)}";
+    }
+
+    var response = await http.get(Uri.parse(url), headers: createHeaders());
+
+    if (isValidResponse(response)) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
   // because the insert/update requests carry an `IFormFile`, so writes are
   // sent as form fields rather than as a JSON body.

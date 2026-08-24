@@ -8,7 +8,7 @@ namespace Flix.Services.Interfaces
         : IBaseCRUDService<UserResponse, UserSearchObject, UserInsertRequest, UserUpdateRequest>
     {
         Task<UserSensitiveResponse?> GetByUsernameAsync(string username);
-
         Task UpdateLastLoginAsync(int userId);
+        Task<List<UserResponse>> GetMostActiveUsersAsync();
     }
 }

@@ -41,6 +41,8 @@ dependencies:
   file_picker: ^11.0.3
   http_parser: ^4.1.2
   date_picker_plus: ^7.0.1
+  pdf: ^3.13.0
+  printing: ^5.15.0
 
 dev_dependencies:
   flutter_test:

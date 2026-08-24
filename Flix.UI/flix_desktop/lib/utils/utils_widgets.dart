@@ -57,11 +57,29 @@ String formatDate(DateTime? date) {
   return "$day/$month/${date.year}";
 }
 
+String formatCount(int? count) {
+  final String digits = (count ?? 0).toString();
+  final StringBuffer grouped = StringBuffer();
+
+  for (int i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) grouped.write(" ");
+    grouped.write(digits[i]);
+  }
+
+  return grouped.toString();
+}
+
 // Whole ratings are shown without the redundant ".0" ("4", not "4.0").
 String formatRating(double rating) {
   return rating == rating.roundToDouble()
       ? rating.toStringAsFixed(0)
       : rating.toStringAsFixed(1);
+}
+
+String formatPercentage(double percentage) {
+  return percentage == percentage.roundToDouble()
+      ? percentage.toStringAsFixed(0)
+      : percentage.toStringAsFixed(1);
 }
 
 const String mField = "This field is mandatory";
