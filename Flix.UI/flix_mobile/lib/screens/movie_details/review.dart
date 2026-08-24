@@ -1,6 +1,7 @@
 import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,7 @@ class _ReviewTabState extends State<ReviewTab> {
           "page": 1,
           "pageSize": _pageSize,
           "includeUser": true,
+          "includeMovie": true,
           "movieId": widget.movieId,
         },
       );
@@ -67,6 +69,13 @@ class _ReviewTabState extends State<ReviewTab> {
         _error = errorText(e);
       });
     }
+  }
+
+  void _onReviewTapped(Review review) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReviewDetails(review: review)),
+    );
   }
 
   void _toggleSpoilers(Review review) {
@@ -113,49 +122,55 @@ class _ReviewTabState extends State<ReviewTab> {
   Widget _buildReview(Review review) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              buildAvatar(
-                context,
-                review.user?.profileImage,
-                review.user?.username,
-                radius: _avatarRadius,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  review.user?.username ?? "-",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+    return InkWell(
+      onTap: () => _onReviewTapped(review),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                buildAvatar(
+                  context,
+                  review.user?.profileImage,
+                  review.user?.username,
+                  radius: _avatarRadius,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    review.user?.username ?? "-",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                formatDate(review.createdAt),
-                style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          buildRating(
-            context,
-            review.rating,
-            isLiked: review.isLiked == true,
-            isRewatch: review.isRewatch == true,
-          ),
-          const SizedBox(height: 8),
-          _buildContent(review),
-        ],
+                const SizedBox(width: 8),
+                Text(
+                  formatDate(review.createdAt),
+                  style: TextStyle(
+                    color: colors.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            buildRating(
+              context,
+              review.rating,
+              isLiked: review.isLiked == true,
+              isRewatch: review.isRewatch == true,
+            ),
+            const SizedBox(height: 8),
+            _buildContent(review),
+          ],
+        ),
       ),
     );
   }

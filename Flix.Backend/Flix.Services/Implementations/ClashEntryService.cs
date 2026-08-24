@@ -1,4 +1,6 @@
+using Flix.Model.Enums;
 using Flix.Model.Exceptions;
+using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
@@ -8,18 +10,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Implementations
 {
-    // Entries are only ever read. A clash belongs to its participants once it is
-    // running, so nothing here writes - the admin client just looks at how the
-    // entries are placing.
     public class ClashEntryService
         : BaseReadService<ClashEntry, ClashEntryResponse, ClashEntrySearchObject>, IClashEntryService
     {
-        private readonly IResponseImageUrlResolver _imageUrlResolver;
+        public const int VotesPerClash = 5;
 
-        public ClashEntryService(FlixDbContext context, IMapper mapper, IResponseImageUrlResolver imageUrlResolver)
+        private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IActivityService _activityService;
+
+        public ClashEntryService(FlixDbContext context, IMapper mapper, IResponseImageUrlResolver imageUrlResolver, ICurrentUserService currentUserService, IActivityService activityService)
             : base(context, mapper)
         {
             _imageUrlResolver = imageUrlResolver;
+            _currentUserService = currentUserService;
+            _activityService = activityService;
         }
 
         // The entry itself has no image, but the participant it belongs to has an avatar.
@@ -89,6 +94,148 @@ namespace Flix.Services.Implementations
                 throw new ClientException($"{nameof(ClashEntry)} with Id {id} not found.");
 
             return MapToResponse(entity);
+        }
+
+        public async Task Participate(ClashEntryInsertRequest request)
+        {
+            var participantId = _currentUserService.GetUserId();
+
+            var clash = await _context.Clashes
+                .Where(x=> x.Id == request.ClashId && x.StartDate <= DateTime.UtcNow && x.EndDate >= DateTime.UtcNow)
+                .FirstOrDefaultAsync();
+
+            if(clash is null)
+                throw new ClientException("This clash cannot be entered");
+
+            if(await IsUserInClash(clash.Id, participantId))
+                throw new ClientException("Cant enter a clash twice");
+
+            var movieList = await _context.MovieLists
+                .Where(x=> x.UserId == participantId && x.Id == request.MovieListId && x.Type != ListType.Watchlist)
+                .FirstOrDefaultAsync();
+
+
+            if(movieList is null)
+                throw new ClientException("Can't add this list as a contender");
+            
+            movieList.Type = ListType.Clash;
+            
+            var clashEntry = new ClashEntry
+            {
+                Clash = clash,
+                MovieList = movieList,
+                UserId = participantId
+            };
+
+            _context.ClashEntries.Add(clashEntry);
+
+            await _context.SaveChangesAsync();
+
+            await _activityService.InsertAsync(participantId, new ActivityInsertRequest
+            {
+                Type = ActivityType.JoinedClash,
+                ClashId = clash.Id,
+                MovieListId = movieList.Id
+            });
+        }
+
+        private async Task<bool> IsUserInClash(int id, int participantId)
+        {
+            return await _context.ClashEntries
+                .AnyAsync(x => x.UserId == participantId && x.ClashId == id);
+        }
+
+        public async Task<ClashVoteStateResponse> GetVoteStateAsync(int clashId)
+        {
+            var votedEntryIds = await _context.ClashVotes
+                .Where(x => x.ClashEntry.ClashId == clashId && x.VoterId == _currentUserService.GetUserId())
+                .Select(x => x.ClashEntryId)
+                .ToListAsync();
+
+            return new ClashVoteStateResponse
+            {
+                ClashId = clashId,
+                VotesAllowed = VotesPerClash,
+                VotesUsed = votedEntryIds.Count,
+                VotesRemaining = Math.Max(VotesPerClash - votedEntryIds.Count, 0),
+                VotedEntryIds = votedEntryIds
+            };
+        }
+
+        public async Task<int> CalculateUserVotesAsync(int clashId, int participantId)
+        {
+            return await _context.ClashVotes
+                .Where(x => x.ClashEntry.ClashId == clashId && x.VoterId == participantId)
+                .CountAsync();
+        }
+
+        public async Task Vote(int clashEntryId)
+        {
+            var voterId = _currentUserService.GetUserId();
+
+            var entry = await _context.ClashEntries
+                .Include(x => x.Clash)
+                .FirstOrDefaultAsync(x => x.Id == clashEntryId);
+
+            if(entry is null)
+                throw new ClientException("This entry cannot be voted on");
+
+            if(entry.Clash.StartDate > DateTime.UtcNow || entry.Clash.EndDate < DateTime.UtcNow)
+                throw new ClientException("This clash is not open for voting");
+
+            if(entry.UserId == voterId)
+                throw new ClientException("Can't vote for your own entry");
+
+            if(await CalculateUserVotesAsync(entry.ClashId, voterId) >= VotesPerClash)
+                throw new ClientException("You have no votes left in this clash");
+
+            _context.ClashVotes.Add(new ClashVote
+            {
+                ClashEntryId = entry.Id,
+                VoterId = voterId
+            });
+
+            await _context.SaveChangesAsync();
+
+            await _activityService.InsertAsync(voterId, new ActivityInsertRequest
+            {
+                Type = ActivityType.VotedOnClash,
+                ClashId = entry.ClashId,
+                MovieListId = entry.MovieListId
+            });
+        }
+
+        public async Task RemoveVote(int clashEntryId)
+        {
+            var voterId = _currentUserService.GetUserId();
+
+            var vote = await _context.ClashVotes
+                .Include(x => x.ClashEntry)
+                    .ThenInclude(e => e.Clash)
+                .FirstOrDefaultAsync(x => x.ClashEntryId == clashEntryId && x.VoterId == voterId);
+
+            if(vote is null)
+                throw new ClientException("You have not voted on this entry");
+
+            if(vote.ClashEntry.Clash.EndDate < DateTime.UtcNow)
+                throw new ClientException("This clash has ended, its votes can no longer be taken back");
+
+            _context.ClashVotes.Remove(vote);
+
+            await RemoveVoteActivitiesAsync(voterId, vote.ClashEntry.ClashId);
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task RemoveVoteActivitiesAsync(int voterId, int clashId)
+        {
+            var activities = await _context.Activities
+                .Where(x => x.Type == ActivityType.VotedOnClash
+                    && x.UserId == voterId
+                    && x.ClashId == clashId)
+                .ToListAsync();
+
+            _context.Activities.RemoveRange(activities);
         }
     }
 }

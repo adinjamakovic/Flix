@@ -46,6 +46,7 @@ namespace Flix.Services.Implementations
 
             var query = _context.Reviews
                 .Include(x => x.Movie)
+                .Include(x => x.User)
                 .Where(x => x.IsDiaryEntry && x.UserId == userId);
 
             query = query
@@ -132,6 +133,7 @@ namespace Flix.Services.Implementations
             await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
 
             await _context.Entry(entity).Reference(x => x.Movie).LoadAsync();
+            await _context.Entry(entity).Reference(x => x.User).LoadAsync();
 
             return MapToResponse(entity);
         }

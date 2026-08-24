@@ -1,9 +1,11 @@
 import 'package:flix_mobile/enums/activity_type.dart';
 import 'package:flix_mobile/models/activity.dart';
 import 'package:flix_mobile/models/movie.dart';
+import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/providers/activity_provider.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +56,7 @@ class _ActivityFeedState extends State<ActivityFeed> {
   static const double _posterHeight = 66;
   static const double _avatarRadius = 18;
   static const double _badgeRadius = 9;
+  static const double _cardRadius = 14;
 
   late ActivityProvider _activityProvider;
   late AuthProvider _authProvider;
@@ -226,16 +229,20 @@ class _ActivityFeedState extends State<ActivityFeed> {
     );
   }
 
+  void _onReviewTapped(Review review) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ReviewDetails(review: review)),
+    );
+  }
+
   Widget _buildActivityCard(Activity activity) {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     final Movie? movie = activity.relatedMovie;
+    final Review? review = activity.review;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
-      ),
+    final Widget content = Padding(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,6 +278,18 @@ class _ActivityFeedState extends State<ActivityFeed> {
           ],
         ],
       ),
+    );
+
+    return Material(
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(_cardRadius),
+      clipBehavior: Clip.antiAlias,
+      child: activity.type == ActivityType.reviewedMovie && review != null
+          ? InkWell(
+              onTap: () => _onReviewTapped(review),
+              child: content,
+            )
+          : content,
     );
   }
 

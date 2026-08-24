@@ -18,14 +18,14 @@ namespace Flix.Services.Validators
             RuleFor(x => x.StartDate)
                 .NotEmpty()
                 .LessThan(x => x.EndDate)
-                .GreaterThan(DateTime.UtcNow)
                 .WithMessage("Start date must be before end date.");
 
             RuleFor(x => x.EndDate)
                 .NotEmpty()
                 .GreaterThan(x => x.StartDate)
-                .GreaterThan(DateTime.UtcNow)
-                .WithMessage("End date must be after start date.");
+                .WithMessage("End date must be after start date.")
+                .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+                .WithMessage("End date cannot be in the past.");
 
             RuleFor(x => x.BannerImage)
                 .ValidImage();

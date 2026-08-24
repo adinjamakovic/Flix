@@ -3,7 +3,7 @@ import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/models/user.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/diary_provider.dart';
-import 'package:flix_mobile/screens/movie_details/movie_details.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -136,10 +136,10 @@ class _DiaryState extends State<Diary> {
   String _titleLabel(Review entry) =>
       titleWithYear(entry.movie?.title, entry.movie?.releaseDate);
 
-  void _onEntryTapped(Movie movie) {
+  void _onEntryTapped(Review entry) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MovieDetails(movieId: movie.id)),
+      MaterialPageRoute(builder: (context) => ReviewDetails(review: entry)),
     );
   }
 
@@ -210,7 +210,7 @@ class _DiaryState extends State<Diary> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         InkWell(
-          onTap: movie == null ? null : () => _onEntryTapped(movie),
+          onTap: () => _onEntryTapped(entry),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(

@@ -6,6 +6,7 @@ import 'package:flix_mobile/providers/movie_recommender_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/movie_details/movie_details.dart';
+import 'package:flix_mobile/screens/review_details.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flix_mobile/widgets/movie_side_scroll.dart';
 import 'package:flix_mobile/widgets/review_side_scroll.dart';
@@ -111,8 +112,7 @@ class _MovieListState extends State<MovieList> {
   }
 
   void _onReviewTapped(Review review) {
-    // TODO: open the review details screen once it exists.
-    debugPrint("TODO: open review ${review.id}");
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewDetails(review: review)));
   }
 
   @override
