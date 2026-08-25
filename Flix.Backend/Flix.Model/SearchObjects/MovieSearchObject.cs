@@ -10,6 +10,7 @@ namespace Flix.Model.SearchObjects
         public string? DirectorName { get; set; }
         public int? LanguageId { get; set; }
         public int? GenreId { get; set; }
+        public int? StudioId { get; set; }
         public bool? IsEnabled { get; set; }
         public DateTime? ReleasedAfter { get; set; }
         public DateTime? ReleasedBefore { get; set; }

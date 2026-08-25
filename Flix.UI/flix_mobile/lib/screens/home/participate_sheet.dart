@@ -127,6 +127,9 @@ class _ParticipateSheetState extends State<ParticipateSheet> {
 
     if (clashId == null || listId == null || _isSaving) return;
 
+    if (!await _confirmRename(list)) return;
+    if (!mounted) return;
+
     setState(() => _isSaving = true);
 
     // The sheet is gone by the time the snack bar goes up, so it is shown on
@@ -152,6 +155,33 @@ class _ParticipateSheetState extends State<ParticipateSheet> {
       setState(() => _isSaving = false);
       showSnack(context, errorText(e));
     }
+  }
+
+  Future<bool> _confirmRename(MovieListDetails list) async {
+    final String clashName = widget.clash.name ?? "the clash";
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Enter this list?"),
+        content: Text(
+          "\"${list.name ?? "Your list"}\" is renamed to \"$clashName\" once it "
+          "is entered, and keeps that name afterwards.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Enter"),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed ?? false;
   }
 
   // The form is a screen of its own, so the sheet gets out of its way first.

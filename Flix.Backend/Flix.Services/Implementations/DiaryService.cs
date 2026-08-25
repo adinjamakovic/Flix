@@ -105,6 +105,8 @@ namespace Flix.Services.Implementations
                 };
 
                 _context.Reviews.Add(entity);
+
+                movie.Views++;
             }
             else
             {

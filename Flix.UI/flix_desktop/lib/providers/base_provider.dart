@@ -44,6 +44,22 @@ abstract class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  Future<dynamic> getObject({dynamic filter, String? action}) async {
+    var url = "$_baseUrl$_endpoint${action == null ? "" : "/$action"}";
+
+    if (filter != null) {
+      url = "$url?${getQueryString(filter)}";
+    }
+
+    var response = await http.get(Uri.parse(url), headers: createHeaders());
+
+    if (isValidResponse(response)) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Unknown error");
+    }
+  }
+
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
   // because the insert/update requests carry an `IFormFile`, so writes are
   // sent as form fields rather than as a JSON body.
@@ -60,10 +76,33 @@ abstract class BaseProvider<T> with ChangeNotifier {
     int id,
     Map<String, dynamic> fields, {
     Map<String, PickedImage> files = const {},
+    String? action,
   }) async {
-    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+    var uri = Uri.parse("$_baseUrl$_endpoint/${action == null ? "" : "$action/"}$id");
 
     return _send(http.MultipartRequest("PUT", uri), fields, files);
+  }
+
+  Future<T> insertJson(Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint");
+
+    return _parse(
+        await http.post(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  Future<T> updateJson(int id, Map<String, dynamic> fields) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$id");
+
+    return _parse(
+        await http.put(uri, headers: createHeaders(), body: jsonEncode(fields)));
+  }
+
+  T _parse(http.Response response) {
+    if (isValidResponse(response)) {
+      return fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception("Unknown error");
+    }
   }
 
   Future<void> delete(int id) async {

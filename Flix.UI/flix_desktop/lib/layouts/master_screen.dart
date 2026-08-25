@@ -1,15 +1,18 @@
 import 'package:flix_desktop/providers/auth_provider.dart';
 import 'package:flix_desktop/screens/lists/cast_list.dart';
+import 'package:flix_desktop/screens/issues.dart';
 import 'package:flix_desktop/screens/lists/clash_list.dart';
+import 'package:flix_desktop/screens/lists/movie_request_list.dart';
 import 'package:flix_desktop/screens/lists/review_list.dart';
 import 'package:flix_desktop/screens/login.dart';
+import 'package:flix_desktop/screens/miscellaneous.dart';
 import 'package:flix_desktop/screens/statistics.dart';
 import 'package:flix_desktop/screens/lists/user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../screens/lists/movie_list.dart';
 
-enum DrawerDestination { movies, cast, users, reviews, clashes, statistics }
+enum DrawerDestination { movies, submissions, cast, users, reviews, clashes, issues, statistics, cruds }
 
 class MasterScreen extends StatefulWidget {
   const MasterScreen({
@@ -29,11 +32,14 @@ class MasterScreen extends StatefulWidget {
 class _MasterScreenState extends State<MasterScreen> {
   final List<_DrawerItem> _items = const [
     _DrawerItem(DrawerDestination.movies, Icons.movie_filter_outlined, "Movies", MovieList()),
+    _DrawerItem(DrawerDestination.submissions, Icons.playlist_add_check_outlined, "Submissions", MovieRequestList()),
     _DrawerItem(DrawerDestination.cast, Icons.account_circle_outlined, "Cast", CastList()),
     _DrawerItem(DrawerDestination.users, Icons.groups_outlined, "Users", UserList()),
     _DrawerItem(DrawerDestination.reviews, Icons.star_border, "Reviews", ReviewList()),
     _DrawerItem(DrawerDestination.clashes, Icons.emoji_events_outlined, "Clashes", ClashList()),
+    _DrawerItem(DrawerDestination.issues, Icons.flag_outlined, "Issues", Issues()),
     _DrawerItem(DrawerDestination.statistics, Icons.bar_chart, "Statistics", Statistics()),
+    _DrawerItem(DrawerDestination.cruds, Icons.more, "Miscellaneous CRUDs", Miscellaneous()),
   ];
 
   @override

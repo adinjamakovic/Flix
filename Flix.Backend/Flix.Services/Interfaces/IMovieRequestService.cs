@@ -8,6 +8,6 @@ namespace Flix.Services.Interfaces
         IBaseReadService<MovieRequestResponse, MovieRequestSearchObject>
     {
         Task<MovieRequestResponse> UserRequest(MovieRequestInsertRequest request);
-        Task<MovieRequestResponse> AdminReview(MovieRequestUpdateRequest request);
+        Task<MovieRequestResponse> AdminReview(int id, MovieRequestUpdateRequest request);
     }
 }

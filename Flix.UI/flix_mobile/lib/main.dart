@@ -13,6 +13,7 @@ import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/providers/movie_recommender_provider.dart';
 import 'package:flix_mobile/providers/movie_request_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
+import 'package:flix_mobile/providers/studio_provider.dart';
 import 'package:flix_mobile/providers/user_network_provider.dart';
 import 'package:flix_mobile/providers/user_provider.dart';
 import 'package:flix_mobile/providers/user_report_provider.dart';
@@ -32,6 +33,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => CountryProvider()),
         ChangeNotifierProvider(create: (_) => CastMemberProvider()),
+        ChangeNotifierProvider(create: (_) => StudioProvider()),
         ChangeNotifierProvider(create: (_) => ClashProvider()),
         ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),

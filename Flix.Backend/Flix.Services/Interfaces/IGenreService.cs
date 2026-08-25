@@ -9,5 +9,6 @@ namespace Flix.Services.Interfaces
     public interface IGenreService :
         IBaseCRUDService<GenreResponse, GenreSearchObject, GenreInsertRequest, GenreUpdateRequest>
     {
+        Task<List<GenrePercentageResponse>> GetGenrePercentages();
     }
 }

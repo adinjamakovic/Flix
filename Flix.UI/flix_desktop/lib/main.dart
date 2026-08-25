@@ -5,10 +5,15 @@ import 'package:flix_desktop/providers/clash_provider.dart';
 import 'package:flix_desktop/providers/country_provider.dart';
 import 'package:flix_desktop/providers/genre_provider.dart';
 import 'package:flix_desktop/providers/language_provider.dart';
+import 'package:flix_desktop/providers/movie_issue_report_provider.dart';
 import 'package:flix_desktop/providers/movie_provider.dart';
+import 'package:flix_desktop/providers/movie_request_provider.dart';
 import 'package:flix_desktop/providers/review_provider.dart';
 import 'package:flix_desktop/providers/role_provider.dart';
+import 'package:flix_desktop/providers/statistics_provider.dart';
+import 'package:flix_desktop/providers/studio_provider.dart';
 import 'package:flix_desktop/providers/user_provider.dart';
+import 'package:flix_desktop/providers/user_report_provider.dart';
 import 'package:flix_desktop/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +32,12 @@ void main() {
             ChangeNotifierProvider(create: (_) => ClashEntryProvider()),
             ChangeNotifierProvider(create: (_) => RoleProvider()),
             ChangeNotifierProvider(create: (_) => GenreProvider()),
-            ChangeNotifierProvider(create: (_) => LanguageProvider())
+            ChangeNotifierProvider(create: (_) => LanguageProvider()),
+            ChangeNotifierProvider(create: (_) => StudioProvider()),
+            ChangeNotifierProvider(create: (_) => StatisticsProvider()),
+            ChangeNotifierProvider(create: (_) => MovieIssueReportProvider()),
+            ChangeNotifierProvider(create: (_) => UserReportProvider()),
+            ChangeNotifierProvider(create: (_) => MovieRequestProvider())
           ],
         child: const MyApp()));
 }

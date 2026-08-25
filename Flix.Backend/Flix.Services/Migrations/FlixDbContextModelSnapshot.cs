@@ -1036,6 +1036,9 @@ namespace Flix.Services.Database.Migrations
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -1081,6 +1084,7 @@ namespace Flix.Services.Database.Migrations
                         {
                             Id = 1,
                             CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 10, 8, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "The ageing patriarch of an organised crime dynasty transfers control of his clandestine empire to his reluctant youngest son.",
                             DurationMinutes = 175,
                             HeaderImage = "Movie/the_godfather_header.png",
@@ -1090,12 +1094,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1972, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Godfather",
                             TrailerUrl = "https://www.youtube.com/watch?v=sY1S34973zA",
-                            Views = 184320
+                            Views = 45
                         },
                         new
                         {
                             Id = 2,
                             CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 10, 8, 20, 0, 0, DateTimeKind.Unspecified),
                             Description = "The lives of two mob hitmen, a boxer, a gangster's wife and a pair of diner bandits intertwine in four tales of violence and redemption.",
                             DurationMinutes = 154,
                             HeaderImage = "Movie/pulp_fiction_header.png",
@@ -1105,12 +1110,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1994, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Pulp Fiction",
                             TrailerUrl = "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
-                            Views = 167845
+                            Views = 43
                         },
                         new
                         {
                             Id = 3,
                             CountryId = 3,
+                            CreatedAt = new DateTime(2024, 1, 10, 8, 40, 0, 0, DateTimeKind.Unspecified),
                             Description = "During her family's move to the suburbs, a sullen ten-year-old girl wanders into a world ruled by gods, witches and spirits where humans are changed into beasts.",
                             DurationMinutes = 125,
                             HeaderImage = "Movie/spirited_away_header.png",
@@ -1120,12 +1126,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2001, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Spirited Away",
                             TrailerUrl = "https://www.youtube.com/watch?v=ByXuk9QqQkk",
-                            Views = 142190
+                            Views = 40
                         },
                         new
                         {
                             Id = 4,
                             CountryId = 5,
+                            CreatedAt = new DateTime(2024, 1, 10, 9, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
                             DurationMinutes = 132,
                             HeaderImage = "Movie/parasite_header.png",
@@ -1135,12 +1142,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2019, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Parasite",
                             TrailerUrl = "https://www.youtube.com/watch?v=5xH0HfJHsaY",
-                            Views = 158073
+                            Views = 40
                         },
                         new
                         {
                             Id = 5,
                             CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 10, 9, 20, 0, 0, DateTimeKind.Unspecified),
                             Description = "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a chief executive.",
                             DurationMinutes = 148,
                             HeaderImage = "Movie/inception_header.png",
@@ -1150,12 +1158,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2010, 7, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Inception",
                             TrailerUrl = "https://www.youtube.com/watch?v=YoHD9XEInc0",
-                            Views = 203557
+                            Views = 42
                         },
                         new
                         {
                             Id = 6,
                             CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 10, 9, 40, 0, 0, DateTimeKind.Unspecified),
                             Description = "Batman raises the stakes in his war on crime until a rising criminal mastermind known as the Joker forces Gotham into anarchy.",
                             DurationMinutes = 152,
                             HeaderImage = "Movie/the_dark_knight_header.png",
@@ -1165,12 +1174,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2008, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "The Dark Knight",
                             TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY",
-                            Views = 221408
+                            Views = 37
                         },
                         new
                         {
                             Id = 7,
                             CountryId = 4,
+                            CreatedAt = new DateTime(2024, 1, 10, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A shy waitress in Montmartre decides to change the lives of those around her for the better while struggling with her own isolation.",
                             DurationMinutes = 122,
                             HeaderImage = "Movie/amelie_header.png",
@@ -1180,12 +1190,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2001, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Amelie",
                             TrailerUrl = "https://www.youtube.com/watch?v=HUECWi5pX7o",
-                            Views = 96412
+                            Views = 34
                         },
                         new
                         {
                             Id = 8,
                             CountryId = 7,
+                            CreatedAt = new DateTime(2024, 1, 10, 10, 20, 0, 0, DateTimeKind.Unspecified),
                             Description = "A filmmaker recalls his childhood in a Sicilian village and the friendship with the projectionist who taught him to love the movies.",
                             DurationMinutes = 155,
                             HeaderImage = "Movie/cinema_paradiso_header.png",
@@ -1195,12 +1206,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1988, 11, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Cinema Paradiso",
                             TrailerUrl = "https://www.youtube.com/watch?v=Ah0kPnzzrs4",
-                            Views = 74265
+                            Views = 34
                         },
                         new
                         {
                             Id = 9,
                             CountryId = 1,
+                            CreatedAt = new DateTime(2024, 1, 10, 10, 40, 0, 0, DateTimeKind.Unspecified),
                             Description = "An overwhelmed laundromat owner facing an audit discovers she must connect with parallel versions of herself to stop a threat spanning the multiverse.",
                             DurationMinutes = 139,
                             HeaderImage = "Movie/everything_everywhere_all_at_once_header.png",
@@ -1210,12 +1222,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2022, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Everything Everywhere All at Once",
                             TrailerUrl = "https://www.youtube.com/watch?v=wxN1T1uxQ2g",
-                            Views = 131776
+                            Views = 31
                         },
                         new
                         {
                             Id = 10,
                             CountryId = 9,
+                            CreatedAt = new DateTime(2024, 1, 10, 11, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "In a post-apocalyptic wasteland, a drifter and a rebel warrior flee from a tyrant and his war parties in a relentless convoy chase.",
                             DurationMinutes = 120,
                             HeaderImage = "Movie/mad_max_fury_road_header.png",
@@ -1225,12 +1238,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(2015, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Mad Max: Fury Road",
                             TrailerUrl = "https://www.youtube.com/watch?v=hEJnMQG9ev8",
-                            Views = 148903
+                            Views = 34
                         },
                         new
                         {
                             Id = 11,
                             CountryId = 6,
+                            CreatedAt = new DateTime(2024, 1, 10, 11, 20, 0, 0, DateTimeKind.Unspecified),
                             Description = "The claustrophobic patrol of a German U-boat crew in the Atlantic during the Second World War, told from inside the submarine.",
                             DurationMinutes = 149,
                             HeaderImage = "Movie/das_boot_header.png",
@@ -1240,12 +1254,13 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1981, 9, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Das Boot",
                             TrailerUrl = "https://www.youtube.com/watch?v=zTaS7OFHM6M",
-                            Views = 52338
+                            Views = 30
                         },
                         new
                         {
                             Id = 12,
                             CountryId = 3,
+                            CreatedAt = new DateTime(2024, 1, 10, 11, 40, 0, 0, DateTimeKind.Unspecified),
                             Description = "A poor village under attack by bandits recruits seven masterless samurai to help them defend themselves.",
                             DurationMinutes = 207,
                             HeaderImage = "Movie/seven_samurai_header.png",
@@ -1255,7 +1270,7 @@ namespace Flix.Services.Database.Migrations
                             ReleaseDate = new DateTime(1954, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Seven Samurai",
                             TrailerUrl = "https://www.youtube.com/watch?v=wErvXaYtDGE",
-                            Views = 68150
+                            Views = 28
                         });
                 });
 

@@ -10,7 +10,8 @@ namespace Flix.Services.Interfaces
     public interface IMovieService :
         IBaseCRUDService<MovieResponse, MovieSearchObject, MovieInsertRequest, MovieUpdateRequest>
     {
-        public Task<PageResult<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies);
-        public Task<PageResult<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId);
+        Task<PageResult<MovieResponse>> GetPopularMoviesForThisWeekAsync(int numberOfMovies);
+        Task<PageResult<MovieResponse>> GetPopularMoviesWithFriendsAsync(int userId);
+        Task<List<MovieResponse>> GetPopularMoviesAsync();
     }
 }

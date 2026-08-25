@@ -26,6 +26,7 @@ namespace Flix.Services.Implementations
         // The friends list feeds a single home-screen row, so it is capped the same way
         // the weekly popular row is rather than taking a count from the caller.
         private const int PopularWithFriendsCount = 7;
+        private const int PopularMoviesCount = 20;
 
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
@@ -58,6 +59,8 @@ namespace Flix.Services.Implementations
                 .Include(x => x.Country)
                 .Include(x => x.Language)
                 .Include(x => x.Genres)
+                .Include(x => x.Studios)
+                .ThenInclude(x => x.Studio)
                 .OrderBy(x => x.Id)
                 .AsSplitQuery();
 
@@ -84,6 +87,9 @@ namespace Flix.Services.Implementations
 
                 if (search.GenreId.HasValue)
                     query = query.Where(x => x.Genres.Any(g => g.Id == search.GenreId.Value));
+
+                if (search.StudioId.HasValue)
+                    query = query.Where(x => x.Studios.Any(s => s.StudioId == search.StudioId.Value));
 
                 if (search.IsEnabled.HasValue)
                     query = query.Where(x => x.IsEnabled == search.IsEnabled.Value);
@@ -124,8 +130,10 @@ namespace Flix.Services.Implementations
         protected override async Task BeforeInsertAsync(Movie entity, MovieInsertRequest request)
         {
             entity.Views = 0;
+            entity.CreatedAt = DateTime.UtcNow;
             entity.Genres = await LoadGenresAsync(request.GenreIds);
             entity.Credits = await BuildCreditsAsync(request.Credits);
+            entity.Studios = await BuildStudioLinksAsync(request.StudioIds);
             var moviePosterImagePath = await _imageStorageService.SaveAsync(ImageStorageCategory.Movie, request.MoviePoster);
             var headerImagePath = await _imageStorageService.SaveAsync(ImageStorageCategory.Movie, request.HeaderImage);
             entity.Poster = moviePosterImagePath;
@@ -148,6 +156,9 @@ namespace Flix.Services.Implementations
 
             if (request.Credits is not null)
                 await ReplaceCreditsAsync(entity, request.Credits);
+
+            if (request.StudioIds is not null)
+                await ReplaceStudiosAsync(entity, request.StudioIds);
 
             if (request.GenreIds is null)
                 return;
@@ -175,6 +186,19 @@ namespace Flix.Services.Implementations
                 entity.Credits.Add(credit);
         }
 
+        private async Task ReplaceStudiosAsync(Movie entity, List<int> studioIds)
+        {
+            var replacements = await BuildStudioLinksAsync(studioIds);
+
+            await _context.Entry(entity).Collection(x => x.Studios).LoadAsync();
+
+            _context.Set<MovieStudio>().RemoveRange(entity.Studios.ToList());
+            entity.Studios.Clear();
+
+            foreach (var link in replacements)
+                entity.Studios.Add(link);
+        }
+
         protected override async Task BeforeDeleteAsync(Movie entity)
         {
             await _context.Entry(entity).Collection(x => x.Credits).LoadAsync();
@@ -185,6 +209,12 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             _context.Set<MovieGenre>().RemoveRange(genreLinks);
+
+            var studioLinks = await _context.Set<MovieStudio>()
+                .Where(ms => ms.MovieId == entity.Id)
+                .ToListAsync();
+
+            _context.Set<MovieStudio>().RemoveRange(studioLinks);
 
             var recommendations = await _context.MovieRecommendations
                 .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
@@ -241,6 +271,31 @@ namespace Flix.Services.Implementations
                         ? null
                         : c.CharacterName.Trim(),
                     OrderOfAppearence = c.OrderOfAppearence
+                })
+                .ToList();
+        }
+
+        private async Task<List<MovieStudio>> BuildStudioLinksAsync(List<int> studioIds)
+        {
+            var ids = studioIds.Distinct().ToList();
+
+            if (ids.Count == 0)
+                return new List<MovieStudio>();
+
+            var studios = await _context.Set<Studio>()
+                .Where(s => ids.Contains(s.Id))
+                .ToDictionaryAsync(s => s.Id);
+
+            var missing = ids.Except(studios.Keys).ToList();
+
+            if (missing.Count != 0)
+                throw new ClientException($"Studio(s) with Id {string.Join(", ", missing)} not found.");
+
+            return ids
+                .Select(id => new MovieStudio
+                {
+                    StudioId = id,
+                    Studio = studios[id]
                 })
                 .ToList();
         }
@@ -351,6 +406,18 @@ namespace Flix.Services.Implementations
                 Items = movies,
                 TotalCount = movies.Count
             };
+        }
+
+        public async Task<List<MovieResponse>> GetPopularMoviesAsync()
+        {
+            var movies = await GetDataSource()
+                .Include(x => x.Reviews)
+                .Where(x => x.IsEnabled)
+                .OrderByDescending(x => x.Reviews.Count())
+                .Take(PopularMoviesCount)
+                .ToListAsync();
+
+            return movies.Select(MapToResponse).ToList();
         }
     }
 }

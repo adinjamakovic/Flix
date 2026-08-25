@@ -5,6 +5,7 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,6 +27,29 @@ namespace Flix.Services.Implementations
             IValidator<GenreUpdateRequest> updateValidator
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+        }
+
+        public async Task<List<GenrePercentageResponse>> GetGenrePercentages()
+        {
+            var counts = await _context.MovieGenres
+                .Where(x => x.Movie.IsEnabled)
+                .GroupBy(x => x.GenreId)
+                .Select(x => new { GenreId = x.Key, Count = x.Count() })
+                .ToDictionaryAsync(x => x.GenreId, x => x.Count);
+
+            var total = counts.Values.Sum();
+
+            var genres = await _context.Genres.ToListAsync();
+
+            return genres
+                .OrderByDescending(x => counts.GetValueOrDefault(x.Id))
+                .ThenBy(x => x.Name)
+                .Select(x => new GenrePercentageResponse
+                {
+                    Genre = MapToResponse(x),
+                    Percentage = total == 0 ? 0m : Math.Round(counts.GetValueOrDefault(x.Id) * 100m / total, 2)
+                })
+                .ToList();
         }
 
         protected override IEnumerable<Genre> ApplyFilters(IQueryable<Genre> query, GenreSearchObject? search)

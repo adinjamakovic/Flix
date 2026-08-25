@@ -3,6 +3,7 @@ import 'package:flix_mobile/models/country.dart';
 import 'package:flix_mobile/models/genre.dart';
 import 'package:flix_mobile/models/language.dart';
 import 'package:flix_mobile/models/movie_credit.dart';
+import 'package:flix_mobile/models/studio.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // To generate run command: "dart run build_runner build"
@@ -26,6 +27,7 @@ class Movie {
       this.directors,
       this.cast,
       this.genres,
+      this.studios,
       this.poster,
       this.headerImage
       );
@@ -46,6 +48,7 @@ class Movie {
   final List<CastMember>? directors;
   final List<MovieCredit>? cast;
   final List<Genre>? genres;
+  final List<Studio>? studios;
   final String? poster;
   final String? headerImage;
 

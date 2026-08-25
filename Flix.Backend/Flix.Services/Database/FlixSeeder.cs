@@ -412,7 +412,8 @@ namespace Flix.Services.Database
 
         private static void SeedMovies(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Movie>().HasData(
+            var movies = new[]
+            {
                 new Movie
                 {
                     Id = 1,
@@ -423,8 +424,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=sY1S34973zA",
                     ReleaseDate = new DateTime(1972, 3, 24),
                     DurationMinutes = 175,
-                    Views = 184_320,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 8, 0, 0),
                     CountryId = 1,
                     LanguageId = 1
                 },
@@ -438,8 +439,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=s7EdQ4FqbhY",
                     ReleaseDate = new DateTime(1994, 10, 14),
                     DurationMinutes = 154,
-                    Views = 167_845,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 8, 20, 0),
                     CountryId = 1,
                     LanguageId = 1
                 },
@@ -453,8 +454,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=ByXuk9QqQkk",
                     ReleaseDate = new DateTime(2001, 7, 20),
                     DurationMinutes = 125,
-                    Views = 142_190,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 8, 40, 0),
                     CountryId = 3,
                     LanguageId = 2
                 },
@@ -468,8 +469,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=5xH0HfJHsaY",
                     ReleaseDate = new DateTime(2019, 5, 30),
                     DurationMinutes = 132,
-                    Views = 158_073,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 9, 0, 0),
                     CountryId = 5,
                     LanguageId = 4
                 },
@@ -483,8 +484,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=YoHD9XEInc0",
                     ReleaseDate = new DateTime(2010, 7, 16),
                     DurationMinutes = 148,
-                    Views = 203_557,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 9, 20, 0),
                     CountryId = 1,
                     LanguageId = 1
                 },
@@ -498,8 +499,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=EXeTwQWrcwY",
                     ReleaseDate = new DateTime(2008, 7, 18),
                     DurationMinutes = 152,
-                    Views = 221_408,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 9, 40, 0),
                     CountryId = 1,
                     LanguageId = 1
                 },
@@ -513,8 +514,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=HUECWi5pX7o",
                     ReleaseDate = new DateTime(2001, 4, 25),
                     DurationMinutes = 122,
-                    Views = 96_412,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 10, 0, 0),
                     CountryId = 4,
                     LanguageId = 3
                 },
@@ -528,8 +529,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=Ah0kPnzzrs4",
                     ReleaseDate = new DateTime(1988, 11, 17),
                     DurationMinutes = 155,
-                    Views = 74_265,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 10, 20, 0),
                     CountryId = 7,
                     LanguageId = 6
                 },
@@ -543,8 +544,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=wxN1T1uxQ2g",
                     ReleaseDate = new DateTime(2022, 3, 25),
                     DurationMinutes = 139,
-                    Views = 131_776,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 10, 40, 0),
                     CountryId = 1,
                     LanguageId = 1
                 },
@@ -558,8 +559,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=hEJnMQG9ev8",
                     ReleaseDate = new DateTime(2015, 5, 15),
                     DurationMinutes = 120,
-                    Views = 148_903,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 11, 0, 0),
                     CountryId = 9,
                     LanguageId = 1
                 },
@@ -573,8 +574,8 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=zTaS7OFHM6M",
                     ReleaseDate = new DateTime(1981, 9, 17),
                     DurationMinutes = 149,
-                    Views = 52_338,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 11, 20, 0),
                     CountryId = 6,
                     LanguageId = 5
                 },
@@ -588,11 +589,17 @@ namespace Flix.Services.Database
                     TrailerUrl = "https://www.youtube.com/watch?v=wErvXaYtDGE",
                     ReleaseDate = new DateTime(1954, 4, 26),
                     DurationMinutes = 207,
-                    Views = 68_150,
                     IsEnabled = true,
+                    CreatedAt = new DateTime(2024, 1, 10, 11, 40, 0),
                     CountryId = 3,
                     LanguageId = 2
-                });
+                }
+            };
+
+            foreach (var movie in movies)
+                movie.Views = SeededWatchCount(movie.Id);
+
+            modelBuilder.Entity<Movie>().HasData(movies);
         }
 
         private static void SeedMovieGenres(ModelBuilder modelBuilder)
@@ -1685,6 +1692,15 @@ namespace Flix.Services.Database
 
         // Users 2 and 5 already have a hand-written watchlist in SeedMovieLists.
         private static readonly HashSet<int> UsersWithSeededWatchlists = new() { 2, 5 };
+
+        // A view is one logged viewing, and every seeded viewing is a review row, so
+        // Movie.Views is derived from the two tables that produce them rather than set
+        // by hand - SeedReviews (via the pairs above) and the recommender matrix.
+        private static int SeededWatchCount(int movieId)
+        {
+            return HandWrittenReviews.Count(x => x.MovieId == movieId)
+                + RecommenderRatings.Count(x => x.Ratings[movieId - 1] is not null);
+        }
 
         // Review text is picked from these by rating band. It deliberately never
         // names the film, so the pools stay valid whatever is in the movie table.

@@ -119,6 +119,7 @@ namespace Flix.Services.Implementations
                 throw new ClientException("Can't add this list as a contender");
             
             movieList.Type = ListType.Clash;
+            movieList.Name = clash.Name;
             
             var clashEntry = new ClashEntry
             {
