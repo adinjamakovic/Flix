@@ -82,88 +82,75 @@ Console.WriteLine(string.IsNullOrWhiteSpace(databaseConnectionString)
 
 var subscriptions = new List<IDisposable>();
 
-for (var attempt = 1; ; attempt++)
+var subscribed = await RetryAsync("Subscribing to messages", async () =>
 {
-    try
+    foreach (var subscription in subscriptions)
+        subscription.Dispose();
+
+    subscriptions.Clear();
+
+    subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRequested>("movie_requested_email_sender", async message =>
     {
-        subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRequested>("movie_requested_email_sender", async message =>
+        Console.WriteLine($"Received MovieRequested #{message.Id}: {MovieTitle(message.Data)}");
+
+        var admins = await GetAdminRecipientsAsync();
+
+        if (admins.Count == 0)
         {
-            Console.WriteLine($"Received MovieRequested #{message.Id}: {MovieTitle(message.Data)}");
-
-            var admins = await GetAdminRecipientsAsync();
-
-            if (admins.Count == 0)
-            {
-                Console.WriteLine($"MovieRequested #{message.Id} has no admin recipient, skipping");
-                return;
-            }
-
-            await SendAsync(
-                admins,
-                $"New movie request: {MovieTitle(message.Data)}",
-                BuildRequestedBody(message));
-        }));
-
-        subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieAccepted>("movie_accepted_email_sender", async message =>
-        {
-            Console.WriteLine($"Received MovieAccepted #{message.Id}: {MovieTitle(message.Data)}");
-
-            var recipient = message.Data?.RequestedByUser;
-
-            if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
-            {
-                Console.WriteLine($"MovieAccepted #{message.Id} has no requester email, skipping");
-                return;
-            }
-
-            await SendAsync(
-                [new MailboxAddress(DisplayName(recipient), recipient.Email)],
-                $"Your movie request was accepted: {MovieTitle(message.Data)}",
-                BuildAcceptedBody(message));
-        }));
-
-        subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRejected>("movie_rejected_email_sender", async message =>
-        {
-            Console.WriteLine($"Received MovieRejected #{message.Id}: {MovieTitle(message.Data)}");
-
-            var recipient = message.Data?.RequestedByUser;
-
-            if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
-            {
-                Console.WriteLine($"MovieRejected #{message.Id} has no requester email, skipping");
-                return;
-            }
-
-            await SendAsync(
-                [new MailboxAddress(DisplayName(recipient), recipient.Email)],
-                $"Your movie request was rejected: {MovieTitle(message.Data)}",
-                BuildRejectedBody(message));
-        }));
-
-        Console.WriteLine("Listening for MovieRequested, MovieAccepted and MovieRejected messages");
-        break;
-    }
-    catch (Exception e)
-    {
-        // Whatever got through before the failure has to go, or a retry would leave
-        // two consumers on the same queue.
-        foreach (var subscription in subscriptions)
-            subscription.Dispose();
-
-        subscriptions.Clear();
-
-        Console.WriteLine($"Failed to subscribe to messages: {e.GetBaseException().Message}");
-
-        if (attempt == 3)
-        {
-            bus.Dispose();
+            Console.WriteLine($"MovieRequested #{message.Id} has no admin recipient, skipping");
             return;
         }
 
-        Console.WriteLine("Retrying in 5 seconds");
-        await Task.Delay(5000);
-    }
+        await SendAsync(
+            admins,
+            $"New movie request: {MovieTitle(message.Data)}",
+            BuildRequestedBody(message));
+    }));
+
+    subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieAccepted>("movie_accepted_email_sender", async message =>
+    {
+        Console.WriteLine($"Received MovieAccepted #{message.Id}: {MovieTitle(message.Data)}");
+
+        var recipient = message.Data?.RequestedByUser;
+
+        if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
+        {
+            Console.WriteLine($"MovieAccepted #{message.Id} has no requester email, skipping");
+            return;
+        }
+
+        await SendAsync(
+            [new MailboxAddress(DisplayName(recipient), recipient.Email)],
+            $"Your movie request was accepted: {MovieTitle(message.Data)}",
+            BuildAcceptedBody(message));
+    }));
+
+    subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRejected>("movie_rejected_email_sender", async message =>
+    {
+        Console.WriteLine($"Received MovieRejected #{message.Id}: {MovieTitle(message.Data)}");
+
+        var recipient = message.Data?.RequestedByUser;
+
+        if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
+        {
+            Console.WriteLine($"MovieRejected #{message.Id} has no requester email, skipping");
+            return;
+        }
+
+        await SendAsync(
+            [new MailboxAddress(DisplayName(recipient), recipient.Email)],
+            $"Your movie request was rejected: {MovieTitle(message.Data)}",
+            BuildRejectedBody(message));
+    }));
+});
+
+if (!subscribed)
+{
+    bus.Dispose();
+    return;
 }
+
+Console.WriteLine("Listening for MovieRequested, MovieAccepted and MovieRejected messages");
 
 // RunAsync rather than a Ctrl+C wait, so the container also stops on the SIGTERM docker sends.
 await host.RunAsync();
@@ -172,14 +159,43 @@ Console.WriteLine("Subscriber is shutting down");
 
 bus.Dispose();
 
+static async Task<bool> RetryAsync(string description, Func<Task> action, int maxAttempts = 5)
+{
+    for (var attempt = 1; ; attempt++)
+    {
+        try
+        {
+            await action();
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"{description} failed: {e.GetBaseException().Message}");
+
+            if (attempt == maxAttempts)
+            {
+                Console.WriteLine($"{description} gave up after {attempt} attempts");
+                return false;
+            }
+
+            var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));
+
+            Console.WriteLine($"Retrying in {delay.TotalSeconds:0} seconds");
+            await Task.Delay(delay);
+        }
+    }
+}
+
 async Task<List<MailboxAddress>> GetAdminRecipientsAsync()
 {
     var recipients = new List<MailboxAddress>();
 
     if (!string.IsNullOrWhiteSpace(databaseConnectionString))
     {
-        try
+        await RetryAsync("Reading admin emails from the database", async () =>
         {
+            recipients.Clear();
+
             await using var scope = host.Services.CreateAsyncScope();
 
             var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
@@ -201,11 +217,7 @@ async Task<List<MailboxAddress>> GetAdminRecipientsAsync()
                     string.IsNullOrWhiteSpace(name) ? fallbackAdminName : name,
                     admin.Email));
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Failed to read admin emails from the database: {e.GetBaseException().Message}");
-        }
+        });
     }
 
     // The database is the source of truth; ADMIN_EMAIL only covers it being unreachable
@@ -226,7 +238,7 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
     mail.Subject = subject;
     mail.Body = new TextPart(TextFormat.Html) { Text = body };
 
-    try
+    var sent = await RetryAsync($"Sending \"{subject}\" to {addresses}", async () =>
     {
         using var client = new SmtpClient();
 
@@ -237,13 +249,10 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
 
         await client.SendAsync(mail);
         await client.DisconnectAsync(true);
+    });
 
+    if (sent)
         Console.WriteLine($"Sent \"{subject}\" to {addresses}");
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine($"Failed to send \"{subject}\" to {addresses}: {e.Message}");
-    }
 }
 
 string BuildRequestedBody(MovieRequested message)

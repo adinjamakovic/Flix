@@ -15,15 +15,14 @@ abstract class BaseProvider<T> with ChangeNotifier {
 
   BaseProvider(String endpoint) {
     _endpoint = endpoint;
-    _baseUrl = const String.fromEnvironment("BASE_URL",
+    _baseUrl = const String.fromEnvironment("API_BASE_URL",
         defaultValue: defaultBaseUrl);
   }
 
   Future<SearchResult<T>> get({dynamic filter, String? action}) async {
     var uri = Uri.parse(_buildUrl(action, filter));
-    var headers = createHeaders();
 
-    var response = await http.get(uri, headers: headers);
+    var response = await _request(() => http.get(uri, headers: createHeaders()));
 
     if (isValidResponse(response)) {
       var data = jsonDecode(response.body);
@@ -42,13 +41,27 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<dynamic> getObject({dynamic filter, String? action}) async {
     var uri = Uri.parse(_buildUrl(action, filter));
 
-    var response = await http.get(uri, headers: createHeaders());
+    var response = await _request(() => http.get(uri, headers: createHeaders()));
 
     if (isValidResponse(response)) {
       return jsonDecode(response.body);
     } else {
       throw Exception("Unknown error");
     }
+  }
+
+  // Every call goes through here so an expired access token is refreshed and
+  // the request replayed once, instead of surfacing as an error on whatever
+  // screen the user happened to be on. `send` is a closure rather than a
+  // prepared request because the replay has to carry the new token.
+  Future<http.Response> _request(Future<http.Response> Function() send) async {
+    var response = await send();
+
+    if (response.statusCode == 401 && await AuthProvider.refreshSession()) {
+      response = await send();
+    }
+
+    return response;
   }
 
   String _buildUrl(String? action, dynamic filter) {
@@ -64,13 +77,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<T> getById(int id) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$id");
 
-    var response = await http.get(uri, headers: createHeaders());
-
-    if (isValidResponse(response)) {
-      return fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Unknown error");
-    }
+    return _parse(await _request(() => http.get(uri, headers: createHeaders())));
   }
 
   // Every write endpoint on the API is `[Consumes("multipart/form-data")]`
@@ -86,7 +93,7 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }) async {
     var uri = Uri.parse("$_baseUrl$_endpoint${action == null ? "" : "/$action"}");
 
-    return _send(http.MultipartRequest("POST", uri), fields, files);
+    return _parse(await _multipart("POST", uri, fields, files));
   }
 
   Future<T> update(
@@ -96,15 +103,14 @@ abstract class BaseProvider<T> with ChangeNotifier {
   }) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$id");
 
-    return _send(http.MultipartRequest("PUT", uri), fields, files);
+    return _parse(await _multipart("PUT", uri, fields, files));
   }
 
   Future<void> delete(int id) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$id");
 
-    var response = await http.delete(uri, headers: createHeaders());
-
-    isValidResponse(response);
+    isValidResponse(
+        await _request(() => http.delete(uri, headers: createHeaders())));
   }
 
   // A write that answers with a payload of its own rather than with T — the
@@ -115,41 +121,23 @@ abstract class BaseProvider<T> with ChangeNotifier {
     Map<String, dynamic> fields, {
     Map<String, PickedImage> files = const {},
   }) async {
-    var request = http.MultipartRequest(
-        "POST", Uri.parse("$_baseUrl$_endpoint/$action"));
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    request.headers.addAll(createMultipartHeaders());
-
-    fields.forEach((key, value) => _addField(request.fields, key, value));
-
-    files.forEach((key, image) {
-      request.files.add(http.MultipartFile.fromBytes(
-        key,
-        image.bytes,
-        filename: image.fileName,
-        contentType: MediaType.parse(image.contentType),
-      ));
-    });
-
-    var response = await http.Response.fromStream(await request.send());
-
-    if (!isValidResponse(response)) throw Exception("Unknown error");
-
-    return jsonDecode(response.body);
+    return _decode(await _multipart("POST", uri, fields, files));
   }
 
   Future<T> insertJson(Map<String, dynamic> fields) async {
     var uri = Uri.parse("$_baseUrl$_endpoint");
 
-    return _parse(
-        await http.post(uri, headers: createHeaders(), body: jsonEncode(fields)));
+    return _parse(await _request(() =>
+        http.post(uri, headers: createHeaders(), body: jsonEncode(fields))));
   }
 
   Future<T> updateJson(int id, Map<String, dynamic> fields) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$id");
 
-    return _parse(
-        await http.put(uri, headers: createHeaders(), body: jsonEncode(fields)));
+    return _parse(await _request(() =>
+        http.put(uri, headers: createHeaders(), body: jsonEncode(fields))));
   }
 
   T _parse(http.Response response) {
@@ -163,14 +151,15 @@ abstract class BaseProvider<T> with ChangeNotifier {
   Future<dynamic> postJson(String action, [Map<String, dynamic>? body]) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    return _decode(await http.post(uri,
-        headers: createHeaders(), body: body == null ? null : jsonEncode(body)));
+    return _decode(await _request(() => http.post(uri,
+        headers: createHeaders(),
+        body: body == null ? null : jsonEncode(body))));
   }
 
   Future<dynamic> deleteAction(String action) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 
-    return _decode(await http.delete(uri, headers: createHeaders()));
+    return _decode(await _request(() => http.delete(uri, headers: createHeaders())));
   }
 
   dynamic _decode(http.Response response) {
@@ -179,31 +168,32 @@ abstract class BaseProvider<T> with ChangeNotifier {
     return response.body.isEmpty ? null : jsonDecode(response.body);
   }
 
-  Future<T> _send(
-    http.MultipartRequest request,
+  // The request is built inside the closure, not handed to it: a
+  // MultipartRequest is single-use, so a replay after a refresh needs a new one.
+  Future<http.Response> _multipart(
+    String method,
+    Uri uri,
     Map<String, dynamic> fields,
     Map<String, PickedImage> files,
-  ) async {
-    request.headers.addAll(createMultipartHeaders());
+  ) {
+    return _request(() async {
+      var request = http.MultipartRequest(method, uri);
 
-    fields.forEach((key, value) => _addField(request.fields, key, value));
+      request.headers.addAll(createMultipartHeaders());
 
-    files.forEach((key, image) {
-      request.files.add(http.MultipartFile.fromBytes(
-        key,
-        image.bytes,
-        filename: image.fileName,
-        contentType: MediaType.parse(image.contentType),
-      ));
+      fields.forEach((key, value) => _addField(request.fields, key, value));
+
+      files.forEach((key, image) {
+        request.files.add(http.MultipartFile.fromBytes(
+          key,
+          image.bytes,
+          filename: image.fileName,
+          contentType: MediaType.parse(image.contentType),
+        ));
+      });
+
+      return http.Response.fromStream(await request.send());
     });
-
-    var response = await http.Response.fromStream(await request.send());
-
-    if (isValidResponse(response)) {
-      return fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Unknown error");
-    }
   }
 
   // `request.fields` is a flat map, so a collection or nested object is spelled
@@ -286,7 +276,10 @@ abstract class BaseProvider<T> with ChangeNotifier {
       return true;
     }
     else if (response.statusCode == 401) {
-      throw Exception("Unauthorized");
+      // The refresh above has already been tried and failed, so the session is
+      // over: `expireSession` sends the user back to login.
+      AuthProvider.expireSession();
+      throw Exception("Your session has expired. Please sign in again.");
     } else {
       throw Exception(_errorMessage(response));
     }

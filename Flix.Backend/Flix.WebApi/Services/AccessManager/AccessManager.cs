@@ -18,16 +18,19 @@ namespace Flix.WebApi.Services.AccessManager
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IConfiguration _configuration;
         private readonly ICryptoService _cryptoService;
+        private readonly ICurrentUserService _currentUserService;
         public AccessManager(
             IUserService userService,
             IRefreshTokenService refreshTokenService,
             IConfiguration configuration,
-            ICryptoService cryptoService)
+            ICryptoService cryptoService,
+            ICurrentUserService currentUserService)
         {
             _userService = userService;
             _refreshTokenService = refreshTokenService;
             _configuration = configuration;
             _cryptoService = cryptoService;
+            _currentUserService = currentUserService;
         }
         public async Task<UserLoginResponse> LoginAsync(UserLoginRequest request)
         {
@@ -100,6 +103,11 @@ namespace Flix.WebApi.Services.AccessManager
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue
             };
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _refreshTokenService.DeleteAllUserRefreshTokensAsync(_currentUserService.GetUserId());
         }
 
         private string GenerateToken(UserResponse user)

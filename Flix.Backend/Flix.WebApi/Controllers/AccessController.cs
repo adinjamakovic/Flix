@@ -34,6 +34,14 @@ namespace Flix.WebApi.Controllers
             var result = await _accessManager.LoginWithRefreshTokenAsync(request);
             return Ok(result);
         }
+        [Authorize]
+        [HttpPost("Logout")]
+        public async Task<ActionResult> Logout()
+        {
+            await _accessManager.LogoutAsync();
+            return Ok();
+        }
+
         // UserInsertRequest carries the profile image as an IFormFile, so registration is
         // multipart rather than JSON.
         [AllowAnonymous]

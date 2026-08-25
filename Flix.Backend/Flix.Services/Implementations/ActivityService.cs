@@ -151,11 +151,10 @@ namespace Flix.Services.Implementations
             if (search?.IncludeTotalCount ?? false)
                 totalCount = await query.CountAsync();
 
-            if (search?.Page is int page && search.PageSize is int size)
-                query = query.Skip((page - 1) * size);
+            var page = search?.Page ?? BaseSearchObject.DefaultPage;
+            var pageSize = search?.PageSize ?? BaseSearchObject.DefaultPageSize;
 
-            if (search?.PageSize is int pageSize)
-                query = query.Take(pageSize);
+            query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
             var entities = await query.ToListAsync();
 

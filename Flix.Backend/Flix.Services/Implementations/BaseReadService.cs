@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Flix.Model.Exceptions;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -44,19 +45,18 @@ namespace Flix.Services.Implementations
             int? totalCount = null;
 
             if (search?.IncludeTotalCount ?? false)
-                totalCount = query.Count();
+                totalCount = await query.CountAsync();
 
-            if (search?.Page is int page && search.PageSize is int size)
-                query = query.Skip((page - 1) * size);
+            var page = search?.Page ?? BaseSearchObject.DefaultPage;
+            var pageSize = search?.PageSize ?? BaseSearchObject.DefaultPageSize;
 
-            if (search?.PageSize is int pageSize)
-                query = query.Take(pageSize);
+            query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
-            var entities = query.AsEnumerable().Select(MapToResponse).ToList();
+            var entities = await query.ToListAsync();
 
             return new PageResult<TResponse>
             {
-                Items = entities,
+                Items = entities.Select(MapToResponse).ToList(),
                 TotalCount = totalCount
             };
         }

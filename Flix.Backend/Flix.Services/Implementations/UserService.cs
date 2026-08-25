@@ -150,9 +150,13 @@ namespace Flix.Services.Implementations
 
             // An omitted password means "leave it alone" - only a supplied one that does not
             // already match is rehashed.
-            if (!string.IsNullOrEmpty(request.Password)
-                && !_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password))
-                entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                VerifyOldPassword(entity, request);
+
+                if (!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password))
+                    entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
+            }
 
             if (request.ProfileImage is not null)
                 entity.ProfileImage = await _imageStorageService.ReplaceIfUploadedAsync(
@@ -162,6 +166,20 @@ namespace Flix.Services.Implementations
 
             if (_currentUserService.IsAdmin)
                 await AssignRoleAsync(entity, request.RoleId);
+        }
+
+        // An admin resetting someone's password has no way of knowing the old one; a user changing
+        // their own has to prove they know it.
+        private void VerifyOldPassword(User entity, UserUpdateRequest request)
+        {
+            if (_currentUserService.IsAdmin)
+                return;
+
+            if (string.IsNullOrEmpty(request.OldPassword))
+                throw new ClientException("Your current password is required to set a new one.");
+
+            if (!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.OldPassword))
+                throw new ClientException("Your current password is incorrect.");
         }
 
         private async Task AssignRoleAsync(User entity, int? roleId)

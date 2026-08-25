@@ -18,7 +18,13 @@ import 'package:flix_desktop/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> _messengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 void main() {
+  AuthProvider.onSessionExpired = _returnToLogin;
+
   runApp(
       MultiProvider(
           providers: [
@@ -40,6 +46,19 @@ void main() {
             ChangeNotifierProvider(create: (_) => MovieRequestProvider())
           ],
         child: const MyApp()));
+}
+
+void _returnToLogin() {
+  rootNavigatorKey.currentState?.pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => LoginScreen()),
+    (route) => false,
+  );
+
+  _messengerKey.currentState?.showSnackBar(
+    const SnackBar(
+      content: Text("Your session has expired. Please sign in again."),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -84,6 +103,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flix',
+      navigatorKey: rootNavigatorKey,
+      scaffoldMessengerKey: _messengerKey,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: flixColorScheme,

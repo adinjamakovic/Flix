@@ -23,7 +23,13 @@ import 'package:flix_mobile/theme/flix_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> _messengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 void main() {
+  AuthProvider.onSessionExpired = _returnToLogin;
+
   runApp(
       MultiProvider(
         providers: [
@@ -50,6 +56,21 @@ void main() {
       child: const MyApp(),));
 }
 
+// The session can run out under any tab, so the redirect goes through the root
+// navigator — a push into a tab's navigator would leave the nav bar up.
+void _returnToLogin() {
+  rootNavigatorKey.currentState?.pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => const Login()),
+    (route) => false,
+  );
+
+  _messengerKey.currentState?.showSnackBar(
+    const SnackBar(
+      content: Text("Your session has expired. Please sign in again."),
+    ),
+  );
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -58,6 +79,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flix',
       theme: flixTheme,
+      navigatorKey: rootNavigatorKey,
+      scaffoldMessengerKey: _messengerKey,
       home: const WelcomeScreen(),
     );
   }

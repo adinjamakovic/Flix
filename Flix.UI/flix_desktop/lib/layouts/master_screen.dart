@@ -119,10 +119,12 @@ class _MasterScreenState extends State<MasterScreen> {
                     tooltip: "Log out",
                     icon: Icon(Icons.logout,
                         color: colors.onSecondaryContainer, size: 24),
-                    onPressed: () {
-                      context.read<AuthProvider>().logout();
-                      Navigator.pushAndRemoveUntil(
-                        context,
+                    onPressed: () async {
+                      var navigator = Navigator.of(context);
+
+                      await context.read<AuthProvider>().logout();
+
+                      navigator.pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                         (route) => false, // drop every screen behind us
                       );
