@@ -4,7 +4,7 @@ services:
     container_name: ib230120-sql
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd1"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd1}"
       MSSQL_PID: "Developer"
     ports:
       - "1433:1433"
@@ -24,8 +24,8 @@ services:
     image: rabbitmq:3-management
     container_name: ib230120-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: "admin"
-      RABBITMQ_DEFAULT_PASS: "admin"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-admin}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASS:-admin}"
     ports:
       - "5672:5672" # AMQP
       - "15672:15672" # Management
@@ -49,10 +49,10 @@ services:
     container_name: ib230120-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=230120;User Id=sa;Password=YourStrong!Passw0rd1;TrustServerCertificate=True;MultipleActiveResultSets=True
-      - ConnectionStrings__RabbitMQ=host=rabbitmq;username=admin;password=admin
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=${MSSQL_DB:-230120};User Id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd1};TrustServerCertificate=True;MultipleActiveResultSets=True
+      - ConnectionStrings__RabbitMQ=host=rabbitmq;username=${RABBITMQ_USER:-admin};password=${RABBITMQ_PASS:-admin}
     env_file:
-      - path: Flix.WebApi/.env
+      - path: .env
         required: false
     ports:
       - "5071:5121"
@@ -65,8 +65,26 @@ services:
       - ib230120
     restart: unless-stopped
 
-
-
+  flix-subscriber:
+    build:
+      context: .
+      dockerfile: Flix.Subscriber/Dockerfile
+    container_name: ib230120-subscriber
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - DATABASE_CONNECTION=Server=sqlserver;Database=${MSSQL_DB:-230120};User Id=sa;Password=${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd1};TrustServerCertificate=True;MultipleActiveResultSets=True
+      - RABBITMQ_HOST=rabbitmq
+    env_file:
+      - path: .env
+        required: True
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ib230120
+    restart: unless-stopped
 
 volumes:
   sqlserver_data:

@@ -21,12 +21,37 @@ using System.Text;
 using Flix.Model.Enums;
 using Azure.Storage.Blobs;
 using Flix.CommonServices.ImageStorageService;
+using EasyNetQ;
 
-Env.Load();
+Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-var blobStorageConnectionString = builder.Configuration["BLOB_STORAGE_CONNECTION_STRING"];
+var blobStorageConnectionString = Environment.GetEnvironmentVariable("BLOB_STORAGE_CONNECTION_STRING");
+
+var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+var rabbitMqUser = Environment.GetEnvironmentVariable("RABBITMQ_USER");
+var rabbitMqPass = Environment.GetEnvironmentVariable("RABBITMQ_PASS");
+
+var environmentConfiguration = new Dictionary<string, string?>
+{
+    ["ConnectionStrings:DefaultConnection"] = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? Environment.GetEnvironmentVariable("DATABASE_CONNECTION"),
+    ["ConnectionStrings:RabbitMQ"] = builder.Configuration.GetConnectionString("RabbitMQ")
+        ?? (string.IsNullOrWhiteSpace(rabbitMqHost)
+            ? null
+            : $"host={rabbitMqHost};username={rabbitMqUser};password={rabbitMqPass}"),
+    ["JwtToken:Issuer"] = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+    ["JwtToken:Audience"] = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+    ["JwtToken:SecretKey"] = Environment.GetEnvironmentVariable("SECRET_KEY"),
+    ["JwtToken:DurationInMinutes"] = Environment.GetEnvironmentVariable("JWT_DURATION")
+};
+
+builder.Configuration.AddInMemoryCollection(
+    environmentConfiguration.Where(x => !string.IsNullOrWhiteSpace(x.Value)));
+
+var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DATABASE_CONNECTION is not configured. See .env_example.");
 
 // Add services to the container.
 
@@ -43,6 +68,10 @@ builder.Services.AddOpenApi(options =>
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(blobStorageConnectionString));
+
+builder.Services.AddSingleton<IBus>(x =>
+    RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("RabbitMQ")
+        ?? throw new InvalidOperationException("Connection string 'RabbitMQ' is not configured.")));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -169,7 +198,7 @@ TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().Ignore(dest => dest.Profi
 
 // DB Context
 builder.Services.AddDbContext<FlixDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(databaseConnectionString));
 
 // Validators
 builder.Services.AddScoped<IValidator<ActivityInsertRequest>, ActivityInsertRequestValidator>();

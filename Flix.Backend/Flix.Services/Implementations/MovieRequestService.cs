@@ -10,7 +10,6 @@ using FluentValidation;
 using MapsterMapper;
 using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Flix.Model.Messages;
 
 namespace Flix.Services.Implementations
@@ -27,7 +26,7 @@ namespace Flix.Services.Implementations
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
         private readonly IMovieService _movieService;
-        private readonly string _rabbitMqConnectionString;
+        private readonly IBus _bus;
         protected readonly IValidator<MovieRequestInsertRequest> _insertValidator;
         protected readonly IValidator<MovieRequestUpdateRequest> _updateValidator;
         public MovieRequestService(
@@ -38,7 +37,7 @@ namespace Flix.Services.Implementations
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
             IMovieService movieService,
-            IConfiguration configuration,
+            IBus bus,
             IValidator<MovieRequestInsertRequest> insertValidator,
             IValidator<MovieRequestUpdateRequest> updateValidator)
             : base(context, mapper)
@@ -48,8 +47,7 @@ namespace Flix.Services.Implementations
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
             _movieService = movieService;
-            _rabbitMqConnectionString = configuration.GetConnectionString("RabbitMQ")
-                ?? throw new InvalidOperationException("Connection string 'RabbitMQ' is not configured.");
+            _bus = bus;
             _insertValidator = insertValidator;
             _updateValidator = updateValidator;
         }
@@ -107,8 +105,26 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            return MapToResponse(entity);
+            var response = MapToResponse(entity);
+
+            if (request.IsApproved)
+                await PublishAsync(new MovieAccepted
+                {
+                    Id = entity.Id,
+                    Data = response
+                });
+            else
+                await PublishAsync(new MovieRejected
+                {
+                    Id = entity.Id,
+                    Data = response
+                });
+
+            return response;
         }
+
+        private Task PublishAsync<TMessage>(TMessage message)
+            => _bus.PubSub.PublishAsync(message);
 
         private static bool HasDirectorEdit(MovieRequestUpdateRequest request)
             => request.DirectorFirstName is not null
@@ -279,15 +295,15 @@ namespace Flix.Services.Implementations
                 .ThenInclude(x => x.Role)
                 .FirstAsync(x => x.Id == requestedByUserId);
 
-            var bus = RabbitHutch.CreateBus(_rabbitMqConnectionString);
-            
-            await bus.PubSub.PublishAsync(new MovieRequested
+            var response = MapToResponse(movieRequestEntity);
+
+            await PublishAsync(new MovieRequested
             {
                 Id = movieRequestEntity.Id,
-                Data = MapToResponse(movieRequestEntity)
+                Data = response
             });
 
-            return MapToResponse(movieRequestEntity);
+            return response;
         }
 
         protected override IQueryable<MovieRequest> GetDataSource()
