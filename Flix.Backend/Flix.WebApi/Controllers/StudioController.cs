@@ -2,7 +2,7 @@ using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Flix.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flix.WebApi.Controllers
@@ -19,6 +19,7 @@ namespace Flix.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("multipart/form-data")]
+        [Authorization("Admin")]
         public override async Task<ActionResult<StudioResponse>> Create([FromForm] StudioInsertRequest request)
         {
             var result = await _service.InsertAsync(request);
@@ -30,17 +31,17 @@ namespace Flix.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("multipart/form-data")]
+        [Authorization("Admin")]
         public override async Task<ActionResult<StudioResponse>> Update(int id, [FromForm] StudioUpdateRequest request)
         {
             var result = await _service.UpdateAsync(id, request);
             return result;
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public override async Task<ActionResult<PageResult<StudioResponse>>> Get([FromQuery] StudioSearchObject? search)
+        [Authorization("Admin")]
+        public override Task<IActionResult> Delete(int id)
         {
-            return Ok(await _service.GetAsync(search));
+            return base.Delete(id);
         }
     }
 }

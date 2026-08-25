@@ -25,6 +25,7 @@ namespace Flix.Services.Implementations
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly ICurrentUserService _currentUserService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
@@ -33,13 +34,15 @@ namespace Flix.Services.Implementations
             IValidator<UserUpdateRequest> updateValidator,
             IImageStorageService imageStorageService,
             IResponseImageUrlResolver imageUrlResolver,
-            IActivityService activityService)
+            IActivityService activityService,
+            ICurrentUserService currentUserService)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageStorageService = imageStorageService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _currentUserService = currentUserService;
         }
 
         public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
@@ -129,6 +132,14 @@ namespace Flix.Services.Implementations
             });
         }
 
+        protected override void MapUpdateRequestToEntity(UserUpdateRequest request, User entity)
+        {
+            if (!_currentUserService.IsAdmin && entity.Id != _currentUserService.GetUserId())
+                throw new ClientException("You can only edit your own account.");
+
+            base.MapUpdateRequestToEntity(request, entity);
+        }
+
         protected override async Task BeforeUpdateAsync(User entity, UserUpdateRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username && u.Id != entity.Id))
@@ -149,7 +160,8 @@ namespace Flix.Services.Implementations
                     entity.ProfileImage,
                     request.ProfileImage);
 
-            await AssignRoleAsync(entity, request.RoleId);
+            if (_currentUserService.IsAdmin)
+                await AssignRoleAsync(entity, request.RoleId);
         }
 
         private async Task AssignRoleAsync(User entity, int? roleId)

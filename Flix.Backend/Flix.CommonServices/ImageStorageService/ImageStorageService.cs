@@ -61,6 +61,9 @@ namespace Flix.CommonServices.ImageStorageService
             if( string.IsNullOrWhiteSpace(extension) || !ImageValidationRules.AllowedExtensions.Contains(extension))
                 throw new Exception("Invalid image extension");
 
+            if (!ImageValidationRules.HasAllowedContentType(image) || !ImageValidationRules.HasMatchingSignature(image))
+                throw new Exception("Invalid image contents");
+
             var container = _blobServiceClient.GetBlobContainerClient(ContainerName);
             await container.CreateIfNotExistsAsync();
 

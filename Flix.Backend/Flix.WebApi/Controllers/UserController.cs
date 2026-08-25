@@ -42,5 +42,11 @@ namespace Flix.WebApi.Controllers
         {
             return base.Get(search);
         }
+
+        [Authorization("Admin")]
+        public override Task<IActionResult> Delete(int id)
+        {
+            return base.Delete(id);
+        }
     }
 }
