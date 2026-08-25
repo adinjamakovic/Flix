@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flix_desktop/providers/base_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,7 +19,10 @@ class AuthProvider extends ChangeNotifier {
   String _baseUrl = "";
 
   AuthProvider() {
-    _baseUrl = const String.fromEnvironment("BASE_URL", defaultValue: "http://localhost:5071/Access");
+    const root = String.fromEnvironment("BASE_URL",
+        defaultValue: BaseProvider.defaultBaseUrl);
+
+    _baseUrl = "${root.endsWith('/') ? root : '$root/'}Access";
   }
 
   Future login(String username, String password) async {

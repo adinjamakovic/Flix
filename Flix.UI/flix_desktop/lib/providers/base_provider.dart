@@ -11,10 +11,12 @@ abstract class BaseProvider<T> with ChangeNotifier {
   static String? _baseUrl;
   String _endpoint = "";
 
+  static const String defaultBaseUrl = "http://localhost:5071/";
+
   BaseProvider(String endpoint) {
     _endpoint = endpoint;
-    _baseUrl = const String.fromEnvironment("BASE_URL", 
-        defaultValue: "http://localhost:5071/");
+    _baseUrl = const String.fromEnvironment("BASE_URL",
+        defaultValue: defaultBaseUrl);
   }
 
   Future<SearchResult<T>> get({dynamic filter}) async {

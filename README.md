@@ -3,39 +3,70 @@
 **English below — [skoči na englesku verziju](#english) / [jump to the English version](#english)**
 
 Platforma za katalog filmova: ASP.NET Core API, Flutter desktop klijent
-za administraciju kataloga i Flutter mobilni klijent za pregled filmova, ocjenjivanje, vođenje
-dnevnika i pravljenje lista.
+za administraciju kataloga, Flutter mobilni klijent za pregled filmova, ocjenjivanje, vođenje
+dnevnika i pravljenje lista, i RabbitMQ pretplatnik koji šalje mail o zahtjevima za filmove.
 
 ## Struktura repozitorija
 
 | Putanja | Šta sadrži |
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API na SQL Serveru, slike u Azure Blob Storage-u. Četiri slojevita projekta: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
-| `Flix.UI/flix_desktop/` | Flutter desktop admin klijent — filmovi, glumci, korisnici, recenzije i clashevi, potpuni CRUD. |
+| `Flix.Backend/Flix.Subscriber/` | Konzolni RabbitMQ pretplatnik koji šalje mail o zahtjevima za filmove. Stoji izvan sloja API-ja i dijeli s njim samo `Flix.Model` i `Flix.Services`. |
+| `Flix.UI/flix_desktop/` | Flutter desktop admin klijent — filmovi, glumci, korisnici, recenzije i clashevi uz potpuni CRUD, red zahtjeva za filmove, prijave i statistika sa PDF izvještajima. |
 | `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil i postavke naloga, dnevnik, watchlist, liste, praćenje i blokiranje korisnika, zahtjevi za filmove, prijave grešaka u katalogu i prijave korisnika. |
-| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + API; `Dockerfile` stoji uz njega. |
+| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + API + pretplatnik; `Dockerfile` stoji uz njega, a pretplatnikov u `Flix.Subscriber/`. |
 
 ## Pokretanje
 
 ### Sve u Dockeru
 
-Compose fajl i `Dockerfile` stoje u `Flix.Backend/`, pa se pokreće odatle:
+Prvo raspakovati `Flix.Backend/.env.zip`, u njemu je gotov `.env` sa svim ključevima i
+vrijednostima. Arhiva je zaštićena lozinkom koja je priložena uz GitHub Release na
+DLWMS-u, pa traži 7-Zip ili WinRAR; ugrađeno raspakivanje u Windows Exploreru i
+`Expand-Archive` u PowerShell-u ne znaju za šifrovane arhive. Environment file mora završiti u
+`Flix.Backend/`, uz `docker-compose.yml`, jer ga pretplatnik traži kao obavezan
+(`required: true`) i bez njega se compose neće ni podići.
+
+Compose fajl i `Dockerfile` stoje u istom folderu, pa se pokreće odatle:
 
 ```powershell
 cd Flix.Backend
+& "C:\Program Files\7-Zip\7z.exe" x .env.zip -p<lozinka>   # ili desni klik → 7-Zip → Extract Here
 docker compose up -d --build
 ```
 
-Time se podiže SQL Server na `localhost:1433` (`sa` / `YourStrong!Passw0rd1`), RabbitMQ na
-`localhost:5672` sa management UI-jem na [localhost:15672](http://localhost:15672)
-(`admin` / `admin`) i API na `http://localhost:5071`. API čeka SQL Serverov healthcheck i sam
-primjenjuje migracije pri pokretanju, pa se na svježem volumenu baza podiže već popunjena.
+Time se podižu četiri servisa: SQL Server na `localhost:1433` (`sa` / `YourStrong!Passw0rd1`),
+RabbitMQ na `localhost:5672` sa management UI-jem na [localhost:15672](http://localhost:15672)
+(`admin` / `admin`), API na `http://localhost:5071` i `flix-subscriber`, koji nema port jer
+samo sluša red poruka. API čeka SQL Serverov healthcheck i sam primjenjuje migracije pri
+pokretanju, pa se na svježem volumenu baza podiže već popunjena.
 
 Za pokretanje samo baze i RabbitMQ-a, kada se API pokreće iz IDE-a:
 
 ```powershell
 docker compose up -d sqlserver rabbitmq
 ```
+
+### Konfiguracija
+
+Sve što je tajna ili ovisi o mašini stoji u `Flix.Backend/.env`; `appsettings.json` ne nosi ni
+jedan connection string ni JWT ključ. Environment file je u gitignore-u i uz to `.dockerignore`-om
+izbačen iz docker image-a, pa u repozitoriju putuje kao `.env.zip`, a u kontejner ulazi kroz `env_file`.
+
+| Ključ | Za šta |
+| --- | --- |
+| `BLOB_STORAGE_CONNECTION_STRING` | Azure Blob Storage. Bez njega pada svaki odgovor koji nosi URL slike. |
+| `DATABASE_CONNECTION` | SQL Server. |
+| `RABBITMQ_HOST` / `_USER` / `_PASS` | Broker, i za API i za pretplatnika. |
+| `JWT_ISSUER`, `JWT_AUDIENCE`, `SECRET_KEY`, `JWT_DURATION` | Potpisivanje tokena. |
+| `SMTP_HOST` / `_PORT` / `_USER` / `_PASS` / `_FROM` / `_FROM_NAME` | Relej kroz koji pretplatnik šalje mail. |
+| `ADMIN_EMAIL`, `ADMIN_NAME` | Rezervni primalac, samo kada je baza nedostupna. |
+| `MSSQL_SA_PASSWORD`, `MSSQL_DB` | Čita ih `docker-compose.yml` kada gradi connection stringove kontejnera, ne aplikacije. |
+
+`Program.cs` učitava `.env` penjući se uz stablo direktorija, pa isti fajl radi i kada se
+pokreće iz `Flix.WebApi/`, i prevodi te ključeve u `ConnectionStrings:*` i `JwtToken:*` koje
+ostatak koda čita. Vrijednosti koje postavi Docker imaju prednost, jer bi unutar kontejnera
+`localhost` iz `.env`-a pokazivao na pogrešnu mašinu.
 
 ### API iz IDE-a
 
@@ -44,12 +75,17 @@ dotnet run --project Flix.Backend/Flix.WebApi --launch-profile https   # https:/
 dotnet dev-certs https --trust
 ```
 
-`Flix.WebApi/.env` mora postojati sa `BLOB_STORAGE_CONNECTION_STRING=…` (kopirati
-`.env_example`) — `Program.cs` ga učitava pri pokretanju i bez njega pada svaki odgovor koji
-nosi URL slike.
-
 U Development okruženju API se sam dokumentuje na `/scalar`, a OpenAPI dokument stoji na
 `/openapi/v1.json`.
+
+### Pretplatnik iz IDE-a
+
+```powershell
+dotnet run --project Flix.Backend/Flix.Subscriber
+```
+
+Traži isti `.env`, a bez `DATABASE_CONNECTION`-a se ne gasi — samo pada na `ADMIN_EMAIL`
+umjesto na spisak admina iz baze.
 
 ### Flutter klijenti
 
@@ -64,9 +100,10 @@ flutter run                     # mobilni, na emulatoru ili uređaju
 klijent se bez njega ne kompajlira.
 
 Bazni URL API-ja je konstanta koja se postavlja pri kompajliranju: desktop klijent
-podrazumijeva `https://localhost:7140/`, a mobilni `http://10.0.2.2:5071/` (put Android
+podrazumijeva `http://localhost:5071/`, a mobilni `http://10.0.2.2:5071/` (put Android
 emulatora do host mašine). Za pokretanje na stvarnom uređaju proslijediti
-`flutter run --dart-define=BASE_URL=http://192.168.1.10:5071/`.
+`flutter run --dart-define=BASE_URL=http://192.168.1.10:5071/`. U oba klijenta `AuthProvider`
+čita isti define i na njega dodaje `/Access`, pa se s njim pomjera i login.
 
 ### Nalozi iz seed podataka
 
@@ -154,8 +191,7 @@ statusom i komentarom, čime se bilježi ko ju je i kada riješio.
 
 Poslane prijave korisnik čita u *Settings → My movie reports*
 (`screens/user_profile/my_issue_reports.dart`) — spisak sa statusom, adminovim komentarom i
-datumom rješavanja, samo za čitanje. Admin ekrana na desktopu još nema, pa prijave niko ne
-zatvara kroz UI.
+datumom rješavanja, samo za čitanje. Admin ih zatvara sa ekrana *Issues* na desktopu.
 
 ## Liste
 
@@ -192,24 +228,74 @@ korisnik umjesto dugmeta dobija tekst, jer se blokada skida iz tog istog menija.
 Prijava korisnika (`POST /UserNetwork/Report`, `screens/user_profile/report_user.dart`) je
 padajuća lista razloga plus opcioni opis, i po uzoru na prijave grešaka u katalogu ostaje
 `Open` dok je admin ne zatvori. Isti korisnik se ne može prijaviti dva puta dok prethodna
-prijava stoji otvorena. Ekrana za pregled poslanih prijava korisnika još nema — stavka u
-postavkama zasad javlja da stiže.
+prijava stoji otvorena. Poslane prijave se čitaju u *Settings → My user reports*
+(`screens/user_profile/my_user_reports.dart`), isto samo za čitanje.
 
 ## Postavke naloga
 
 `screens/user_profile/user_settings.dart` je forma iza `PUT /User/{id}` — ime, korisničko ime,
-email, telefon, država, bio i profilna slika, uz linkove ka prijavama korisnika. Lozinka se
+email, telefon, država, bio i profilna slika, uz linkove ka obje vrste poslanih prijava. Lozinka se
 mijenja u istoj formi, a prazna polja znače da ostaje postojeća, jer API rehashuje samo lozinku
 koju je dobio. Ograničenja polja prepisana su iz `UserUpdateRequestValidator` da forma padne
 prije poziva.
 
+## Admin strana
+
+Pored CRUD ekrana, desktop klijent ima tri destinacije koje ne uređuju katalog nego obrađuju
+ono što stiže sa mobilnog.
+
+**Submissions** (`screens/lists/movie_request_list.dart`) je red zahtjeva za filmove, filtriran
+po statusu i podrazumijevano na `Pending`. Svaki zahtjev se otvara u istoj formi za detalje
+filma kao i katalog, pa admin ispravlja šta je korisnik pogrešno unio prije nego što odluči.
+Potvrda ide na `PUT /MovieRequest/AdminReview/{id}`, koji zahtjev prevodi u `Approved` ili
+`Rejected`, bilježi ko ga je i kada pregledao i tek tada uključuje film u katalog
+(`IsEnabled`). Već pregledan zahtjev se odbija — status se ne mijenja dvaput. Režisera kojeg je
+korisnik ukucao rukom admin može preimenovati ovdje; zamijeni li ga postojećim iz cast liste,
+ukucani red se briše.
+
+**Issues** (`screens/issues.dart`) su dva taba nad `MovieIssueReport` i `UserReport`, sa
+filterom po statusu iznad. Isti dijalog (`widgets/report_review_dialog.dart`) zatvara oba —
+`Resolved` ili `Dismissed` uz komentar, koji je ono što prijavitelj vidi na svom ekranu.
+
+**Statistics** (`screens/statistics.dart`) čita `GET /Statistics` — jedan
+`AdminStatisticsResponse` sa četiri brojača (aktivni korisnici, filmovi, recenzije, clashevi),
+uz trend računat kao poređenje posljednjih sedam dana sa sedam prethodnih, plus najaktivniji
+korisnici, najgledaniji filmovi, posljednje aktivnosti i udio žanrova za pie chart. Endpoint
+stoji iza `[Authorization("Admin")]`.
+
+Dva panela se izvoze u PDF: `utils/reports.dart` gradi dokumente paketom `pdf`, a
+`screens/report_preview.dart` ih prikazuje u `PdfPreview`-u paketa `printing`, odakle se
+štampaju ili spašavaju. Izvještaji se grade iz istog odgovora koji ekran već ima, pa izvoz ne
+zove API ponovo.
+
+## Mail o zahtjevima za filmove
+
+`Flix.Subscriber` je konzolna aplikacija koja sluša tri poruke i na svaku šalje mail preko
+MailKit-a:
+
+| Poruka | Kada je objavljena | Kome ide mail |
+| --- | --- | --- |
+| `MovieRequested` | korisnik pošalje zahtjev | svakom aktivnom adminu |
+| `MovieAccepted` | admin odobri zahtjev | korisniku koji ga je poslao |
+| `MovieRejected` | admin odbije zahtjev | korisniku koji ga je poslao |
+
+Sve tri objavljuje `MovieRequestService` kroz `IBus` koji je u `Program.cs` registrovan kao
+singleton — EasyNetQ otvara vezu po busu i vraća se iz `PublishAsync` prije nego što poruka
+napusti socket, pa bus napravljen i odbačen oko jednog objavljivanja može izgubiti poruku.
+
+Spisak admina se čita iz baze po poruci, a ne jednom pri pokretanju, da bi se admin dodan u
+međuvremenu pokupio bez restarta; `ADMIN_EMAIL` pokriva samo slučaj kada je baza nedostupna.
+Greška SMTP releja ili baze se hvata i ispisuje, jer bi propuštena kroz EasyNetQ vraćala poruku
+u red zauvijek. Pretplata se pokušava tri puta prije odustajanja, pošto se u Dockeru pretplatnik
+podigne prije nego što RabbitMQ prihvati prvu vezu.
+
 ## Napomene
 
-- `MovieRequestService` objavljuje `MovieRequested` poruku na RabbitMQ kada korisnik zatraži
-  film. Ništa se na nju još ne pretplaćuje.
 - Svi seed podaci stoje u `HasData` u `Flix.Services/Database/FlixSeeder.cs`, pa svaka izmjena
   seed podataka zahtijeva novu migraciju.
 - Ne postoji test projekat za backend.
+- Za testiranje slanja mailova preporučuje se kreiranje administratorskog naloga sa vlastitom
+  e-mail adresom, kako bi poruke stvarno stigle u inbox.
 
 ---
 
@@ -218,39 +304,72 @@ prije poziva.
 # Flix (English)
 
 A movie-catalog platform: an ASP.NET Core API with a Flutter
-admin client for managing the catalog and a Flutter mobile client for browsing it, rating
-films, keeping a diary and building lists.
+admin client for managing the catalog, a Flutter mobile client for browsing it, rating
+films, keeping a diary and building lists, and a RabbitMQ subscriber mailing out
+movie-request news.
 
 ## Repository layout
 
 | Path | What it is |
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API on SQL Server, images in Azure Blob Storage. Four layered projects: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
-| `Flix.UI/flix_desktop/` | Flutter desktop admin client — movies, cast, users, reviews and clashes, full CRUD. |
+| `Flix.Backend/Flix.Subscriber/` | A console RabbitMQ subscriber that mails out movie-request news. It sits outside the API's layering and shares only `Flix.Model` and `Flix.Services` with it. |
+| `Flix.UI/flix_desktop/` | Flutter desktop admin client — movies, cast, users, reviews and clashes with full CRUD, the movie-request queue, the report queues and statistics with PDF reports. |
 | `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile and account settings, diary, watchlist, lists, following and blocking, movie requests, catalog issue reports and user reports. |
-| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + the API; the `Dockerfile` sits next to it. |
+| `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + the API + the subscriber; the `Dockerfile` sits next to it, the subscriber's inside `Flix.Subscriber/`. |
 
 ## Running it
 
 ### Everything in Docker
 
-The compose file and the `Dockerfile` live in `Flix.Backend/`, so that is where this runs from:
+Start by extracting `Flix.Backend/.env.zip` — it holds a ready `.env` with every key filled in.
+The archive is password protected, with the password attached to the GitHub Release on DLWMS, so
+it needs 7-Zip or WinRAR; Windows Explorer's built-in extraction and PowerShell's
+`Expand-Archive` cannot read encrypted archives. The environment file has to end up in
+`Flix.Backend/`, next to `docker-compose.yml`, because the subscriber declares it
+`required: true` and compose will not come up without it.
+
+The compose file and the `Dockerfile` live in that same folder, so that is where this runs from:
 
 ```powershell
 cd Flix.Backend
+& "C:\Program Files\7-Zip\7z.exe" x .env.zip -p<password>   # or right-click → 7-Zip → Extract Here
 docker compose up -d --build
 ```
 
-That brings up SQL Server on `localhost:1433` (`sa` / `YourStrong!Passw0rd1`), RabbitMQ on
-`localhost:5672` with its management UI on [localhost:15672](http://localhost:15672)
-(`admin` / `admin`), and the API on `http://localhost:5071`. The API waits on SQL Server's
-healthcheck and applies migrations itself on startup, so a fresh volume comes up seeded.
+That brings up four services: SQL Server on `localhost:1433` (`sa` / `YourStrong!Passw0rd1`),
+RabbitMQ on `localhost:5672` with its management UI on [localhost:15672](http://localhost:15672)
+(`admin` / `admin`), the API on `http://localhost:5071`, and `flix-subscriber`, which publishes
+no port because it only listens on a queue. The API waits on SQL Server's healthcheck and
+applies migrations itself on startup, so a fresh volume comes up seeded.
 
 To run only the database and RabbitMQ, with the API started from the IDE:
 
 ```powershell
 docker compose up -d sqlserver rabbitmq
 ```
+
+### Configuration
+
+Everything secret or machine-specific lives in `Flix.Backend/.env`; `appsettings.json` carries
+no connection string and no JWT key. That file is gitignored and also kept out of the image by
+`.dockerignore`, so it travels in the repository as `.env.zip` and reaches the container through
+`env_file`.
+
+| Key | What it is for |
+| --- | --- |
+| `BLOB_STORAGE_CONNECTION_STRING` | Azure Blob Storage. Every response carrying an image URL fails without it. |
+| `DATABASE_CONNECTION` | SQL Server. |
+| `RABBITMQ_HOST` / `_USER` / `_PASS` | The broker, for both the API and the subscriber. |
+| `JWT_ISSUER`, `JWT_AUDIENCE`, `SECRET_KEY`, `JWT_DURATION` | Token signing. |
+| `SMTP_HOST` / `_PORT` / `_USER` / `_PASS` / `_FROM` / `_FROM_NAME` | The relay the subscriber sends mail through. |
+| `ADMIN_EMAIL`, `ADMIN_NAME` | A fallback recipient, used only when the database is unreachable. |
+| `MSSQL_SA_PASSWORD`, `MSSQL_DB` | Read by `docker-compose.yml` when it builds the containers' connection strings, not by any of the apps. |
+
+`Program.cs` loads the `.env` by walking up the directory tree, so the same file works when the
+API is started from `Flix.WebApi/`, and it translates those keys into the `ConnectionStrings:*`
+and `JwtToken:*` the rest of the code reads. Values set by Docker win, because inside a
+container the `localhost` spelling in `.env` would point at the wrong machine.
 
 ### The API from the IDE
 
@@ -259,10 +378,16 @@ dotnet run --project Flix.Backend/Flix.WebApi --launch-profile https   # https:/
 dotnet dev-certs https --trust
 ```
 
-`Flix.WebApi/.env` must exist with `BLOB_STORAGE_CONNECTION_STRING=…` (copy `.env_example`) —
-`Program.cs` loads it at startup and every response carrying an image URL fails without it.
-
 In Development the API documents itself at `/scalar`, with the OpenAPI doc at `/openapi/v1.json`.
+
+### The subscriber from the IDE
+
+```powershell
+dotnet run --project Flix.Backend/Flix.Subscriber
+```
+
+It wants the same `.env`, and it does not quit without `DATABASE_CONNECTION` — it just falls
+back to `ADMIN_EMAIL` instead of the admins in the database.
 
 ### The Flutter clients
 
@@ -277,9 +402,11 @@ flutter run                     # mobile, on an emulator or device
 compiles without it.
 
 The API base URL is a compile-time constant: the desktop client defaults to
-`https://localhost:7140/`, the mobile client to `http://10.0.2.2:5071/` (the Android
+`http://localhost:5071/`, the mobile client to `http://10.0.2.2:5071/` (the Android
 emulator's route to the host). Override with
 `flutter run --dart-define=BASE_URL=http://192.168.1.10:5071/` when running on a real device.
+In both clients `AuthProvider` reads the same define and appends `/Access` to it, so login moves
+with everything else.
 
 ### Seeded logins
 
@@ -371,8 +498,8 @@ and when.
 
 A user reads their filed reports back under *Settings → My movie reports*
 (`screens/user_profile/my_issue_reports.dart`) — a read-only list carrying the status, the
-admin's comment and the date it was resolved. There is still no admin screen on the desktop, so
-nothing closes a report through a UI.
+admin's comment and the date it was resolved. An admin closes them from the *Issues* screen on
+the desktop.
 
 ## Lists
 
@@ -412,21 +539,73 @@ menu.
 Reporting a user (`POST /UserNetwork/Report`, `screens/user_profile/report_user.dart`) is a
 dropdown of reasons plus an optional description and, like a catalog issue report, stays `Open`
 until an admin closes it. The same user cannot be reported twice while an earlier report is
-still open. There is no screen for reading filed user reports yet — the settings entry says as
-much.
+still open. Filed reports are read back under *Settings → My user reports*
+(`screens/user_profile/my_user_reports.dart`), read-only in the same way.
 
 ## Account settings
 
 `screens/user_profile/user_settings.dart` is the form behind `PUT /User/{id}` — name, username,
-email, phone, country, bio and profile photo, along with the links to the user's reports. The
-password is changed in the same form, where leaving the fields empty keeps the current one,
-because the API only rehashes a password it was actually sent. The field limits are copied from
-`UserUpdateRequestValidator` so the form fails before the round trip.
+email, phone, country, bio and profile photo, along with the links to both kinds of filed
+report. The password is changed in the same form, where leaving the fields empty keeps the
+current one, because the API only rehashes a password it was actually sent. The field limits are
+copied from `UserUpdateRequestValidator` so the form fails before the round trip.
+
+## The admin side
+
+Beyond the CRUD screens, the desktop client carries three destinations that do not edit the
+catalog but work through what arrives from mobile.
+
+**Submissions** (`screens/lists/movie_request_list.dart`) is the movie-request queue, filtered
+by status and defaulting to `Pending`. A request opens in the same movie details form the
+catalog uses, so an admin fixes whatever the user got wrong before deciding. Confirming goes to
+`PUT /MovieRequest/AdminReview/{id}`, which turns the request into `Approved` or `Rejected`,
+records who reviewed it and when, and only then puts the movie into the catalog (`IsEnabled`).
+A request already reviewed is refused — a status is not changed twice. A director the user
+typed in by hand can be renamed here; replacing them with an existing member of the cast list
+deletes the typed-in row.
+
+**Issues** (`screens/issues.dart`) is two tabs over `MovieIssueReport` and `UserReport`, with a
+status filter above them. The same dialog (`widgets/report_review_dialog.dart`) closes both —
+`Resolved` or `Dismissed` plus a comment, which is what the reporter sees on their own screen.
+
+**Statistics** (`screens/statistics.dart`) reads `GET /Statistics` — one
+`AdminStatisticsResponse` carrying four counters (active users, movies, reviews, clashes), each
+with a trend computed as the last seven days against the seven before them, plus the most
+active users, the most watched movies, the newest activities and the genre shares behind the pie
+chart. The endpoint sits behind `[Authorization("Admin")]`.
+
+Two of the panels export to PDF: `utils/reports.dart` builds the documents with the `pdf`
+package and `screens/report_preview.dart` shows them in the `printing` package's `PdfPreview`,
+which is where they are printed or saved. A report is built from the response the screen already
+holds, so exporting does not call the API again.
+
+## Movie-request mail
+
+`Flix.Subscriber` is a console app listening for three messages, each of which it turns into
+mail through MailKit:
+
+| Message | Published when | Who gets the mail |
+| --- | --- | --- |
+| `MovieRequested` | a user files a request | every active admin |
+| `MovieAccepted` | an admin approves it | the user who filed it |
+| `MovieRejected` | an admin rejects it | the user who filed it |
+
+All three are published by `MovieRequestService` through the `IBus` registered as a singleton in
+`Program.cs` — EasyNetQ opens a connection per bus and returns from `PublishAsync` before the
+frame has left the socket, so a bus created and disposed around a single publish can drop the
+message.
+
+The admin list is read from the database per message rather than once at startup, so an admin
+added in the meantime is picked up without a restart; `ADMIN_EMAIL` only covers the database
+being unreachable. A failing SMTP relay or database is caught and logged, because letting it
+through EasyNetQ would requeue the message forever. Subscribing is attempted three times before
+giving up, since under Docker the subscriber comes up before RabbitMQ accepts its first
+connection.
 
 ## Notes
 
-- `MovieRequestService` publishes a `MovieRequested` message to RabbitMQ when a user requests a
-  film. Nothing subscribes to it yet.
 - All seed data lives in `HasData` in `Flix.Services/Database/FlixSeeder.cs`, so changing it
   requires a new migration.
 - There is no backend test project.
+- To test the mail sending, create an admin account with your own e-mail address so the
+  messages actually land in your inbox.

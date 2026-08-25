@@ -13,6 +13,7 @@
 *.userosscache
 *.sln.docstates
 Dockerfile*
+**/Dockerfile*
 .dockerignore
 docker-compose*.yml
 **/docker-compose*.yml
