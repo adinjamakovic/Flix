@@ -6,13 +6,16 @@ class MovieSideScroll extends StatefulWidget {
   const MovieSideScroll({
     super.key,
     required this.title,
-    required this.Movies,
+    required this.movies,
     this.onMovieTap,
+    this.captionOf,
   });
 
   final String title;
-  final List<Movie> Movies;
+  final List<Movie> movies;
   final ValueChanged<Movie>? onMovieTap;
+
+  final String? Function(Movie movie)? captionOf;
 
   @override
   _MovieSideScrollState createState() => _MovieSideScrollState();
@@ -22,6 +25,7 @@ class _MovieSideScrollState extends State<MovieSideScroll> {
   static const double _posterWidth = 100;
   static const double _posterHeight = 150;
   static const double _posterRadius = 6;
+  static const double _captionHeight = 32;
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +42,15 @@ class _MovieSideScrollState extends State<MovieSideScroll> {
           ),
           const SizedBox(height: 4),
           SizedBox(
-            height: _posterHeight,
+            height: widget.captionOf == null
+                ? _posterHeight
+                : _posterHeight + _captionHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: widget.Movies.length,
+              itemCount: widget.movies.length,
               separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) =>
-                  _buildPosterButton(widget.Movies[index]),
+                  _buildPosterButton(widget.movies[index]),
             ),
           ),
         ],
@@ -65,21 +71,51 @@ class _MovieSideScrollState extends State<MovieSideScroll> {
     );
 
     final ValueChanged<Movie>? onMovieTap = widget.onMovieTap;
-    if (onMovieTap == null) return poster;
+    if (onMovieTap == null) return _withCaption(movie, poster);
 
-    return Stack(
-      children: [
-        poster,
-        Positioned.fill(
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => onMovieTap(movie),
-              borderRadius: BorderRadius.circular(_posterRadius),
+    return _withCaption(
+      movie,
+      Stack(
+        children: [
+          poster,
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => onMovieTap(movie),
+                borderRadius: BorderRadius.circular(_posterRadius),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  Widget _withCaption(Movie movie, Widget poster) {
+    if (widget.captionOf == null) return poster;
+
+    return SizedBox(
+      width: _posterWidth,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          poster,
+          const SizedBox(height: 4),
+          Expanded(
+            child: Text(
+              widget.captionOf!(movie) ?? "",
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10,
+                height: 1.2,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

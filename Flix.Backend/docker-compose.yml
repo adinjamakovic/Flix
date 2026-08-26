@@ -1,6 +1,6 @@
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU26-ubuntu-22.04
     container_name: ib230120-sql
     environment:
       ACCEPT_EULA: "Y"
@@ -21,7 +21,7 @@ services:
       start_period: 30s
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.13.7-management
     container_name: ib230120-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER:-admin}"

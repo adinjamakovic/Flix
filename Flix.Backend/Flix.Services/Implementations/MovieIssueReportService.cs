@@ -5,6 +5,7 @@ using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
+using Flix.Services.StateMachines;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
@@ -124,6 +125,11 @@ namespace Flix.Services.Implementations
 
             if (request.Status is not ReportStatus status || status == entity.Status)
                 return;
+
+            Transitions.Report.EnsureCanTransition(
+                entity.Status,
+                status,
+                $"A report that is {entity.Status} cannot be set to {status}.");
 
             entity.Status = status;
             entity.ReviewedByUserId = _currentUserService.GetUserId();

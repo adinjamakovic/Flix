@@ -128,6 +128,8 @@ namespace Flix.Services.Implementations
                 UserId = participantId
             };
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.ClashEntries.Add(clashEntry);
 
             await _context.SaveChangesAsync();
@@ -138,6 +140,8 @@ namespace Flix.Services.Implementations
                 ClashId = clash.Id,
                 MovieListId = movieList.Id
             });
+
+            await transaction.CommitAsync();
         }
 
         private async Task<bool> IsUserInClash(int id, int participantId)
@@ -190,6 +194,8 @@ namespace Flix.Services.Implementations
             if(await CalculateUserVotesAsync(entry.ClashId, voterId) >= VotesPerClash)
                 throw new ClientException("You have no votes left in this clash");
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.ClashVotes.Add(new ClashVote
             {
                 ClashEntryId = entry.Id,
@@ -204,6 +210,8 @@ namespace Flix.Services.Implementations
                 ClashId = entry.ClashId,
                 MovieListId = entry.MovieListId
             });
+
+            await transaction.CommitAsync();
         }
 
         public async Task RemoveVote(int clashEntryId)

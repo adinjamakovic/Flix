@@ -2,7 +2,7 @@ using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Flix.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flix.WebApi.Controllers
@@ -15,11 +15,22 @@ namespace Flix.WebApi.Controllers
         {
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public override async Task<ActionResult<PageResult<LanguageResponse>>> Get([FromQuery] LanguageSearchObject? search)
+        [Authorization("Admin")]
+        public override Task<ActionResult<LanguageResponse>> Create([FromBody] LanguageInsertRequest request)
         {
-            return Ok(await _service.GetAsync(search));
+            return base.Create(request);
+        }
+
+        [Authorization("Admin")]
+        public override Task<ActionResult<LanguageResponse>> Update(int id, [FromBody] LanguageUpdateRequest request)
+        {
+            return base.Update(id, request);
+        }
+
+        [Authorization("Admin")]
+        public override Task<IActionResult> Delete(int id)
+        {
+            return base.Delete(id);
         }
     }
 }

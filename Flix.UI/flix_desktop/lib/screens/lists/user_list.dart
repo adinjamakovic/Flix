@@ -24,6 +24,7 @@ class _UserListState extends State<UserList> {
   /// The country dropdown filters client-side, so it pulls the whole list once.
   static const int _countryPageSize = 200;
 
+  static const int _avatarFlex = 8;
   static const int _emailFlex = 26;
   static const int _usernameFlex = 22;
   static const int _countryFlex = 10;
@@ -390,6 +391,15 @@ class _UserListState extends State<UserList> {
   }
 
   List<TableColumn<User>> get _columns => [
+        TableColumn<User>.custom(
+          label: "AVATAR",
+          flex: _avatarFlex,
+          builder: (context, user) => TableThumbnail(
+            url: user.profileImage,
+            icon: Icons.person_outline,
+            borderRadius: 17,
+          ),
+        ),
         TableColumn<User>(
           label: "USERNAME",
           flex: _usernameFlex,

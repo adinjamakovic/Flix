@@ -18,27 +18,30 @@ namespace Flix.WebApi.Services.AccessManager
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IConfiguration _configuration;
         private readonly ICryptoService _cryptoService;
+        private readonly ICurrentUserService _currentUserService;
         public AccessManager(
             IUserService userService,
             IRefreshTokenService refreshTokenService,
             IConfiguration configuration,
-            ICryptoService cryptoService)
+            ICryptoService cryptoService,
+            ICurrentUserService currentUserService)
         {
             _userService = userService;
             _refreshTokenService = refreshTokenService;
             _configuration = configuration;
             _cryptoService = cryptoService;
+            _currentUserService = currentUserService;
         }
         public async Task<UserLoginResponse> LoginAsync(UserLoginRequest request)
         {
             var user = await _userService.GetByUsernameAsync(request.Username);
 
             if (user is null)
-                throw new Exception($"User with username '{request.Username}' not found.");
+                throw new ClientException("Wrong credentials. Please try again!");
 
             var isPasswordValid = _cryptoService.VerifyPassword(user.PasswordHash, user.PasswordSalt, request.Password);
             if (!isPasswordValid)
-                throw new ClientException("Invalid credentials");
+                throw new ClientException("Wrong credentials. Please try again!");
 
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
@@ -82,11 +85,9 @@ namespace Flix.WebApi.Services.AccessManager
             if (!user.IsActive)
                 throw new ClientException("User is not active");
 
-            await _refreshTokenService.DeleteAllUserRefreshTokensAsync(user.Id);
-
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
-            
+
             var token = new RefreshToken
             {
                 UserId = user.Id,
@@ -94,12 +95,17 @@ namespace Flix.WebApi.Services.AccessManager
                 ExpiresAt = DateTime.UtcNow.AddDays(7)
             };
 
-            await _refreshTokenService.InsertAsync(token);
+            await _refreshTokenService.ReplaceUserRefreshTokensAsync(user.Id, token);
             return new UserLoginResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue
             };
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _refreshTokenService.DeleteAllUserRefreshTokensAsync(_currentUserService.GetUserId());
         }
 
         private string GenerateToken(UserResponse user)

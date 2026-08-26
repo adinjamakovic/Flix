@@ -25,6 +25,7 @@ namespace Flix.Services.Implementations
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
+        private readonly ICurrentUserService _currentUserService;
         public UserService(
             FlixDbContext context,
             MapsterMapper.IMapper mapper,
@@ -33,23 +34,29 @@ namespace Flix.Services.Implementations
             IValidator<UserUpdateRequest> updateValidator,
             IImageStorageService imageStorageService,
             IResponseImageUrlResolver imageUrlResolver,
-            IActivityService activityService)
+            IActivityService activityService,
+            ICurrentUserService currentUserService)
             : base(context, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageStorageService = imageStorageService;
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
+            _currentUserService = currentUserService;
         }
 
         public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             var response = await base.InsertAsync(request);
 
             await _activityService.InsertAsync(response.Id, new ActivityInsertRequest
             {
                 Type = ActivityType.JoinedPlatform
             });
+
+            await transaction.CommitAsync();
 
             return response;
         }
@@ -129,6 +136,14 @@ namespace Flix.Services.Implementations
             });
         }
 
+        protected override void MapUpdateRequestToEntity(UserUpdateRequest request, User entity)
+        {
+            if (!_currentUserService.IsAdmin && entity.Id != _currentUserService.GetUserId())
+                throw new ClientException("You can only edit your own account.");
+
+            base.MapUpdateRequestToEntity(request, entity);
+        }
+
         protected override async Task BeforeUpdateAsync(User entity, UserUpdateRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username && u.Id != entity.Id))
@@ -139,9 +154,13 @@ namespace Flix.Services.Implementations
 
             // An omitted password means "leave it alone" - only a supplied one that does not
             // already match is rehashed.
-            if (!string.IsNullOrEmpty(request.Password)
-                && !_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password))
-                entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                VerifyOldPassword(entity, request);
+
+                if (!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.Password))
+                    entity.PasswordHash = _cryptoService.GenerateHash(request.Password, entity.PasswordSalt);
+            }
 
             if (request.ProfileImage is not null)
                 entity.ProfileImage = await _imageStorageService.ReplaceIfUploadedAsync(
@@ -149,7 +168,22 @@ namespace Flix.Services.Implementations
                     entity.ProfileImage,
                     request.ProfileImage);
 
-            await AssignRoleAsync(entity, request.RoleId);
+            if (_currentUserService.IsAdmin)
+                await AssignRoleAsync(entity, request.RoleId);
+        }
+
+        // An admin resetting someone's password has no way of knowing the old one; a user changing
+        // their own has to prove they know it.
+        private void VerifyOldPassword(User entity, UserUpdateRequest request)
+        {
+            if (_currentUserService.IsAdmin)
+                return;
+
+            if (string.IsNullOrEmpty(request.OldPassword))
+                throw new ClientException("Your current password is required to set a new one.");
+
+            if (!_cryptoService.VerifyPassword(entity.PasswordHash, entity.PasswordSalt, request.OldPassword))
+                throw new ClientException("Your current password is incorrect.");
         }
 
         private async Task AssignRoleAsync(User entity, int? roleId)

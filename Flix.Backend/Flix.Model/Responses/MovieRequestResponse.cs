@@ -9,5 +9,7 @@ namespace Flix.Model.Responses
         public MovieResponse? Movie {get; set;}
         public MovieRequestStatus Status {get; set;}
         public DateTime CreatedAt {get; set;}
+        public DateTime? ReviewedAt {get; set;}
+        public string? AdminComment {get; set;}
     }
 }

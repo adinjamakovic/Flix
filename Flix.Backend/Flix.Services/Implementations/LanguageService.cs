@@ -5,6 +5,7 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,6 +27,15 @@ namespace Flix.Services.Implementations
             IValidator<LanguageUpdateRequest> updateValidator
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+        }
+
+        protected override string DescribeEntity(Language entity) => $"Language '{entity.Name}'";
+
+        protected override async Task<string?> DescribeUsageAsync(Language entity)
+        {
+            var movies = await _context.Movies.CountAsync(x => x.LanguageId == entity.Id);
+
+            return UsageDescription.Describe((movies, "movie"));
         }
 
         protected override IEnumerable<Language> ApplyFilters(IQueryable<Language> query, LanguageSearchObject? search)

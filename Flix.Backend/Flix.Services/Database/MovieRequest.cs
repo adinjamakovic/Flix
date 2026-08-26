@@ -23,5 +23,7 @@ namespace Flix.Services.Database
 
         public DateTime? ReviewedAt { get; set; }
 
+        [MaxLength(2000)]
+        public string? AdminComment { get; set; }
     }
 }

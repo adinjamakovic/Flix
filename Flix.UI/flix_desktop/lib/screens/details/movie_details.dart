@@ -17,6 +17,7 @@ import 'package:flix_desktop/providers/movie_request_provider.dart';
 import 'package:flix_desktop/providers/studio_provider.dart';
 import 'package:flix_desktop/utils/utils_widgets.dart';
 import 'package:flix_desktop/widgets/image_input.dart';
+import 'package:flix_desktop/widgets/rejection_reason_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -1397,18 +1398,17 @@ class _MovieDetailsState extends State<MovieDetails> {
   Future<void> _submitReview(bool approved) async {
     if (approved && !(_formKey.currentState?.validate() ?? false)) return;
 
+    String? reason;
+
     if (!approved) {
       final String title = _titleController.text.trim();
 
-      final bool confirmed = await confirmBox(
+      reason = await showRejectionReasonDialog(
         context,
-        "Reject submission",
-        "Reject ${title.isEmpty ? "this submission" : title}? It stays out of "
-            "the catalogue, and the requester cannot send it again for review.",
-        confirmLabel: "Reject",
+        title: title.isEmpty ? "this submission" : title,
       );
 
-      if (!confirmed || !mounted) return;
+      if (reason == null || !mounted) return;
     }
 
     setState(() {
@@ -1418,6 +1418,7 @@ class _MovieDetailsState extends State<MovieDetails> {
     final Map<String, dynamic> fields = {
       ..._buildMovieFields(),
       "isApproved": approved,
+      "adminComment": ?reason,
       ..._buildRequestedDirectorFieldValues(),
     };
 

@@ -17,6 +17,7 @@ namespace Flix.Services.Implementations
         private const int SeedMoviesPerUser = 3;
         private const int RecommendationsPerSeed = 6;
         private const int PopularFallbackCount = 10;
+        private const string PopularReason = "Popular on Flix right now";
 
         private readonly FlixDbContext _context;
         protected readonly MapsterMapper.IMapper _mapper;
@@ -198,9 +199,12 @@ namespace Flix.Services.Implementations
 
         public async Task<PageResult<MovieRecommendationResponse>> GetRecommendationsForMovieAsync(MovieRecommendationSearchObject search)
         {
+            // Disabled movies stay in the training set - they still carry co-occurrence signal - but
+            // never leave the service. Filtering here rather than at generation time means enabling a
+            // movie brings it back immediately, without waiting for the worker's next pass.
             var recommendationEntities = await _context.MovieRecommendations
                 .Include(x=>x.RecommendedMovie)
-                .Where(x=>x.MovieId == search.MovieId)
+                .Where(x=>x.MovieId == search.MovieId && x.RecommendedMovie.IsEnabled)
                 .OrderByDescending(x=>x.Score)
                 .Take(search.NumberOfRecommendations)
                 .ToListAsync();
@@ -244,6 +248,8 @@ namespace Flix.Services.Implementations
             if (seedMovieIds.Count == 0)
                 return await GetPopularRecommendationsAsync(excludedMovieIds);
 
+            var seedMovies = await GetSeedMoviesAsync(seedMovieIds);
+
             var recommendations = new List<MovieRecommendationResponse>();
             var addedMovieIds = new HashSet<int>();
 
@@ -273,6 +279,12 @@ namespace Flix.Services.Implementations
                     if (!addedMovieIds.Add(recommendation.RecommendedMovieId))
                         continue;
 
+                    if (seedMovies.TryGetValue(seedMovieId, out var seedMovie))
+                    {
+                        recommendation.Movie = seedMovie;
+                        recommendation.Reason = $"Because you liked {seedMovie.Title}";
+                    }
+
                     recommendations.Add(recommendation);
                     keptForSeed++;
                 }
@@ -286,6 +298,26 @@ namespace Flix.Services.Implementations
                 Items = recommendations,
                 TotalCount = recommendations.Count
             };
+        }
+
+        private async Task<Dictionary<int, MovieResponse>> GetSeedMoviesAsync(List<int> seedMovieIds)
+        {
+            var seedEntities = await _context.Movies
+                .Where(m => seedMovieIds.Contains(m.Id))
+                .ToListAsync();
+
+            var seedMovies = new Dictionary<int, MovieResponse>();
+
+            foreach (var seedEntity in seedEntities)
+            {
+                var movie = _mapper.Map<MovieResponse>(seedEntity);
+
+                _imageUrlResolver.Resolve(movie);
+
+                seedMovies[seedEntity.Id] = movie;
+            }
+
+            return seedMovies;
         }
 
         private async Task<PageResult<MovieRecommendationResponse>> GetPopularRecommendationsAsync(HashSet<int> excludedMovieIds)
@@ -348,7 +380,8 @@ namespace Flix.Services.Implementations
                     {
                         RecommendedMovieId = movieId,
                         RecommendedMovie = movie,
-                        Source = RecommendationSource.Popular
+                        Source = RecommendationSource.Popular,
+                        Reason = PopularReason
                     };
                 })
                 .ToList();

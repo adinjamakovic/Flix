@@ -184,7 +184,10 @@ class _StudioListState extends State<StudioList> {
         TableColumn<Studio>.custom(
           label: "LOGO",
           flex: _logoFlex,
-          builder: _buildLogo,
+          builder: (context, studio) => TableThumbnail(
+            url: studio.logo,
+            icon: Icons.business_outlined,
+          ),
         ),
         TableColumn<Studio>(
           label: "NAME",
@@ -204,43 +207,6 @@ class _StudioListState extends State<StudioList> {
           onDelete: _deleteStudio,
         ),
       ];
-
-  Widget _buildLogo(BuildContext context, Studio studio) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    // Logos arrive as expiring SAS URLs, so anything that is not an http(s)
-    // URL, or that fails to load, falls back to the placeholder.
-    final Uri? uri = Uri.tryParse(studio.logo ?? "");
-    final bool isNetworkImage =
-        uri != null && (uri.scheme == "http" || uri.scheme == "https");
-
-    final Widget placeholder = Icon(
-      Icons.business_outlined,
-      size: 16,
-      color: colors.onSurfaceVariant,
-    );
-
-    return Center(
-      child: Container(
-        width: 34,
-        height: 34,
-        alignment: Alignment.center,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: colors.surfaceContainer,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: isNetworkImage
-            ? Image.network(
-                uri.toString(),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => placeholder,
-              )
-            : placeholder,
-      ),
-    );
-  }
 
   Widget _buildFilterField({
     required String label,

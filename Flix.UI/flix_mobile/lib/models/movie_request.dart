@@ -13,6 +13,8 @@ class MovieRequest {
     this.movie,
     this.status,
     this.createdAt,
+    this.reviewedAt,
+    this.adminComment,
   );
 
   final int? id;
@@ -23,6 +25,8 @@ class MovieRequest {
 
   final MovieRequestStatus? status;
   final DateTime? createdAt;
+  final DateTime? reviewedAt;
+  final String? adminComment;
 
   String? get statusLabel =>
       status == null ? null : getMovieRequestStatus(status!);

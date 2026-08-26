@@ -2,8 +2,10 @@ import 'package:flix_mobile/models/country.dart';
 import 'package:flix_mobile/models/picked_image.dart';
 import 'package:flix_mobile/models/search_result.dart';
 import 'package:flix_mobile/models/user.dart';
+import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/country_provider.dart';
 import 'package:flix_mobile/providers/user_provider.dart';
+import 'package:flix_mobile/screens/login.dart';
 import 'package:flix_mobile/screens/user_profile/my_issue_reports.dart';
 import 'package:flix_mobile/screens/user_profile/my_user_reports.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
@@ -38,6 +40,7 @@ class _UserSettingsState extends State<UserSettings> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -51,6 +54,7 @@ class _UserSettingsState extends State<UserSettings> {
 
   PickedImage? _profileImage;
 
+  bool _obscureOldPassword = true;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -76,6 +80,7 @@ class _UserSettingsState extends State<UserSettings> {
     _emailController.dispose();
     _phoneNumberController.dispose();
     _bioController.dispose();
+    _oldPasswordController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -160,8 +165,10 @@ class _UserSettingsState extends State<UserSettings> {
           "bio": _nullIfBlank(_bioController.text),
           "countryId": _selectedCountryId,
           // An empty password field means "keep the current one" — the API
-          // only rehashes a password it was actually sent.
+          // only rehashes a password it was actually sent, and only after the
+          // old one confirms it.
           "password": _nullIfBlank(_passwordController.text),
+          "oldPassword": _nullIfBlank(_oldPasswordController.text),
         },
         files: {"profileImage": ?_profileImage},
       );
@@ -244,9 +251,77 @@ class _UserSettingsState extends State<UserSettings> {
           const Divider(),
           const SizedBox(height: 20),
           _buildForm(),
+          const SizedBox(height: 20),
+          const Divider(),
+          const SizedBox(height: 20),
+          _buildLogout(),
         ],
       ),
     );
+  }
+
+  Widget _buildLogout() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Card(
+      color: colors.surfaceContainerLow,
+      child: ListTile(
+        leading: Icon(Icons.logout, color: colors.error),
+        title: Text(
+          "Log out",
+          style: TextStyle(
+            color: colors.error,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          "Ends the session on the server, not just on this device",
+          style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
+        ),
+        onTap: _isSaving ? null : _logout,
+      ),
+    );
+  }
+
+  Future<void> _logout() async {
+    if (!await _confirmLogout() || !mounted) return;
+
+    final NavigatorState navigator = Navigator.of(context, rootNavigator: true);
+
+    await context.read<AuthProvider>().logout();
+
+    if (!mounted) return;
+
+    navigator.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const Login()),
+      (route) => false,
+    );
+  }
+
+  Future<bool> _confirmLogout() async {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Log out"),
+        content: const Text("You will have to sign in again to use Flix."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: colors.error),
+            child: const Text("Log out"),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed ?? false;
   }
 
   Widget _buildLinkTile({
@@ -359,8 +434,23 @@ class _UserSettingsState extends State<UserSettings> {
           const SizedBox(height: 20),
           _buildLabel("Password"),
           const SizedBox(height: 4),
-          _buildHint("Leave both fields empty to keep your current password."),
+          _buildHint(
+            "Leave the new password fields empty to keep your current password.",
+          ),
           const SizedBox(height: 10),
+          _buildField(
+            controller: _oldPasswordController,
+            hint: "Current password",
+            icon: Icons.lock_clock_outlined,
+            obscureText: _obscureOldPassword,
+            suffixIcon: _buildVisibilityToggle(
+              obscured: _obscureOldPassword,
+              onToggle: () =>
+                  setState(() => _obscureOldPassword = !_obscureOldPassword),
+            ),
+            validator: _oldPasswordValidator,
+          ),
+          const SizedBox(height: 14),
           _buildField(
             controller: _passwordController,
             hint: "New password",
@@ -402,6 +492,16 @@ class _UserSettingsState extends State<UserSettings> {
   // empty field is valid here — anything typed is held to the insert rules.
   String? _newPasswordValidator(String? value) =>
       (value == null || value.isEmpty) ? null : passwordValidator(value);
+
+  // Only a user changing their own password confirms the old one, and the API
+  // refuses the change without it.
+  String? _oldPasswordValidator(String? value) {
+    if (_passwordController.text.isEmpty) return null;
+
+    return (value == null || value.isEmpty)
+        ? "Enter your current password to change it"
+        : null;
+  }
 
   Widget _buildLabel(String label) {
     final ColorScheme colors = Theme.of(context).colorScheme;

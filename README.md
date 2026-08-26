@@ -102,7 +102,7 @@ klijent se bez njega ne kompajlira.
 Bazni URL API-ja je konstanta koja se postavlja pri kompajliranju: desktop klijent
 podrazumijeva `http://localhost:5071/`, a mobilni `http://10.0.2.2:5071/` (put Android
 emulatora do host mašine). Za pokretanje na stvarnom uređaju proslijediti
-`flutter run --dart-define=BASE_URL=http://192.168.1.10:5071/`. U oba klijenta `AuthProvider`
+`flutter run --dart-define=API_BASE_URL=http://192.168.1.10:5071/`. U oba klijenta `AuthProvider`
 čita isti define i na njega dodaje `/Access`, pa se s njim pomjera i login.
 
 ### Nalozi iz seed podataka
@@ -114,6 +114,35 @@ emulatora do host mašine). Za pokretanje na stvarnom uređaju proslijediti
 
 Desktop klijent je samo za administratore — čita role claim iz JWT-a i odbija sve ostale već na
 login ekranu.
+
+### Istek tokena
+
+Pristupni token traje `JWT_DURATION` minuta, pa istekne usred rada. Oba klijenta zato svaki zahtjev
+šalju kroz `BaseProvider._request`: na HTTP 401 se jednom pozove `POST /Access/LoginWithRefreshToken`
+i zahtjev se ponovi s novim tokenom, tako da korisnik ništa ne primijeti. Zahtjev se šalje kao
+closure jer ponovljeni poziv mora nositi novi token, a `MultipartRequest` se gradi iznova — jednom
+poslan se ne može ponoviti. Više paralelnih 401 odgovora dijeli isti poziv osvježavanja, pa se
+sesija ne obnavlja više puta odjednom.
+
+Ako i osvježavanje padne (refresh token istekao, poništen odjavom ili nalog deaktiviran), sesija se
+briše i klijent vodi na login ekran — mobilni kroz root navigator, jer istek može pogoditi bilo koji
+tab, uz poruku da se treba ponovo prijaviti. Istekli token se nigdje ne ignoriše.
+
+### Odjava
+
+`POST /Access/Logout` briše iz baze sve refresh tokene naloga koji ga je pozvao, pa se sesija ne
+može produžiti — sljedeći `LoginWithRefreshToken` vraća `Refresh token not found`, a nastavak rada
+traži ponovni login.
+
+Pristupni token nije u bazi i namjerno tu ne završava: JWT se provjerava potpisom, bez upita nad
+bazom. Odjava ga zato ne poništava odmah — ostaje važeći do isteka `JWT_DURATION` minuta (trenutno
+15), i toliki je prozor u kojem bi kopija tokena još radila. Poništavanje i njega tražilo bi ili
+crnu listu ili čuvanje pristupnih tokena u bazi i upit pri svakom zahtjevu; nijedno nije urađeno,
+pa se odjava oslanja na kratak vijek tokena.
+
+Oba klijenta zovu endpoint prije nego što očiste svoja polja — desktop iz dugmeta u zaglavlju,
+mobilni iz *Settings → Log out*. Poziv koji padne (istekao token, nedostupan API) ne zadržava
+korisnika prijavljenim, jer se lokalna sesija briše svakako.
 
 ## Recenzije, dnevnik i ponovna gledanja
 
@@ -404,7 +433,7 @@ compiles without it.
 The API base URL is a compile-time constant: the desktop client defaults to
 `http://localhost:5071/`, the mobile client to `http://10.0.2.2:5071/` (the Android
 emulator's route to the host). Override with
-`flutter run --dart-define=BASE_URL=http://192.168.1.10:5071/` when running on a real device.
+`flutter run --dart-define=API_BASE_URL=http://192.168.1.10:5071/` when running on a real device.
 In both clients `AuthProvider` reads the same define and appends `/Access` to it, so login moves
 with everything else.
 
@@ -417,6 +446,38 @@ with everything else.
 
 The desktop client is admin-only — it reads the role claim out of the JWT and turns non-admins
 away at the login screen.
+
+### When the token expires
+
+An access token lasts `JWT_DURATION` minutes, so it runs out mid-session. Both clients therefore send
+every request through `BaseProvider._request`: on an HTTP 401 it calls
+`POST /Access/LoginWithRefreshToken` once and replays the request with the new token, with nothing
+showing on screen. The request is passed as a closure because the replay has to carry the new token,
+and a `MultipartRequest` is rebuilt from scratch — one that has been sent cannot be sent again.
+Several concurrent 401s share the same refresh call, so the session is not renewed more than once at
+a time.
+
+If the refresh fails too (the refresh token expired, was revoked by a logout, or the account was
+deactivated), the session is cleared and the client goes back to the login screen — on mobile through
+the root navigator, since the expiry can hit under any tab — with a message that signing in again is
+needed. An expired token is never ignored.
+
+### Logging out
+
+`POST /Access/Logout` deletes every refresh token the calling account has from the database, so the
+session cannot be extended — the next `LoginWithRefreshToken` answers `Refresh token not found`,
+and carrying on means signing in again.
+
+The access token is not in the database and deliberately does not go there: a JWT is checked by its
+signature, without a query. Logging out therefore does not void it on the spot — it stays valid
+until `JWT_DURATION` minutes (15 right now) are up, and that is the window in which a copy of it
+would still work. Voiding it too would take either a deny list or storing access tokens in the
+database and querying on every request; neither is in place, so logout leans on the token's short
+life instead.
+
+Both clients call the endpoint before clearing their own fields — the desktop from the button in
+the header, mobile from *Settings → Log out*. A call that fails (an expired token, an unreachable
+API) does not keep the user signed in, because the local session is cleared either way.
 
 ## Reviews, the diary and rewatches
 

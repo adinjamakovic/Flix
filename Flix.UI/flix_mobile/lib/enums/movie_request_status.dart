@@ -6,16 +6,17 @@ enum MovieRequestStatus {
   @JsonValue(1)
   approved,
   @JsonValue(2)
-  rejected
+  rejected,
+  @JsonValue(3)
+  cancelled
 }
 
 String getMovieRequestStatus(MovieRequestStatus status)
 {
-  if(status == MovieRequestStatus.approved) {
-    return "Approved";
-  } else if (status == MovieRequestStatus.pending) {
-    return "Pending";
-  } else {
-    return "Rejected";
-  }
+  return switch (status) {
+    MovieRequestStatus.pending => "Pending",
+    MovieRequestStatus.approved => "Approved",
+    MovieRequestStatus.rejected => "Rejected",
+    MovieRequestStatus.cancelled => "Cancelled",
+  };
 }

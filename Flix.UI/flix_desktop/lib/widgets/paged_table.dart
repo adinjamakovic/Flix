@@ -113,6 +113,61 @@ class TableColumn<T> {
   }
 }
 
+class TableThumbnail extends StatelessWidget {
+  const TableThumbnail({
+    super.key,
+    required this.url,
+    required this.icon,
+    this.width = 34,
+    this.height = 34,
+    this.borderRadius = 6,
+  });
+
+  final String? url;
+  final IconData icon;
+  final double width;
+  final double height;
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    // Images arrive as expiring SAS URLs, so anything that is not an http(s)
+    // URL, or that fails to load, falls back to the placeholder.
+    final Uri? uri = Uri.tryParse(url ?? "");
+    final bool isNetworkImage =
+        uri != null && (uri.scheme == "http" || uri.scheme == "https");
+
+    final Widget placeholder = Icon(
+      icon,
+      size: 16,
+      color: colors.onSurfaceVariant,
+    );
+
+    return Center(
+      child: Container(
+        width: width,
+        height: height,
+        alignment: Alignment.center,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(borderRadius),
+          border: Border.all(color: colors.outlineVariant),
+        ),
+        child: isNetworkImage
+            ? Image.network(
+                uri.toString(),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => placeholder,
+              )
+            : placeholder,
+      ),
+    );
+  }
+}
+
 class PagedTable<T> extends StatelessWidget {
   const PagedTable({
     super.key,

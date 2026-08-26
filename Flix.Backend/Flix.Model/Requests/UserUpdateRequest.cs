@@ -9,6 +9,7 @@ namespace Flix.Model.Requests
         public string? Email { get; set; } = string.Empty;
         public string? Username { get; set; } = string.Empty;
         public string? Password { get; set; } = string.Empty;
+        public string? OldPassword { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Bio { get; set; }
         public int? CountryId { get; set; }

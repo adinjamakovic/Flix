@@ -44,7 +44,8 @@ var environmentConfiguration = new Dictionary<string, string?>
     ["JwtToken:Issuer"] = Environment.GetEnvironmentVariable("JWT_ISSUER"),
     ["JwtToken:Audience"] = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
     ["JwtToken:SecretKey"] = Environment.GetEnvironmentVariable("SECRET_KEY"),
-    ["JwtToken:DurationInMinutes"] = Environment.GetEnvironmentVariable("JWT_DURATION")
+    ["JwtToken:DurationInMinutes"] = Environment.GetEnvironmentVariable("JWT_DURATION"),
+    ["Cors:AllowedOrigins"] = Environment.GetEnvironmentVariable("CORS_ORIGINS")
 };
 
 builder.Configuration.AddInMemoryCollection(
@@ -52,6 +53,11 @@ builder.Configuration.AddInMemoryCollection(
 
 var databaseConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("DATABASE_CONNECTION is not configured. See .env_example.");
+
+const string CorsPolicy = "FlixCors";
+
+var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://localhost:5071;https://localhost:7140")
+    .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
 // Add services to the container.
 
@@ -64,6 +70,14 @@ builder.Services.AddControllers(
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicy, policy => policy
+        .WithOrigins(allowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 builder.Services.AddSingleton(x =>
@@ -258,6 +272,7 @@ builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddHostedService<ClashStateWorkerService>();
+builder.Services.AddHostedService<MovieRecommendationWorkerService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 var app = builder.Build();
@@ -275,8 +290,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// HTTPS redirection is disabled because of the Flutter mobile development environment
-//app.UseHttpsRedirection();
+// No app.UseHttpsRedirection(): a redirect to localhost sends an emulator or a
+// device to itself, so the Flutter clients stay on HTTP.
+
+app.UseCors(CorsPolicy);
 
 app.UseAuthentication();
 

@@ -58,11 +58,7 @@ namespace Flix.Services.Implementations
             if (search.IncludeTotalCount ?? false)
                 totalCount = await query.CountAsync();
 
-            if (search.Page is int page && search.PageSize is int size)
-                query = query.Skip((page - 1) * size);
-
-            if (search.PageSize is int pageSize)
-                query = query.Take(pageSize);
+            query = query.Skip((search.Page - 1) * search.PageSize).Take(search.PageSize);
 
             var entities = await query.ToListAsync();
 
@@ -94,6 +90,8 @@ namespace Flix.Services.Implementations
                 && !x.IsDiaryEntry);
 
             var isNewEntry = entity is null;
+
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
             if (entity is null)
             {
@@ -133,6 +131,8 @@ namespace Flix.Services.Implementations
                 await LogAsync(userId, entity, ActivityType.LikedMovie);
 
             await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
+
+            await transaction.CommitAsync();
 
             await _context.Entry(entity).Reference(x => x.Movie).LoadAsync();
             await _context.Entry(entity).Reference(x => x.User).LoadAsync();

@@ -3,7 +3,7 @@ using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Flix.WebApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flix.WebApi.Controllers
@@ -22,6 +22,7 @@ namespace Flix.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("multipart/form-data")]
+        [Authorization("Admin")]
         public override async Task<ActionResult<MovieResponse>> Create([FromForm] MovieInsertRequest request)
         {
             var result = await _service.InsertAsync(request);
@@ -33,24 +34,17 @@ namespace Flix.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes("multipart/form-data")]
+        [Authorization("Admin")]
         public override async Task<ActionResult<MovieResponse>> Update(int id, [FromForm] MovieUpdateRequest request)
         {
             var result = await _service.UpdateAsync(id, request);
             return result;
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public override async Task<ActionResult<PageResult<MovieResponse>>> Get([FromQuery] MovieSearchObject? search)
+        [Authorization("Admin")]
+        public override Task<IActionResult> Delete(int id)
         {
-            return Ok(await _service.GetAsync(search));
-        }
-
-        [HttpGet("{id}")]
-        [AllowAnonymous]
-        public override async Task<ActionResult<MovieResponse>> GetById(int id)
-        {
-            return await base.GetById(id);
+            return base.Delete(id);
         }
 
         [HttpGet("PopularThisWeek")]

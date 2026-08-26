@@ -29,6 +29,7 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
     MovieRequestStatus.pending,
     MovieRequestStatus.approved,
     MovieRequestStatus.rejected,
+    MovieRequestStatus.cancelled,
   ];
 
   late MovieRequestProvider _movieRequestProvider;
@@ -82,6 +83,51 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
     }
   }
 
+  Future<void> _cancel(MovieRequest request) async {
+    final int? id = request.id;
+
+    if (id == null || !await _confirmCancel(request.movie?.title)) return;
+
+    try {
+      await _movieRequestProvider.cancelRequest(id);
+
+      if (!mounted) return;
+
+      showSnack(context, "Request cancelled.");
+
+      await _load();
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      showSnack(context, errorText(e));
+    }
+  }
+
+  Future<bool> _confirmCancel(String? title) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Cancel request"),
+        content: Text(
+          "${title ?? "This movie"} will not be reviewed, and you will have to "
+          "send it in again if you change your mind.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Keep it"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Cancel request"),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed ?? false;
+  }
+
   bool get _isEmpty =>
       _requests.values.every((requests) => requests.isEmpty);
 
@@ -95,6 +141,8 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
         return colors.error;
       case MovieRequestStatus.pending:
         return _pendingColor;
+      case MovieRequestStatus.cancelled:
+        return colors.onSurfaceVariant;
     }
   }
 
@@ -106,6 +154,8 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
         return "Nothing rejected — so far, so good.";
       case MovieRequestStatus.pending:
         return "Nothing waiting on a review.";
+      case MovieRequestStatus.cancelled:
+        return "You haven't cancelled anything.";
     }
   }
 
@@ -194,10 +244,6 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
     final ColorScheme colors = Theme.of(context).colorScheme;
     final Color accent = _statusColor(status);
 
-    final Movie? movie = request.movie;
-    final int? year = movie?.releaseDate?.year;
-    final String? genres = movie?.genreNames;
-
     return Container(
       decoration: BoxDecoration(
         color: accent,
@@ -213,9 +259,27 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
           ),
         ),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildRequestRow(request, status),
+            ?_buildAdminComment(request, status),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequestRow(MovieRequest request, MovieRequestStatus status) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final Movie? movie = request.movie;
+    final int? year = movie?.releaseDate?.year;
+    final String? genres = movie?.genreNames;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
             buildPoster(
               context,
               movie?.poster,
@@ -259,11 +323,70 @@ class _MovieRequestsListState extends State<MovieRequestsList> {
                       fontSize: 11,
                     ),
                   ),
+                  if (status == MovieRequestStatus.pending)
+                    TextButton.icon(
+                      onPressed: () => _cancel(request),
+                      icon: const Icon(Icons.close, size: 15),
+                      label: const Text("Cancel request"),
+                      style: TextButton.styleFrom(
+                        foregroundColor: colors.error,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        minimumSize: const Size(0, 34),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        textStyle: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
             const SizedBox(width: 10),
             _buildStatusBadge(status),
+      ],
+    );
+  }
+
+  Widget? _buildAdminComment(
+    MovieRequest request,
+    MovieRequestStatus status,
+  ) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final String comment = request.adminComment?.trim() ?? "";
+
+    if (comment.isEmpty) return null;
+
+    final String label = status == MovieRequestStatus.rejected
+        ? "Why it was rejected"
+        : "Admin note";
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              comment,
+              style: TextStyle(color: colors.onSurface, fontSize: 13),
+            ),
           ],
         ),
       ),

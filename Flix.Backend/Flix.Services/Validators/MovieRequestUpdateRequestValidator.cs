@@ -9,6 +9,7 @@ namespace Flix.Services.Validators
     public class MovieRequestUpdateRequestValidator : AbstractValidator<MovieRequestUpdateRequest>
     {
         private const int MaxNameLength = 50;
+        private const int MaxCommentLength = 2000;
 
         public MovieRequestUpdateRequestValidator()
         {
@@ -33,6 +34,15 @@ namespace Flix.Services.Validators
 
             RuleFor(x => x.DirectorPhoto)
                 .ValidImage();
+
+            RuleFor(x => x.AdminComment)
+                .NotEmpty()
+                .WithMessage("A rejected request has to say why it was rejected")
+                .When(x => !x.IsApproved);
+
+            RuleFor(x => x.AdminComment)
+                .MaximumLength(MaxCommentLength)
+                .When(x => !string.IsNullOrWhiteSpace(x.AdminComment));
         }
     }
 }

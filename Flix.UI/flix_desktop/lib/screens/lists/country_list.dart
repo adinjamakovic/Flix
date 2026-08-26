@@ -184,7 +184,13 @@ class _CountryListState extends State<CountryList> {
         TableColumn<Country>.custom(
           label: "FLAG",
           flex: _flagFlex,
-          builder: _buildFlag,
+          builder: (context, country) => TableThumbnail(
+            url: country.flagImage,
+            icon: Icons.flag_outlined,
+            width: 38,
+            height: 26,
+            borderRadius: 4,
+          ),
         ),
         TableColumn<Country>(
           label: "NAME",
@@ -204,43 +210,6 @@ class _CountryListState extends State<CountryList> {
           onDelete: _deleteCountry,
         ),
       ];
-
-  Widget _buildFlag(BuildContext context, Country country) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    // Flags arrive as expiring SAS URLs, so anything that is not an http(s)
-    // URL, or that fails to load, falls back to the placeholder.
-    final Uri? uri = Uri.tryParse(country.flagImage ?? "");
-    final bool isNetworkImage =
-        uri != null && (uri.scheme == "http" || uri.scheme == "https");
-
-    final Widget placeholder = Icon(
-      Icons.flag_outlined,
-      size: 16,
-      color: colors.onSurfaceVariant,
-    );
-
-    return Center(
-      child: Container(
-        width: 38,
-        height: 26,
-        alignment: Alignment.center,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: colors.surfaceContainer,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: isNetworkImage
-            ? Image.network(
-                uri.toString(),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => placeholder,
-              )
-            : placeholder,
-      ),
-    );
-  }
 
   Widget _buildFilterField({
     required String label,

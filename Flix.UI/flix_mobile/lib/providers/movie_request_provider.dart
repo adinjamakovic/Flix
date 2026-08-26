@@ -30,6 +30,10 @@ class MovieRequestProvider extends BaseProvider<MovieRequest> {
     });
   }
 
+  Future<MovieRequest> cancelRequest(int id) async {
+    return MovieRequest.fromJson(await postJson("Cancel/$id"));
+  }
+
   Future<MovieRequest> submitRequest({
     required String title,
     String? directorName,

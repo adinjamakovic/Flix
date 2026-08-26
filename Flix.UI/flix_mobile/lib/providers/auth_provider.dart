@@ -7,11 +7,21 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class AuthProvider extends ChangeNotifier {
-  bool _isAuthenticated = false;
-  static String? _accessToken;
-  String? _refreshToken;
-  String? _username;
+  // The session lives in statics so `BaseProvider` can read the token and
+  // refresh it without an injected dependency; the instance registered in
+  // `MultiProvider` is kept only to notify the screens watching it.
+  static AuthProvider? _instance;
 
+  static bool _isAuthenticated = false;
+  static String? _accessToken;
+  static String? _refreshToken;
+  static String? _username;
+
+  static Future<bool>? _refreshing;
+
+  // Set by `main()`: a token expires inside a request, far from any
+  // BuildContext, so the redirect back to login is left to the app root.
+  static VoidCallback? onSessionExpired;
 
   static String? get accessToken => _accessToken;
   static int? get currentUserId =>
@@ -21,13 +31,15 @@ class AuthProvider extends ChangeNotifier {
   int? get userId => currentUserId;
   bool get isAuthenticated => _isAuthenticated;
 
-  String _baseUrl = "";
-
-  AuthProvider() {
-    const root = String.fromEnvironment("BASE_URL",
+  static final String _baseUrl = () {
+    const root = String.fromEnvironment("API_BASE_URL",
         defaultValue: BaseProvider.defaultBaseUrl);
 
-    _baseUrl = "${root.endsWith('/') ? root : '$root/'}Access";
+    return "${root.endsWith('/') ? root : '$root/'}Access";
+  }();
+
+  AuthProvider() {
+    _instance = this;
   }
 
   Future login(String username, String password) async {
@@ -48,13 +60,61 @@ class AuthProvider extends ChangeNotifier {
     // FormatException that hides the real reason.
     isValidResponse(response);
 
-    var data = jsonDecode(response.body);
+    _store(jsonDecode(response.body));
+  }
 
+  // A 401 means the access token ran out, so the request that hit it asks for
+  // a new one; false says the session is gone and cannot be replayed.
+  // Concurrent callers share one call — a screen loading four things at once
+  // gets four 401s, not four refreshes.
+  static Future<bool> refreshSession() {
+    return _refreshing ??=
+        _refreshSession().whenComplete(() => _refreshing = null);
+  }
+
+  static Future<bool> _refreshSession() async {
+    final String? token = _refreshToken;
+
+    if (token == null) return false;
+
+    try {
+      final http.Response response = await http.post(
+        Uri.parse("$_baseUrl/LoginWithRefreshToken"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"refreshToken": token}),
+      );
+
+      if (response.statusCode < 200 || response.statusCode >= 300) return false;
+
+      _store(jsonDecode(response.body));
+
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static void expireSession() {
+    if (!_isAuthenticated && _accessToken == null) return;
+
+    _clear();
+    onSessionExpired?.call();
+  }
+
+  static void _store(Map<String, dynamic> data) {
     _isAuthenticated = true;
     _accessToken = data['accessToken'];
     _refreshToken = data['refreshToken'];
     _username = _readClaim(_accessToken, "Username");
-    notifyListeners();
+    _instance?.notifyListeners();
+  }
+
+  static void _clear() {
+    _isAuthenticated = false;
+    _accessToken = null;
+    _refreshToken = null;
+    _username = null;
+    _instance?.notifyListeners();
   }
 
   /// `Access/Register` takes the profile image as an `IFormFile`, so the
@@ -107,12 +167,22 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logout() {
-    _isAuthenticated = false;
-    _accessToken = null;
-    _refreshToken  = null;
-    _username = null;
-    notifyListeners();
+  Future<void> logout() async {
+    var token = _accessToken;
+
+    _clear();
+
+    if (token == null) return;
+
+    // The session is already gone locally, so a failed call must not keep the
+    // user signed in: an expired token answers 401, and an unreachable API
+    // throws.
+    try {
+      await http.post(
+        Uri.parse("$_baseUrl/Logout"),
+        headers: {...createHeaders(), "Authorization": "Bearer $token"},
+      );
+    } catch (_) {}
   }
 
   bool isValidResponse(http.Response response)
@@ -130,7 +200,7 @@ class AuthProvider extends ChangeNotifier {
     if (response.statusCode >= 300 && response.statusCode < 400) {
       throw Exception(
           "The API redirected the request to ${response.headers['location']}. "
-          "Check BASE_URL — it has to reach the API without a redirect.");
+          "Check API_BASE_URL — it has to reach the API without a redirect.");
     }
 
     throw Exception(_errorMessage(response));

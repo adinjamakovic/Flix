@@ -21,10 +21,15 @@ class UserRelationship {
   final bool? isBlockedBy;
 
   bool get following => isFollowing ?? false;
+  bool get followedBy => isFollowedBy ?? false;
   bool get blocked => isBlocked ?? false;
   bool get blockedBy => isBlockedBy ?? false;
 
   bool get canFollow => !blocked && !blockedBy;
+
+  // What the API calls a friend, and what the home feed's friend rows are built
+  // from: the follow going both ways.
+  bool get friends => following && followedBy;
 
   factory UserRelationship.fromJson(Map<String, dynamic> json) =>
       _$UserRelationshipFromJson(json);

@@ -25,6 +25,7 @@ class _ClashParticipantListState extends State<ClashParticipantList> {
   static const int _pageSize = 8;
 
   static const int _rankFlex = 12;
+  static const int _avatarFlex = 8;
   static const int _usernameFlex = 22;
   static const int _listFlex = 30;
   static const int _moviesFlex = 12;
@@ -321,6 +322,15 @@ class _ClashParticipantListState extends State<ClashParticipantList> {
           label: "RANK",
           flex: _rankFlex,
           builder: _buildRankBadge,
+        ),
+        TableColumn<ClashEntry>.custom(
+          label: "AVATAR",
+          flex: _avatarFlex,
+          builder: (context, entry) => TableThumbnail(
+            url: entry.user?.profileImage,
+            icon: Icons.person_outline,
+            borderRadius: 17,
+          ),
         ),
         TableColumn<ClashEntry>(
           label: "USERNAME",
