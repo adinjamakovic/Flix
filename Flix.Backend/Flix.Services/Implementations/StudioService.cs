@@ -1,4 +1,5 @@
 using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -6,6 +7,7 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Text;
 
@@ -47,11 +49,15 @@ namespace Flix.Services.Implementations
 
         protected override async Task BeforeInsertAsync(Studio entity, StudioInsertRequest request)
         {
+            await EnsureNameIsAvailableAsync(entity);
+
             entity.Logo = await _imageStorageService.SaveAsync(ImageStorageCategory.Studio, request.Logo);
         }
 
         protected override async Task BeforeUpdateAsync(Studio entity, StudioUpdateRequest request)
         {
+            await EnsureNameIsAvailableAsync(entity);
+
             if (request.Logo is null)
                 return;
 
@@ -59,6 +65,14 @@ namespace Flix.Services.Implementations
                 ImageStorageCategory.Studio,
                 entity.Logo,
                 request.Logo);
+        }
+
+        private async Task EnsureNameIsAvailableAsync(Studio entity)
+        {
+            entity.Name = entity.Name.Trim();
+
+            if (await _context.Set<Studio>().AnyAsync(x => x.Id != entity.Id && x.Name == entity.Name))
+                throw new ClientException($"Studio '{entity.Name}' already exists.");
         }
 
         protected override async Task AfterDeleteAsync(Studio entity)

@@ -1,3 +1,4 @@
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -27,6 +28,34 @@ namespace Flix.Services.Implementations
             IValidator<LanguageUpdateRequest> updateValidator
             ) : base(context, mapper, insertValidator, updateValidator)
         {
+        }
+
+        protected override async Task BeforeInsertAsync(Language entity, LanguageInsertRequest request)
+        {
+            await EnsureIsUniqueAsync(entity);
+        }
+
+        protected override async Task BeforeUpdateAsync(Language entity, LanguageUpdateRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return;
+
+            await EnsureIsUniqueAsync(entity);
+        }
+
+        private async Task EnsureIsUniqueAsync(Language entity)
+        {
+            entity.Name = entity.Name.Trim();
+            entity.Code = entity.Code?.Trim();
+
+            if (await _context.Languages.AnyAsync(x => x.Id != entity.Id && x.Name == entity.Name))
+                throw new ClientException($"Language '{entity.Name}' already exists.");
+
+            if (string.IsNullOrEmpty(entity.Code))
+                return;
+
+            if (await _context.Languages.AnyAsync(x => x.Id != entity.Id && x.Code == entity.Code))
+                throw new ClientException($"Language code '{entity.Code}' is already used by another language.");
         }
 
         protected override string DescribeEntity(Language entity) => $"Language '{entity.Name}'";

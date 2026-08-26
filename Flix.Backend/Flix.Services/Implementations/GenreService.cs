@@ -1,3 +1,4 @@
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -50,6 +51,27 @@ namespace Flix.Services.Implementations
                     Percentage = total == 0 ? 0m : Math.Round(counts.GetValueOrDefault(x.Id) * 100m / total, 2)
                 })
                 .ToList();
+        }
+
+        protected override async Task BeforeInsertAsync(Genre entity, GenreInsertRequest request)
+        {
+            await EnsureNameIsAvailableAsync(entity);
+        }
+
+        protected override async Task BeforeUpdateAsync(Genre entity, GenreUpdateRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return;
+
+            await EnsureNameIsAvailableAsync(entity);
+        }
+
+        private async Task EnsureNameIsAvailableAsync(Genre entity)
+        {
+            entity.Name = entity.Name.Trim();
+
+            if (await _context.Genres.AnyAsync(x => x.Id != entity.Id && x.Name == entity.Name))
+                throw new ClientException($"Genre '{entity.Name}' already exists.");
         }
 
         protected override IEnumerable<Genre> ApplyFilters(IQueryable<Genre> query, GenreSearchObject? search)

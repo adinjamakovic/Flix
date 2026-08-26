@@ -1,4 +1,5 @@
 using Flix.CommonServices.ImageStorageService;
+using Flix.Model.Exceptions;
 using Flix.Model.Requests;
 using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
@@ -39,11 +40,16 @@ namespace Flix.Services.Implementations
 
         protected override async Task BeforeInsertAsync(Country entity, CountryInsertRequest request)
         {
+            await EnsureIsUniqueAsync(entity);
+
             entity.FlagImage = await _imageStorageService.SaveAsync(ImageStorageCategory.Country, request.FlagImage);
         }
 
         protected override async Task BeforeUpdateAsync(Country entity, CountryUpdateRequest request)
         {
+            if (!string.IsNullOrWhiteSpace(request.Name))
+                await EnsureIsUniqueAsync(entity);
+
             if (request.FlagImage is null)
                 return;
 
@@ -51,6 +57,21 @@ namespace Flix.Services.Implementations
                 ImageStorageCategory.Country,
                 entity.FlagImage,
                 request.FlagImage);
+        }
+
+        private async Task EnsureIsUniqueAsync(Country entity)
+        {
+            entity.Name = entity.Name.Trim();
+            entity.Code = entity.Code?.Trim();
+
+            if (await _context.Countries.AnyAsync(x => x.Id != entity.Id && x.Name == entity.Name))
+                throw new ClientException($"Country '{entity.Name}' already exists.");
+
+            if (string.IsNullOrEmpty(entity.Code))
+                return;
+
+            if (await _context.Countries.AnyAsync(x => x.Id != entity.Id && x.Code == entity.Code))
+                throw new ClientException($"Country code '{entity.Code}' is already used by another country.");
         }
 
         protected override async Task AfterDeleteAsync(Country entity)
