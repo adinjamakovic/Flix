@@ -6,6 +6,7 @@ using Flix.Model.Responses;
 using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
+using Flix.Services.StateMachines;
 using FluentValidation;
 using MapsterMapper;
 using EasyNetQ;
@@ -72,8 +73,12 @@ namespace Flix.Services.Implementations
                 .FirstOrDefaultAsync(x => x.Id == id)
                 ?? throw new ClientException($"{nameof(MovieRequest)} with Id {id} not found.");
 
-            if (entity.Status != MovieRequestStatus.Pending)
-                throw new ClientException("This request has already been reviewed.");
+            var outcome = request.IsApproved ? MovieRequestStatus.Approved : MovieRequestStatus.Rejected;
+
+            Transitions.MovieRequest.EnsureCanTransition(
+                entity.Status,
+                outcome,
+                "This request is no longer pending, so it cannot be reviewed.");
 
             var movie = entity.CreatedMovie
                 ?? throw new ClientException("This request has no movie to review.");
@@ -92,6 +97,8 @@ namespace Flix.Services.Implementations
                 await ApplyDirectorEditAsync(placeholderDirector!, request);
             }
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             await _movieService.UpdateAsync(movie.Id, request);
 
             movie.IsEnabled = request.IsApproved && request.IsEnabled;
@@ -99,11 +106,16 @@ namespace Flix.Services.Implementations
             if (placeholderDirector is not null && !keepsPlaceholder)
                 _context.CastMembers.Remove(placeholderDirector);
 
-            entity.Status = request.IsApproved ? MovieRequestStatus.Approved : MovieRequestStatus.Rejected;
+            entity.Status = outcome;
             entity.ReviewedByUserId = reviewedByUserId;
             entity.ReviewedAt = DateTime.UtcNow;
+            entity.AdminComment = string.IsNullOrWhiteSpace(request.AdminComment)
+                ? null
+                : request.AdminComment.Trim();
 
             await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
 
             var response = MapToResponse(entity);
 
@@ -121,6 +133,31 @@ namespace Flix.Services.Implementations
                 });
 
             return response;
+        }
+
+        // Withdrawing a submission belongs to whoever sent it, so this deliberately bypasses
+        // GetDataSource() rather than reusing it: an admin's wider data source would otherwise
+        // let them cancel somebody else's pending request instead of reviewing it.
+        public async Task<MovieRequestResponse> Cancel(int id)
+        {
+            var userId = _currentUserService.GetUserId();
+
+            var entity = await IncludeCreatedMovie(IncludeRequestedBy(_context.Set<MovieRequest>()))
+                .FirstOrDefaultAsync(x => x.Id == id && x.RequestedByUserId == userId)
+                ?? throw new ClientException($"{nameof(MovieRequest)} with Id {id} not found.");
+
+            Transitions.MovieRequest.EnsureCanTransition(
+                entity.Status,
+                MovieRequestStatus.Cancelled,
+                "Only a request that is still pending can be cancelled.");
+
+            entity.Status = MovieRequestStatus.Cancelled;
+            entity.ReviewedByUserId = userId;
+            entity.ReviewedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return MapToResponse(entity);
         }
 
         private Task PublishAsync<TMessage>(TMessage message)
@@ -271,23 +308,27 @@ namespace Flix.Services.Implementations
 
             _context.MovieRequests.Add(movieRequestEntity);
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             try
             {
                 await _context.SaveChangesAsync();
+
+                await _activityService.InsertAsync(requestedByUserId, new ActivityInsertRequest
+                {
+                    Type = ActivityType.RequestedMovie,
+                    MovieId = movieEntity.Id
+                });
+
+                await transaction.CommitAsync();
             }
             catch
             {
-                // The upload happens before the row exists, so a failed save would otherwise
-                // leave a blob nothing points at.
+                // The upload happens before the row exists, so a rolled back write would
+                // otherwise leave a blob nothing points at.
                 await _imageStorageService.DeleteIfExistsAsync(ImageStorageCategory.Movie, movieEntity.Poster);
                 throw;
             }
-
-            await _activityService.InsertAsync(requestedByUserId, new ActivityInsertRequest
-            {
-                Type = ActivityType.RequestedMovie,
-                MovieId = movieEntity.Id
-            });
 
             movieRequestEntity.RequestedBy = await _context.Users
                 .Include(x => x.Country)

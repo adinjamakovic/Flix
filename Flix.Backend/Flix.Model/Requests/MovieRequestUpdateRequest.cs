@@ -5,6 +5,7 @@ namespace Flix.Model.Requests
     public class MovieRequestUpdateRequest : MovieUpdateRequest
     {
         public bool IsApproved {get; set;} = false;
+        public string? AdminComment {get; set;}
         public string? DirectorFirstName {get; set;}
         public string? DirectorLastName {get; set;}
         public int? DirectorCountryId {get; set;}

@@ -26,6 +26,7 @@ class _MovieListState extends State<MovieList> {
 
   static const int _earliestYear = 1900;
 
+  static const int _posterFlex = 8;
   static const int _titleFlex = 26;
   static const int _directorFlex = 22;
   static const int _countryFlex = 10;
@@ -543,6 +544,17 @@ class _MovieListState extends State<MovieList> {
     );
   }
   List<TableColumn<Movie>> get _columns => [
+        TableColumn<Movie>.custom(
+          label: "POSTER",
+          flex: _posterFlex,
+          builder: (context, movie) => TableThumbnail(
+            url: movie.poster,
+            icon: Icons.movie_outlined,
+            width: 30,
+            height: 44,
+            borderRadius: 4,
+          ),
+        ),
         TableColumn<Movie>(
           label: "TITLE",
           flex: _titleFlex,

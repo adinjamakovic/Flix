@@ -84,6 +84,8 @@ namespace Flix.Services.Implementations
             if (await _context.UserFollows.AnyAsync(x => x.FollowerId == currentUserId && x.FollowingId == userId))
                 return await BuildRelationshipAsync(userId);
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.UserFollows.Add(new UserFollow
             {
                 FollowerId = currentUserId,
@@ -100,6 +102,8 @@ namespace Flix.Services.Implementations
                 TargetUserId = userId
             });
 
+            await transaction.CommitAsync();
+
             return await BuildRelationshipAsync(userId);
         }
 
@@ -113,12 +117,16 @@ namespace Flix.Services.Implementations
             if (follow is null)
                 return await BuildRelationshipAsync(userId);
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.UserFollows.Remove(follow);
 
             await RemoveFollowActivitiesAsync(currentUserId, userId);
 
             await _context.SaveChangesAsync();
             await SyncFriendshipAsync(currentUserId, userId);
+
+            await transaction.CommitAsync();
 
             return await BuildRelationshipAsync(userId);
         }

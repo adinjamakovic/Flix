@@ -150,6 +150,7 @@ class _UserProfileState extends State<UserProfile> {
         _buildFollowCounts(context),
         if (widget.relationship != null) ...[
           SizedBox(height: 16,),
+          _buildRelationshipBadge(context),
           _buildFollowButton(context),
         ],
         SizedBox(height: 16,),
@@ -205,6 +206,36 @@ class _UserProfileState extends State<UserProfile> {
           ),
         ],
       );
+  }
+
+  Widget _buildRelationshipBadge(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    final UserRelationship relationship = widget.relationship!;
+
+    if (!relationship.canFollow) return const SizedBox.shrink();
+
+    final bool friends = relationship.friends;
+
+    if (!friends && !relationship.followedBy) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Chip(
+            avatar: Icon(
+              friends ? Icons.people_alt : Icons.person_add_alt_1,
+              size: 16,
+              color: friends ? colors.primary : colors.onSurfaceVariant,
+            ),
+            label: Text(friends ? "Friends" : "Follows you"),
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildFollowButton(BuildContext context) {

@@ -3,6 +3,8 @@ using Flix.Model.SearchObjects;
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Implementations
 {
@@ -42,6 +44,10 @@ namespace Flix.Services.Implementations
         protected virtual Task BeforeDeleteAsync(TEntity entity) => Task.CompletedTask;
 
         protected virtual Task AfterDeleteAsync(TEntity entity) => Task.CompletedTask;
+
+        protected virtual string DescribeEntity(TEntity entity) => typeof(TEntity).Name;
+
+        protected virtual Task<string?> DescribeUsageAsync(TEntity entity) => Task.FromResult<string?>(null);
 
         public virtual async Task<TResponse> InsertAsync(TInsertRequest request)
         {
@@ -83,9 +89,25 @@ namespace Flix.Services.Implementations
             await BeforeDeleteAsync(entity);
 
             _context.Set<TEntity>().Remove(entity);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) when (IsForeignKeyViolation(ex))
+            {
+                var usage = await DescribeUsageAsync(entity);
+                var subject = DescribeEntity(entity);
+
+                throw new ClientException(usage is null
+                    ? $"{subject} cannot be deleted because other records still reference it."
+                    : $"{subject} cannot be deleted because it is used by {usage}.");
+            }
 
             await AfterDeleteAsync(entity);
         }
+
+        private static bool IsForeignKeyViolation(DbUpdateException exception)
+            => exception.InnerException is SqlException { Number: 547 };
     }
 }

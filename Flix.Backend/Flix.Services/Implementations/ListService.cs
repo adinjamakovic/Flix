@@ -49,6 +49,8 @@ namespace Flix.Services.Implementations
 
         public override async Task<ListResponse> InsertAsync(ListInsertRequest request)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             var response = await base.InsertAsync(request);
 
             await _activityService.InsertAsync(_currentUserService.GetUserId(), new ActivityInsertRequest
@@ -56,6 +58,8 @@ namespace Flix.Services.Implementations
                 Type = ActivityType.CreatedList,
                 MovieListId = response.Id
             });
+
+            await transaction.CommitAsync();
 
             return response;
         }
@@ -313,9 +317,9 @@ namespace Flix.Services.Implementations
                 CreatedAt = DateTime.UtcNow
             };
 
+            // Left unsaved on purpose: the caller's SaveChanges writes it along with the item
+            // being added to it, so the operation stays a single write.
             _context.MovieLists.Add(watchlist);
-
-            await _context.SaveChangesAsync();
 
             return watchlist;
         }
@@ -349,6 +353,8 @@ namespace Flix.Services.Implementations
                 throw new ClientException("This movie has already been added to this list");
             }
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             _context.MovieListItems.Add(new MovieListItem
             {
                 MovieList = list,
@@ -361,15 +367,15 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            if(!isWatchlist)
-                return;
+            if(isWatchlist)
+                await _activityService.InsertAsync(userId, new ActivityInsertRequest
+                {
+                    Type = ActivityType.AddedToWatchlist,
+                    MovieId = movie.Id,
+                    MovieListId = list.Id
+                });
 
-            await _activityService.InsertAsync(userId, new ActivityInsertRequest
-            {
-                Type = ActivityType.AddedToWatchlist,
-                MovieId = movie.Id,
-                MovieListId = list.Id
-            });
+            await transaction.CommitAsync();
         }
 
         private async Task<MovieList> GetCustomListAsync(int userId, int? listId)

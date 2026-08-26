@@ -209,6 +209,8 @@ namespace Flix.Services.Implementations
             var wasWatched = opinion is not null;
             var wasLiked = opinion?.IsLiked ?? false;
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             if (opinion is null)
             {
                 opinion = new Review
@@ -252,6 +254,8 @@ namespace Flix.Services.Implementations
                     MovieId = movie.Id,
                     ReviewId = opinion.Id
                 });
+
+            await transaction.CommitAsync();
 
             return await GetMovieStateAsync(movie.Id);
         }

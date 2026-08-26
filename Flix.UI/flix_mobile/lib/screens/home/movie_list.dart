@@ -144,13 +144,13 @@ class _MovieListState extends State<MovieList> {
           children: [
             MovieSideScroll(
               title: "Recommended for you",
-              Movies: _recommendedMovies,
+              movies: _recommendedMovies,
               onMovieTap: _onMovieTapped,
             ),
             const SizedBox(height: 12),
             MovieSideScroll(
               title: "Popular this week",
-              Movies: _popularThisWeek,
+              movies: _popularThisWeek,
               onMovieTap: _onMovieTapped,
             ),
             const SizedBox(height: 12),
@@ -166,7 +166,7 @@ class _MovieListState extends State<MovieList> {
             if (_popularWithFriends.isNotEmpty)
               MovieSideScroll(
                 title: "Popular with friends",
-                Movies: _popularWithFriends,
+                movies: _popularWithFriends,
                 onMovieTap: _onMovieTapped,
               ),
           ],

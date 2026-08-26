@@ -17,6 +17,7 @@ class CastList extends StatefulWidget {
 }
 
 class _CastListState extends State<CastList> {
+  static const int _photoFlex = 8;
   static const int _nameFlex = 22;
   static const int _roleFlex = 12;
   static const int _nationalityFlex = 12;
@@ -285,6 +286,15 @@ class _CastListState extends State<CastList> {
   }
 
   List<TableColumn<CastMember>> get _columns => [
+        TableColumn<CastMember>.custom(
+          label: "PHOTO",
+          flex: _photoFlex,
+          builder: (context, cast) => TableThumbnail(
+            url: cast.photo,
+            icon: Icons.person_outline,
+            borderRadius: 17,
+          ),
+        ),
         TableColumn<CastMember>(
           label: "NAME",
           flex: _nameFlex,

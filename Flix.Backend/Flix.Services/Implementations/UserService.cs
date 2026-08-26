@@ -47,12 +47,16 @@ namespace Flix.Services.Implementations
 
         public override async Task<UserResponse> InsertAsync(UserInsertRequest request)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             var response = await base.InsertAsync(request);
 
             await _activityService.InsertAsync(response.Id, new ActivityInsertRequest
             {
                 Type = ActivityType.JoinedPlatform
             });
+
+            await transaction.CommitAsync();
 
             return response;
         }

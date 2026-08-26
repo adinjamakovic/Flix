@@ -56,8 +56,10 @@ class LoginScreen extends StatelessWidget {
                     AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
                     try{
                       await authProvider.login(_usernameController.text, _passwordController.text);
+                      if (!context.mounted) return;
                       Navigator.push(context, MaterialPageRoute(builder: (context) => MovieList()));
                     } on Exception catch (e) {
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
                     }
 

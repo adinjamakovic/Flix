@@ -6,12 +6,12 @@ class MovieSideScroll extends StatefulWidget {
   const MovieSideScroll({
     super.key,
     required this.title,
-    required this.Movies,
+    required this.movies,
     this.onMovieTap,
   });
 
   final String title;
-  final List<Movie> Movies;
+  final List<Movie> movies;
   final ValueChanged<Movie>? onMovieTap;
 
   @override
@@ -41,10 +41,10 @@ class _MovieSideScrollState extends State<MovieSideScroll> {
             height: _posterHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: widget.Movies.length,
+              itemCount: widget.movies.length,
               separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) =>
-                  _buildPosterButton(widget.Movies[index]),
+                  _buildPosterButton(widget.movies[index]),
             ),
           ),
         ],

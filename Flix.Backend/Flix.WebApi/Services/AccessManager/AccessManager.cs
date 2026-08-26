@@ -85,11 +85,9 @@ namespace Flix.WebApi.Services.AccessManager
             if (!user.IsActive)
                 throw new ClientException("User is not active");
 
-            await _refreshTokenService.DeleteAllUserRefreshTokensAsync(user.Id);
-
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
-            
+
             var token = new RefreshToken
             {
                 UserId = user.Id,
@@ -97,7 +95,7 @@ namespace Flix.WebApi.Services.AccessManager
                 ExpiresAt = DateTime.UtcNow.AddDays(7)
             };
 
-            await _refreshTokenService.InsertAsync(token);
+            await _refreshTokenService.ReplaceUserRefreshTokensAsync(user.Id, token);
             return new UserLoginResponse
             {
                 AccessToken = accessToken,

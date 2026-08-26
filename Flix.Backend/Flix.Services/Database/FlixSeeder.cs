@@ -1348,7 +1348,9 @@ namespace Flix.Services.Database
                     Status = MovieRequestStatus.Rejected,
                     CreatedAt = new DateTime(2026, 2, 11, 13, 0, 0),
                     ReviewedByUserId = 1,
-                    ReviewedAt = new DateTime(2026, 2, 13, 8, 30, 0)
+                    ReviewedAt = new DateTime(2026, 2, 13, 8, 30, 0),
+                    AdminComment = "The title you sent in is already in the catalogue "
+                        + "under its original name, so there is nothing to add."
                 });
         }
 

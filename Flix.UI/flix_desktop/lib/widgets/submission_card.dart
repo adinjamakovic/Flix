@@ -65,6 +65,7 @@ class SubmissionCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 _buildGaps(context),
+                ?_buildAdminComment(context),
                 const SizedBox(height: 14),
                 Align(
                   alignment: Alignment.centerRight,
@@ -78,15 +79,7 @@ class SubmissionCard extends StatelessWidget {
                           onPressed: onOpenMovie,
                           icon: const Icon(Icons.movie_outlined, size: 18),
                           label: const Text("Open movie"),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: colors.onSurface,
-                            side: BorderSide(color: colors.outline),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
+                          style: _outlinedStyle(context),
                         ),
                 ),
               ],
@@ -94,6 +87,17 @@ class SubmissionCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  ButtonStyle _outlinedStyle(BuildContext context, [Color? foreground]) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return OutlinedButton.styleFrom(
+      foregroundColor: foreground ?? colors.onSurface,
+      side: BorderSide(color: foreground ?? colors.outline),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
 
@@ -176,6 +180,44 @@ class SubmissionCard extends StatelessWidget {
     );
   }
 
+  Widget? _buildAdminComment(BuildContext context) {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    final String comment = request.adminComment?.trim() ?? "";
+
+    if (comment.isEmpty) return null;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 14),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Reason given to the requester",
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              comment,
+              style: TextStyle(color: colors.onSurface, fontSize: 13.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // A submission is only ever partially filled in, so what is still missing is
   // spelled out here rather than left for the admin to find in the form.
   Widget _buildGaps(BuildContext context) {
@@ -239,6 +281,7 @@ class SubmissionStatusChip extends StatelessWidget {
       MovieRequestStatus.pending => colors.primary,
       MovieRequestStatus.approved => _approvedColor,
       MovieRequestStatus.rejected => colors.onSurfaceVariant,
+      MovieRequestStatus.cancelled => colors.onSurfaceVariant,
     };
 
     return Container(

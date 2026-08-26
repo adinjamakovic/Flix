@@ -289,8 +289,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// HTTPS redirection is disabled because of the Flutter mobile development environment
-//app.UseHttpsRedirection();
+// No app.UseHttpsRedirection(): a redirect to localhost sends an emulator or a
+// device to itself, so the Flutter clients stay on HTTP.
 
 app.UseCors(CorsPolicy);
 

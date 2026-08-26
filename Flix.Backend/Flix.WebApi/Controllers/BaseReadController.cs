@@ -29,14 +29,7 @@ namespace Flix.WebApi.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<TResponse>> GetById(int id)
         {
-            try
-            {
-                return Ok(await _service.GetByIdAsync(id));
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { error = ex.Message });
-            }
+            return Ok(await _service.GetByIdAsync(id));
         }
     }
 }

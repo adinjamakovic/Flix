@@ -32,6 +32,15 @@ namespace Flix.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
+        // Revoking and issuing are one operation, so they share a single write rather than
+        // leaving a window where the user has no valid refresh token at all.
+        public async Task ReplaceUserRefreshTokensAsync(int userId, RefreshToken refreshToken)
+        {
+            _refreshTokens.RemoveRange(_refreshTokens.Where(rt => rt.UserId == userId));
+            await _refreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteAllUserRefreshTokensAsync(int userId)
         {
             _refreshTokens.RemoveRange(_refreshTokens.Where(rt => rt.UserId == userId));

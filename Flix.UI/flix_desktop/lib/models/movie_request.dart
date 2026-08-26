@@ -13,7 +13,9 @@ class MovieRequest {
       this.requestedByUser,
       this.movie,
       this.status,
-      this.createdAt
+      this.createdAt,
+      this.reviewedAt,
+      this.adminComment
       );
 
   final int? id;
@@ -23,6 +25,8 @@ class MovieRequest {
 
   final MovieRequestStatus? status;
   final DateTime? createdAt;
+  final DateTime? reviewedAt;
+  final String? adminComment;
 
   bool get isPending => status == MovieRequestStatus.pending;
 

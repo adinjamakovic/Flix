@@ -52,6 +52,17 @@ namespace Flix.WebApi.Controllers
             var result = await _service.AdminReview(id, request);
             return Ok(result);
         }
+
+        // The requester withdrawing their own submission, so it carries no role filter; the
+        // service is what keeps every caller, admin included, inside their own submissions.
+        [HttpPost("Cancel/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MovieRequestResponse>> Cancel(int id)
+        {
+            var result = await _service.Cancel(id);
+            return Ok(result);
+        }
     }
 
 }

@@ -283,11 +283,22 @@ string BuildAcceptedBody(MovieAccepted message)
 
 string BuildRejectedBody(MovieRejected message)
 {
+    var reason = message.Data?.AdminComment;
+
+    var reasonBlock = string.IsNullOrWhiteSpace(reason)
+        ? string.Empty
+        : $"""
+            <table cellpadding="4" cellspacing="0" style="border-collapse:collapse">
+                <tr><td><strong>Reason</strong></td><td>{Encode(reason)}</td></tr>
+            </table>
+            """;
+
     return Wrap(
         "Movie request rejected",
         $"""
         <p>Hi {Encode(DisplayName(message.Data?.RequestedByUser))},</p>
         <p>Your request for <strong>{Encode(MovieTitle(message.Data))}</strong> was reviewed and will not be added to the catalog.</p>
+        {reasonBlock}
         <p>You are welcome to submit another request at any time.</p>
         """);
 }

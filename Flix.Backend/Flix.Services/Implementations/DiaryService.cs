@@ -91,6 +91,8 @@ namespace Flix.Services.Implementations
 
             var isNewEntry = entity is null;
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             if (entity is null)
             {
                 entity = new Review
@@ -129,6 +131,8 @@ namespace Flix.Services.Implementations
                 await LogAsync(userId, entity, ActivityType.LikedMovie);
 
             await _listService.RemoveIfAddedToWatchlistAsync(movie.Id);
+
+            await transaction.CommitAsync();
 
             await _context.Entry(entity).Reference(x => x.Movie).LoadAsync();
             await _context.Entry(entity).Reference(x => x.User).LoadAsync();

@@ -1,5 +1,6 @@
 using Flix.Model.Enums;
 using Flix.Services.Database;
+using Flix.Services.StateMachines;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +12,12 @@ namespace Flix.Services.BackgroundServices
         : BackgroundService
     {
         private static readonly TimeSpan Interval = TimeSpan.FromMinutes(1);
+
+        private static readonly ClashStatus[] CanComplete =
+            [.. Transitions.Clash.SourcesOf(ClashStatus.Completed)];
+
+        private static readonly ClashStatus[] CanActivate =
+            [.. Transitions.Clash.SourcesOf(ClashStatus.Active)];
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -46,7 +53,7 @@ namespace Flix.Services.BackgroundServices
             var completed = await context.Clashes
                 .Include(c => c.Entries)
                     .ThenInclude(e => e.Votes)
-                .Where(c => c.Status != ClashStatus.Completed && c.EndDate < now)
+                .Where(c => CanComplete.Contains(c.Status) && c.EndDate < now)
                 .AsSplitQuery()
                 .ToListAsync(ct);
 
@@ -57,7 +64,7 @@ namespace Flix.Services.BackgroundServices
             }
 
             var started = await context.Clashes
-                .Where(c => c.Status == ClashStatus.Upcoming && c.StartDate <= now && c.EndDate >= now)
+                .Where(c => CanActivate.Contains(c.Status) && c.StartDate <= now && c.EndDate >= now)
                 .ToListAsync(ct);
 
             foreach (var clash in started)

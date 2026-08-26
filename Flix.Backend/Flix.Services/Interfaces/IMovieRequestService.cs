@@ -9,5 +9,6 @@ namespace Flix.Services.Interfaces
     {
         Task<MovieRequestResponse> UserRequest(MovieRequestInsertRequest request);
         Task<MovieRequestResponse> AdminReview(int id, MovieRequestUpdateRequest request);
+        Task<MovieRequestResponse> Cancel(int id);
     }
 }
