@@ -37,11 +37,11 @@ namespace Flix.WebApi.Services.AccessManager
             var user = await _userService.GetByUsernameAsync(request.Username);
 
             if (user is null)
-                throw new Exception($"User with username '{request.Username}' not found.");
+                throw new ClientException("Wrong credentials. Please try again!");
 
             var isPasswordValid = _cryptoService.VerifyPassword(user.PasswordHash, user.PasswordSalt, request.Password);
             if (!isPasswordValid)
-                throw new ClientException("Invalid credentials");
+                throw new ClientException("Wrong credentials. Please try again!");
 
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();

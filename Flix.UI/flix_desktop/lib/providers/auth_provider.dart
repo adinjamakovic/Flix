@@ -156,8 +156,25 @@ class AuthProvider extends ChangeNotifier {
     }
     else{
       debugPrint(response.body);
-      throw Exception("Something bad happened please try again");
+      throw Exception(_errorMessage(response));
     }
+  }
+
+  String _errorMessage(http.Response response) {
+    try {
+      var errors = jsonDecode(response.body)["errors"] as Map<String, dynamic>;
+
+      var messages = errors.values
+          .expand((value) => value is List ? value : [value])
+          .map((message) => message.toString().trim())
+          .where((message) => message.isNotEmpty);
+
+      if (messages.isNotEmpty) return messages.join("\n");
+    } catch (_) {
+      // Not a validation payload — fall through to the generic message.
+    }
+
+    return "Something bad happened please try again";
   }
 
    Map<String, String> createHeaders() {

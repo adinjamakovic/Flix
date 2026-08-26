@@ -11,5 +11,6 @@ namespace Flix.Model.Responses
         public MovieResponse RecommendedMovie {get; set;} = null!;
         public float Score { get; set; }
         public RecommendationSource Source { get; set; }
+        public string? Reason { get; set; }
     }
 }

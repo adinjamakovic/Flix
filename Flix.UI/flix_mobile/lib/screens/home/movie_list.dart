@@ -1,4 +1,5 @@
 import 'package:flix_mobile/models/movie.dart';
+import 'package:flix_mobile/models/movie_recommendation.dart';
 import 'package:flix_mobile/models/review.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
@@ -27,6 +28,7 @@ class _MovieListState extends State<MovieList> {
   late MovieRecommenderProvider _movieRecommenderProvider;
 
   List<Movie> _recommendedMovies = List.empty();
+  Map<int, String> _recommendationReasons = const {};
   List<Movie> _popularThisWeek = List.empty();
   List<Review> _newReviewsFromFriends = List.empty();
   List<Movie> _popularWithFriends = List.empty();
@@ -66,8 +68,8 @@ class _MovieListState extends State<MovieList> {
       final Future<List<Review>> friendReviews = _optional(
           _reviewProvider.get(action: "LatestFromFriends").then(itemsOf<Review>));
 
-      final List<List<Movie>> results = await Future.wait([
-        _movieRecommenderProvider.getRecommendedMoviesForUser(),
+      final List<Object> results = await Future.wait([
+        _movieRecommenderProvider.getRecommendationsForUser(),
         _movieProvider.get(action: "PopularThisWeek").then(itemsOf<Movie>),
         _optional(_movieProvider
             .get(action: "PopularWithFriends")
@@ -76,10 +78,21 @@ class _MovieListState extends State<MovieList> {
       final List<Review> reviews = await friendReviews;
       if(!mounted) return;
 
+      final List<MovieRecommendation> recommendations =
+          results[0] as List<MovieRecommendation>;
+
       setState(() {
-        _recommendedMovies = results[0];
-        _popularThisWeek = results[1];
-        _popularWithFriends = results[2];
+        _recommendedMovies = recommendations
+            .map((recommendation) => recommendation.recommendedMovie!)
+            .toList();
+        _recommendationReasons = {
+          for (final recommendation in recommendations)
+            if (recommendation.recommendedMovie?.id != null &&
+                recommendation.reason != null)
+              recommendation.recommendedMovie!.id!: recommendation.reason!,
+        };
+        _popularThisWeek = results[1] as List<Movie>;
+        _popularWithFriends = results[2] as List<Movie>;
         _newReviewsFromFriends = reviews;
         _isLoading = false;
       });
@@ -146,6 +159,7 @@ class _MovieListState extends State<MovieList> {
               title: "Recommended for you",
               movies: _recommendedMovies,
               onMovieTap: _onMovieTapped,
+              captionOf: (movie) => _recommendationReasons[movie.id],
             ),
             const SizedBox(height: 12),
             MovieSideScroll(
