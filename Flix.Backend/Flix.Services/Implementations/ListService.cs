@@ -124,23 +124,18 @@ namespace Flix.Services.Implementations
             entity.Type = ListType.Custom;
             entity.CreatedAt = DateTime.UtcNow;
 
-            if(request.MovieIds is null || request.MovieIds.Count == 0)
+            var requestedIds = request.MovieIds?.Distinct().ToList() ?? new List<int>();
+
+            if(requestedIds.Count == 0)
                 return;
 
-            var requestedIds = request.MovieIds?.Distinct().ToList() ?? new List<int>();
+            await EnsureMoviesCanBeListedAsync(requestedIds);
 
             for(var position = 0; position < requestedIds.Count; position++)
             {
-                var id = requestedIds[position];
-
-                var movie = await _context.Movies.Where(x=>x.Id == id).FirstOrDefaultAsync();
-
-                if(movie is null)
-                    throw new ClientException("One of the selected movies is null");
-
                 var MovieListItem = new MovieListItem
                 {
-                    MovieId = id,
+                    MovieId = requestedIds[position],
                     MovieList = entity,
                     Position = position
                 };
@@ -153,6 +148,9 @@ namespace Flix.Services.Implementations
         {
             if(_currentUserService.GetUserId() != entity.UserId)
                 throw new ClientException("Only the user who made the list can edit the list");
+
+            if(entity.Type == ListType.Watchlist)
+                throw new ClientException("The watchlist cannot be edited. Add and remove movies through the watchlist actions instead.");
 
             entity.UpdatedAt = DateTime.UtcNow;
 
@@ -170,12 +168,8 @@ namespace Flix.Services.Implementations
             var existingMovieIds = existingItems.Select(x => x.MovieId).ToHashSet();
             var addedMovieIds = requestedIds.Where(x => !existingMovieIds.Contains(x)).ToList();
 
-            var validMovieIds = addedMovieIds.Count == 0
-                ? new List<int>()
-                : await _context.Movies
-                    .Where(x => addedMovieIds.Contains(x.Id))
-                    .Select(x => x.Id)
-                    .ToListAsync();
+            if(addedMovieIds.Count > 0)
+                await EnsureMoviesCanBeListedAsync(addedMovieIds);
 
             for(var position = 0; position < requestedIds.Count; position++)
             {
@@ -189,9 +183,6 @@ namespace Flix.Services.Implementations
                     continue;
                 }
 
-                if(!validMovieIds.Contains(id))
-                    throw new ClientException("One of the selected movies is null");
-
                 var MovieListItem = new MovieListItem
                 {
                     MovieId = id,
@@ -201,6 +192,23 @@ namespace Flix.Services.Implementations
 
                 _context.MovieListItems.Add(MovieListItem);
             }
+        }
+
+        private async Task EnsureMoviesCanBeListedAsync(List<int> movieIds)
+        {
+            var movies = await _context.Movies
+                .Where(x => movieIds.Contains(x.Id))
+                .Select(x => new { x.Id, x.IsEnabled })
+                .ToListAsync();
+
+            var foundIds = movies.Select(x => x.Id).ToHashSet();
+            var missingId = movieIds.FirstOrDefault(x => !foundIds.Contains(x));
+
+            if(missingId != 0)
+                throw new ClientException($"Movie with Id {missingId} not found.");
+
+            if(movies.Any(x => !x.IsEnabled))
+                throw new ClientException("One of the selected movies cannot be added to a list.");
         }
 
         protected override async Task BeforeDeleteAsync(MovieList entity)

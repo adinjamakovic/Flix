@@ -1,3 +1,4 @@
+import 'package:flix_mobile/models/cast_member.dart';
 import 'package:flix_mobile/models/genre.dart';
 import 'package:flix_mobile/models/movie.dart';
 import 'package:flix_mobile/models/movie_user_state.dart';
@@ -7,6 +8,7 @@ import 'package:flix_mobile/providers/auth_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/providers/review_provider.dart';
 import 'package:flix_mobile/providers/user_provider.dart';
+import 'package:flix_mobile/screens/cast_member_profile.dart';
 import 'package:flix_mobile/screens/movie_details/actions_sheet.dart';
 import 'package:flix_mobile/screens/movie_details/cast.dart';
 import 'package:flix_mobile/screens/movie_details/crew.dart';
@@ -320,6 +322,18 @@ class _MovieDetailsState extends State<MovieDetails>
     return RatingCountChart(counts: counts);
   }
 
+  // The profile is fed the cast member the movie response already carries, the
+  // same way `CrewTab` does - `GET /CastMember/{id}` comes back with no country
+  // and no roles.
+  void _openDirector(CastMember director) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CastMemberProfile(castMember: director),
+      ),
+    );
+  }
+
   Padding _buildBody(Movie movie, ColorScheme colorScheme, int genreCount, List<Genre> genres) {
     return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -349,9 +363,9 @@ class _MovieDetailsState extends State<MovieDetails>
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              debugPrint("TODO: cast screen");
-                            },
+                            onTap: movie.director == null
+                                ? null
+                                : () => _openDirector(movie.director!),
                             child: Text(
                               movie.director?.fullName ?? "Unknown",
                               style: TextStyle(

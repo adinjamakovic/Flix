@@ -279,11 +279,33 @@ namespace Flix.Services.Implementations
 
         protected override UserResponse MapToResponse(User entity)
         {
-            var response = base.MapToResponse(entity);
+            if (_currentUserService.IsAdmin)
+                return MapAs<UserAdminResponse>(entity);
+
+            if (_currentUserService.UserId == entity.Id)
+                return MapAs<UserSelfResponse>(entity);
+
+            return MapAs<UserResponse>(entity);
+        }
+
+        private TResponse MapAs<TResponse>(User entity) where TResponse : UserResponse
+        {
+            var response = _mapper.Map<TResponse>(entity);
 
             _imageUrlResolver.Resolve(response);
 
             return response;
+        }
+
+        public async Task<PageResult<UserAdminResponse>> GetAdminAsync(UserSearchObject? search = null)
+        {
+            var page = await GetAsync(search);
+
+            return new PageResult<UserAdminResponse>
+            {
+                Items = page.Items.Cast<UserAdminResponse>().ToList(),
+                TotalCount = page.TotalCount
+            };
         }
 
         public override async Task<UserResponse> GetByIdAsync(int id)
@@ -316,9 +338,7 @@ namespace Flix.Services.Implementations
         // It is mapped once rather than followed off each review, so the cycle cannot come back.
         private void AttachLatestReviews(UserResponse response, User entity)
         {
-            var author = _mapper.Map<UserResponse>(entity);
-
-            _imageUrlResolver.Resolve(author);
+            var author = MapAs<UserResponse>(entity);
 
             response.Reviews = entity.Reviews
                 .OrderByDescending(x => x.CreatedAt)
@@ -345,6 +365,16 @@ namespace Flix.Services.Implementations
             return response;
         }
 
+        public async Task<UserAdminResponse?> GetAccountByIdAsync(int id)
+        {
+            var user = await GetDataSource()
+                .Include(u => u.Roles)
+                    .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            return user is null ? null : _mapper.Map<UserAdminResponse>(user);
+        }
+
         public async Task UpdateLastLoginAsync(int userId)
         {
             await _context.Users
@@ -362,7 +392,7 @@ namespace Flix.Services.Implementations
                 .Take(MostActiveUsersCount)
                 .ToListAsync();
 
-            return users.Select(MapToResponse).ToList();
+            return users.Select(MapAs<UserResponse>).ToList();
         }
     }
 }

@@ -62,8 +62,9 @@ var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://lo
 // Add services to the container.
 
 builder.Services.AddControllers(
-    options => { 
+    options => {
         options.Filters.Add<ExceptionFilter>();
+        options.Filters.Add<ImageStorageFilter>();
     }
 );
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -113,27 +114,19 @@ builder.Services.AddAuthorization();
 builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
-    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
-    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
-    // UserResponse.Reviews and ReviewResponse.User point straight back at each other, and EF fixup
-    // wires both ends of that pair whenever a user and any of their reviews are tracked by the same
-    // query - which every review feed and the activity feed do. Letting Mapster follow it recurses
-    // user -> reviews -> user until the stack blows, taking the process down with it. So it is never
-    // mapped automatically: UserService.GetByIdAsync fills it for the profile screen. The authors it
-    // nests carry no reviews of their own, which is what stops the cycle coming back.
     .Ignore(dest => dest.Reviews)
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
     .Map(dest => dest.FollowerCount, src => src.Followers.Count)
     .Map(dest => dest.FollowingCount, src => src.Following.Count);
-TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
-    .IgnoreNullValues(true)
+TypeAdapterConfig<User, UserSelfResponse>.NewConfig()
+    .Inherits<User, UserResponse>();
+TypeAdapterConfig<User, UserAdminResponse>.NewConfig()
+    .Inherits<User, UserSelfResponse>()
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
-    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
-    .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
-    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
-    .Map(dest => dest.FollowerCount, src => src.Followers.Count)
-    .Map(dest => dest.FollowingCount, src => src.Following.Count);
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault());
+TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
+    .Inherits<User, UserAdminResponse>();
 TypeAdapterConfig<Role, RoleResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
     .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())

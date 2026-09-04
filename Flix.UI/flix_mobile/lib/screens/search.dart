@@ -155,7 +155,6 @@ class _SearchState extends State<Search> {
       "pageSize": _pageSize,
       "includeTotalCount": true,
       "includeReviews": true,
-      "isEnabled": true,
     };
 
     final String title = _titleController.text.trim();

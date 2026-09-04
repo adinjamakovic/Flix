@@ -1,7 +1,8 @@
-﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,10 +18,20 @@ namespace Flix.CommonServices.ImageStorageService
         private static readonly TimeSpan ReadUrlLifetime = TimeSpan.FromHours(1);
 
         private readonly BlobServiceClient _blobServiceClient;
-        
-        public ImageStorageService(BlobServiceClient blobServiceClient)
+        private readonly ILogger<ImageStorageService> _logger;
+
+        // Blob writes cannot join the database transaction, so an upload is held here until the
+        // row carrying its path has been saved: until then the new blob is the one to drop on a
+        // failure, and only afterwards does the path it replaced become safe to delete.
+        private readonly List<PendingUpload> _pending = new();
+        private readonly List<string> _superseded = new();
+
+        private sealed record PendingUpload(string Path, string? ReplacedPath);
+
+        public ImageStorageService(BlobServiceClient blobServiceClient, ILogger<ImageStorageService> logger)
         {
             _blobServiceClient = blobServiceClient;
+            _logger = logger;
         }
 
         private static string GetCategoryFolder(ImageStorageCategory category) => category switch
@@ -48,11 +59,13 @@ namespace Flix.CommonServices.ImageStorageService
             if(newImage is null || newImage.Length == 0)
                 return currentStoredPath;
 
-            await DeleteIfExistsAsync(category, currentStoredPath);
-            return await SaveAsync(category, newImage);
+            return await UploadAsync(category, newImage, currentStoredPath) ?? currentStoredPath;
         }
 
-        public async Task<string?> SaveAsync(ImageStorageCategory category, IFormFile? image)
+        public Task<string?> SaveAsync(ImageStorageCategory category, IFormFile? image)
+            => UploadAsync(category, image, null);
+
+        private async Task<string?> UploadAsync(ImageStorageCategory category, IFormFile? image, string? replacedPath)
         {
             if (image is null || image.Length == 0)
                 return null;
@@ -72,7 +85,61 @@ namespace Flix.CommonServices.ImageStorageService
 
             await blobClient.UploadAsync(image.OpenReadStream(), new BlobHttpHeaders { ContentType = image.ContentType });
 
-            return bloblName;   
+            _pending.Add(new PendingUpload(
+                bloblName,
+                string.IsNullOrWhiteSpace(replacedPath) ? null : replacedPath));
+
+            return bloblName;
+        }
+
+        public void MarkPersisted()
+        {
+            foreach (var upload in _pending)
+            {
+                if (upload.ReplacedPath is not null)
+                    _superseded.Add(upload.ReplacedPath);
+            }
+
+            _pending.Clear();
+        }
+
+        public async Task CommitAsync()
+        {
+            MarkPersisted();
+
+            var superseded = _superseded.ToList();
+            _superseded.Clear();
+
+            foreach (var path in superseded)
+                await TryDeleteAsync(path);
+        }
+
+        public async Task RollbackAsync()
+        {
+            var orphans = _pending.Select(x => x.Path).ToList();
+
+            // Superseded blobs are deliberately kept: the write that replaced them may itself
+            // have been rolled back, and a leaked blob beats a row pointing at a deleted one.
+            _pending.Clear();
+            _superseded.Clear();
+
+            foreach (var path in orphans)
+                await TryDeleteAsync(path);
+        }
+
+        private async Task TryDeleteAsync(string path)
+        {
+            try
+            {
+                var container = _blobServiceClient.GetBlobContainerClient(ContainerName);
+                await container.GetBlobClient(path).DeleteIfExistsAsync();
+            }
+            catch (Exception ex)
+            {
+                // Cleanup runs after the caller's work is done, so a failure here must not
+                // turn a completed request into an error - the blob is only left behind.
+                _logger.LogError(ex, "Failed to delete blob {Path}", path);
+            }
         }
 
         public string? ToPublicPath(ImageStorageCategory category, string? storedPath)
