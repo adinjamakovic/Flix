@@ -67,18 +67,6 @@ namespace Flix.Services.Database
                 .WithMany()
                 .HasForeignKey(c => c.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<MovieRecommendation>()
-                .HasOne(x => x.Movie)
-                .WithMany()
-                .HasForeignKey(x => x.MovieId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<MovieRecommendation>()
-                .HasOne(x => x.RecommendedMovie)
-                .WithMany()
-                .HasForeignKey(x => x.RecommendedMovieId)
-                .OnDelete(DeleteBehavior.NoAction);
         }
 
         private static void ConfigureUserRelationships(ModelBuilder modelBuilder)

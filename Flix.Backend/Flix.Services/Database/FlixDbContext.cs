@@ -31,7 +31,6 @@ namespace Flix.Services.Database
         public DbSet<MovieIssueReport> MovieIssueReports => Set<MovieIssueReport>();
         public DbSet<UserReport> UserReports => Set<UserReport>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-        public DbSet<MovieRecommendation> MovieRecommendations => Set<MovieRecommendation>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

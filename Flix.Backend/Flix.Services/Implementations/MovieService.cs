@@ -227,12 +227,6 @@ namespace Flix.Services.Implementations
 
             _context.Set<MovieStudio>().RemoveRange(studioLinks);
 
-            var recommendations = await _context.MovieRecommendations
-                .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
-                .ToListAsync();
-
-            _context.MovieRecommendations.RemoveRange(recommendations);
-
             var listItems = await _context.MovieListItems
                 .Where(x => x.MovieId == entity.Id)
                 .ToListAsync();

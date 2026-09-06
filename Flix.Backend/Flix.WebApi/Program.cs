@@ -6,6 +6,7 @@ using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
 using Flix.Services.Interfaces;
+using Flix.Services.Recommendations;
 using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
 using Flix.WebApi.Filters;
@@ -181,11 +182,6 @@ TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
     .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
     .Map(dest => dest.Movie, src => src.CreatedMovie);
 TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
-TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
-    .IgnoreNullValues(true)
-    .Map(dest => dest.Movie, src => src.Movie)
-    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie)
-    .Map(dest => dest.Source, src => RecommendationSource.Similar);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -257,7 +253,8 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
+builder.Services.AddScoped<IRecommendationSignalService, RecommendationSignalService>();
+builder.Services.AddScoped<IUserRecommendationService, UserRecommendationService>();
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IListService, ListService>();
@@ -265,7 +262,6 @@ builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddHostedService<ClashStateWorkerService>();
-builder.Services.AddHostedService<MovieRecommendationWorkerService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 var app = builder.Build();
