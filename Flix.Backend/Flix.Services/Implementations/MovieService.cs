@@ -1,5 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;

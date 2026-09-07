@@ -1,11 +1,9 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
+using Flix.Model.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.CommonServices.ImageStorageService
 {
@@ -70,12 +68,21 @@ namespace Flix.CommonServices.ImageStorageService
             if (image is null || image.Length == 0)
                 return null;
 
+            if (image.Length > ImageValidationRules.MaxImageSizeBytes)
+                throw new ClientException(
+                    $"Image must be {ImageValidationRules.MaxImageSizeBytes / (1024 * 1024)} MB or smaller.");
+
             var extension = Path.GetExtension(image.FileName);
             if( string.IsNullOrWhiteSpace(extension) || !ImageValidationRules.AllowedExtensions.Contains(extension))
-                throw new Exception("Invalid image extension");
+                throw new ClientException(
+                    $"Image must be one of the following types: {string.Join(", ", ImageValidationRules.AllowedExtensions)}.");
 
-            if (!ImageValidationRules.HasAllowedContentType(image) || !ImageValidationRules.HasMatchingSignature(image))
-                throw new Exception("Invalid image contents");
+            if (!ImageValidationRules.HasAllowedContentType(image))
+                throw new ClientException(
+                    $"Image must be sent as one of the following content types, matching its extension: {string.Join(", ", ImageValidationRules.AllowedContentTypes)}.");
+
+            if (!ImageValidationRules.HasMatchingSignature(image))
+                throw new ClientException("Image contents do not match its file type.");
 
             var container = _blobServiceClient.GetBlobContainerClient(ContainerName);
             await container.CreateIfNotExistsAsync();

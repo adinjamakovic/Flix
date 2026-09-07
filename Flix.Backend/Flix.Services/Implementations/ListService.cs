@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Net.Quic;
-using System.Security.Cryptography.X509Certificates;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
 using Flix.Model.Requests;
@@ -10,10 +7,7 @@ using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Flix.Services.Implementations
 {

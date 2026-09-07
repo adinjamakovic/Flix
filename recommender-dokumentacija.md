@@ -134,11 +134,17 @@ Polovina koja je više doprinijela dobija pravo da objasni preporuku:
 | Slučaj | `Source` | `Reason` | `Movie` / `MovieId` |
 | --- | --- | --- | --- |
 | collaborative jači | `Similar` | `"Loved by users with taste like yours"` | prazno |
-| content jači | `Similar` | `"Because you liked {naslov}"` | seed film |
+| content jači, postoji seed film | `Similar` | `"Because you liked {naslov}"` | seed film |
+| content jači, nema seed filma | `Similar` | `"Matches what you have been watching"` | prazno |
 | dopuna / nema signala | `Popular` | `"Popular on Flix right now"` | prazno |
 
+Poređenje je `collab × MaxCollaborativeWeight` prema `content`, dakle collaborative doprinos se
+mjeri težinom kojom ulazi u blend, a ne sirovim score-om.
+
 Seed film je onaj iz korisnikovog profila s najvećim `Affinity × sličnost` prema kandidatu —
-dakle film koji kandidata najbolje objašnjava, a ne naprosto zadnji ocijenjeni.
+dakle film koji kandidata najbolje objašnjava, a ne naprosto zadnji ocijenjeni. Kandidat kojeg
+content strana nije prepoznala (nema atribute u `MovieFeatures`) nema seed, pa dobija generičko
+objašnjenje iz trećeg reda tabele.
 
 Mobilna aplikacija ([`movie_list.dart`](Flix.UI/flix_mobile/lib/screens/home/movie_list.dart))
 mapira `Reason` po `recommendedMovie.id` i prosljeđuje ga `MovieSideScroll`-u kao `captionOf`, pa

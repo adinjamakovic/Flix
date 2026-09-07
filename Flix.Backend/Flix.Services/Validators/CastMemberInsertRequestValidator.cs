@@ -1,8 +1,6 @@
 ﻿using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Requests;
 using FluentValidation;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.Services.Validators
 {

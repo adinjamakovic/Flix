@@ -2,8 +2,6 @@
 using Flix.Services.Database;
 using Flix.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.Services.Implementations
 {

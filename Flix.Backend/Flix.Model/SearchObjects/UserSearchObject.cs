@@ -1,5 +1,3 @@
-using System.Diagnostics.Contracts;
-
 namespace Flix.Model.SearchObjects
 {
     public class UserSearchObject : BaseSearchObject

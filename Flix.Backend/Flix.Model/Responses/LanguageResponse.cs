@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text;
-
 namespace Flix.Model.Responses
 {
     public class LanguageResponse

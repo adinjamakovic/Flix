@@ -11,9 +11,10 @@ dnevnika i pravljenje lista, i RabbitMQ pretplatnik koji šalje mail o zahtjevim
 | Putanja | Šta sadrži |
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API na SQL Serveru, slike u Azure Blob Storage-u. Četiri slojevita projekta: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
-| `Flix.Backend/Flix.Subscriber/` | Konzolni RabbitMQ pretplatnik koji šalje mail o zahtjevima za filmove. Stoji izvan sloja API-ja i dijeli s njim samo `Flix.Model` i `Flix.Services`. |
+| `Flix.Backend/Flix.Subscriber/` | Konzolni RabbitMQ pretplatnik koji šalje mail o zahtjevima za filmove i o resetu lozinke. Stoji izvan sloja API-ja i dijeli s njim samo `Flix.Model` i `Flix.Services`. |
+| `Flix.Backend/Flix.Services.Tests/` | xUnit testovi sistema preporuke. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin klijent — filmovi, glumci, korisnici, recenzije i clashevi uz potpuni CRUD, red zahtjeva za filmove, prijave i statistika sa PDF izvještajima. |
-| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil i postavke naloga, dnevnik, watchlist, liste, praćenje i blokiranje korisnika, zahtjevi za filmove, prijave grešaka u katalogu i prijave korisnika. |
+| `Flix.UI/flix_mobile/` | Flutter mobilni klijent — feedovi na početnoj, pretraga, detalji filma, profil i postavke naloga, dnevnik, watchlist, liste, praćenje i blokiranje korisnika, zahtjevi za filmove, prijave grešaka u katalogu, prijave korisnika, reset lozinke i lista notifikacija preko SignalR-a. |
 | `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + API + pretplatnik; `Dockerfile` stoji uz njega, a pretplatnikov u `Flix.Subscriber/`. |
 
 ## Pokretanje
@@ -59,6 +60,7 @@ izbačen iz docker image-a, pa u repozitoriju putuje kao `.env.zip`, a u kontejn
 | `DATABASE_CONNECTION` | SQL Server. |
 | `RABBITMQ_HOST` / `_USER` / `_PASS` | Broker, i za API i za pretplatnika. |
 | `JWT_ISSUER`, `JWT_AUDIENCE`, `SECRET_KEY`, `JWT_DURATION` | Potpisivanje tokena. |
+| `CORS_ORIGINS` | Lista dozvoljenih origina razdvojena `;`. Opciono; bez nje se koriste `http://localhost:5071` i `https://localhost:7140`. |
 | `SMTP_HOST` / `_PORT` / `_USER` / `_PASS` / `_FROM` / `_FROM_NAME` | Relej kroz koji pretplatnik šalje mail. |
 | `ADMIN_EMAIL`, `ADMIN_NAME` | Rezervni primalac, samo kada je baza nedostupna. |
 | `MSSQL_SA_PASSWORD`, `MSSQL_DB` | Čita ih `docker-compose.yml` kada gradi connection stringove kontejnera, ne aplikacije. |
@@ -306,9 +308,9 @@ Dva panela se izvoze u PDF: `utils/reports.dart` gradi dokumente paketom `pdf`, 
 štampaju ili spašavaju. Izvještaji se grade iz istog odgovora koji ekran već ima, pa izvoz ne
 zove API ponovo.
 
-## Mail o zahtjevima za filmove
+## Mail kroz RabbitMQ
 
-`Flix.Subscriber` je konzolna aplikacija koja sluša tri poruke i na svaku šalje mail preko
+`Flix.Subscriber` je konzolna aplikacija koja sluša četiri poruke i na svaku šalje mail preko
 MailKit-a:
 
 | Poruka | Kada je objavljena | Kome ide mail |
@@ -316,22 +318,106 @@ MailKit-a:
 | `MovieRequested` | korisnik pošalje zahtjev | svakom aktivnom adminu |
 | `MovieAccepted` | admin odobri zahtjev | korisniku koji ga je poslao |
 | `MovieRejected` | admin odbije zahtjev | korisniku koji ga je poslao |
+| `PasswordResetRequested` | korisnik zatraži reset lozinke | korisniku, sa šestocifrenim kodom |
 
-Sve tri objavljuje `MovieRequestService` kroz `IBus` koji je u `Program.cs` registrovan kao
-singleton — EasyNetQ otvara vezu po busu i vraća se iz `PublishAsync` prije nego što poruka
-napusti socket, pa bus napravljen i odbačen oko jednog objavljivanja može izgubiti poruku.
+### Transakcijski outbox
+
+Nijedan servis ne objavljuje na bus direktno. `IOutboxService.Enqueue(poruka)` samo *dodaje* red
+u tabelu `OutboxMessages` unutar pozivaočeve transakcije, pa se događaj i redovi koje najavljuje
+commituju zajedno — broker koji je pao ne može ni izgubiti mail ni oboriti poslovnu operaciju
+koju je baza već prihvatila. `OutboxDispatcherService` (hosted service u API-ju) svakih 5 sekundi
+pokupi neobrađene redove, objavi ih redoslijedom `Id` i upiše `ProcessedAt`. Objava koja padne
+podiže `Attempts`, bilježi `LastError` i pomjera `NextAttemptAt` eksponencijalnim backoff-om do
+najviše 5 minuta; nakon 10 pokušaja red ostaje neobrađen i loguje se na `Error` nivou — to je
+dead-letter stanje, ništa ne nestaje tiho. Isporučenom redu se `Payload` briše, jer
+`PasswordResetRequested` nosi reset kod u čitljivom obliku i on ne smije nadživjeti mail.
+
+Isporuka je **at-least-once** (objava koja uspije uz save koji ne uspije se ponavlja), pa
+handleri pretplatnika moraju podnijeti ponovljeni mail. `OutboxMessageRegistry` je jedino mjesto
+koje nabraja tipove poruka koji smiju putovati ovim putem; `Enqueue` baca na neregistrovan tip.
+
+`IBus` je u `Program.cs` registrovan kao singleton — EasyNetQ otvara vezu po busu i vraća se iz
+`PublishAsync` prije nego što poruka napusti socket, pa bus napravljen i odbačen oko jednog
+objavljivanja može izgubiti poruku. Dispatcher mu je jedini korisnik.
+
+### Pretplatnik
 
 Spisak admina se čita iz baze po poruci, a ne jednom pri pokretanju, da bi se admin dodan u
-međuvremenu pokupio bez restarta; `ADMIN_EMAIL` pokriva samo slučaj kada je baza nedostupna.
-Greška SMTP releja ili baze se hvata i ispisuje, jer bi propuštena kroz EasyNetQ vraćala poruku
-u red zauvijek. Pretplata se pokušava tri puta prije odustajanja, pošto se u Dockeru pretplatnik
-podigne prije nego što RabbitMQ prihvati prvu vezu.
+međuvremenu pokupio bez restarta; `ADMIN_EMAIL` pokriva samo slučaj kada je baza nedostupna ili
+nema nijednog admina. `RetryAsync` pokušava pet puta uz eksponencijalni backoff i onda
+**proslijedi izuzetak dalje** — to je ono što tjera EasyNetQ da poruku prebaci u
+`EasyNetQ_Default_Error_Queue` (vidljiv u management UI-ju), jer bi progutan izuzetak potvrdio
+mail koji nikada nije poslan. Pretplata se takođe pokušava pet puta, pošto se u Dockeru
+pretplatnik podigne prije nego što RabbitMQ prihvati prvu vezu. Sve se loguje kroz `ILogger`.
+
+## Notifikacije u aplikaciji
+
+RabbitMQ i pretplatnik šalju **mail**; lista notifikacija u aplikaciji je nešto drugo i ne ide
+kroz bus. Notifikacije su vlastita tabela (`Notifications` — naslov, tekst, `CreatedAt`, nullable
+`ReadAt` koji *jeste* stanje pročitanosti, te `MovieRequestId` / `MovieId` kao deep linkovi), piše
+ih `INotificationService` unutar API-ja i gura ih klijentu preko SignalR-a.
+
+| Endpoint | Šta radi |
+| --- | --- |
+| `GET /Notification` | stranična lista, uvijek samo vlastita (`GetDataSource` je vezan za pozivaoca) |
+| `GET /Notification/UnreadCount` | broj nepročitanih, za bedž |
+| `PUT /Notification/MarkAsRead/{id}` | označi jednu kao pročitanu |
+| `PUT /Notification/MarkAllAsRead` | označi sve kao pročitane |
+
+Ne postoji insert — notifikacije upisuju servisi koji ih izazovu. Događaji su: poslan zahtjev za
+film (i pošiljaocu i svakom aktivnom adminu), odobren zahtjev, odbijen zahtjev, povučen zahtjev
+(adminima) i pregled obje vrste prijava.
+
+Hub stoji na `/hubs/notifications`, nosi `[Authorize]` i svaku konekciju stavlja u grupu
+`user-{id}`, pa isti nalog prijavljen dvaput vidi istu listu kako se pomjera. Šalje
+`notificationReceived` (notifikacija plus novi broj nepročitanih) i `unreadCountChanged` (samo
+broj, gura se i pri konektovanju da bedž bude tačan prije ijednog čitanja). WebSocket handshake ne
+nosi `Authorization` header, pa `Program.cs` čita `access_token` iz query stringa, ali **samo** na
+putanji huba.
+
+Na mobilnom je to `NotificationProvider` (`signalr_netcore`), koji drži listu, broj nepročitanih i
+samu konekciju. `ContainerScreen` ga pokreće u `initState` i gasi u `dispose`, jer taj ekran *jeste*
+sesija. Lista se osvježava sama — **nema dugmeta za ručni refresh**; pull-to-refresh postoji samo
+za slučaj da je socket pao. Prekinuta veza se prvo pokuša popraviti kroz
+`AuthProvider.refreshSession()`, pošto je uobičajen razlog istekao access token.
+
+## Zaboravljena lozinka
+
+Zaboravljanje lozinke je odvojen tok od njene promjene: `PUT /User/{id}` i dalje traži
+`OldPassword`, što nikako ne pomaže onome ko je zaključan van naloga. Put nazad su tri anonimna
+endpointa nad `IPasswordResetService`:
+
+| Endpoint | Ulaz | Šta radi |
+| --- | --- | --- |
+| `POST /Access/ForgotPassword` | email | šalje šestocifreni kod na mail |
+| `POST /Access/VerifyResetToken` | email + kod | 200 ili 400, bez trošenja koda |
+| `POST /Access/ResetPassword` | email + kod + nova lozinka | postavlja novu lozinku |
+
+Kod stoji u tabeli `ResetTokens` kao PBKDF2 hash sa vlastitim saltom, nikad u čitljivom obliku;
+generiše se sa `RandomNumberGenerator`. Ističe nakon 15 minuta, umire nakon 5 pogrešnih pokušaja,
+jednokratan je (`UsedAt`), a novi zahtjev briše svaki nepotrošen kod tog korisnika. Nova lozinka
+prolazi ista pravila kao pri registraciji, dobija svjež salt, i uspješan reset poništava sve
+refresh tokene naloga. `ForgotPassword` odgovara identično i za adresu koja nema nalog, pa se kroz
+njega ne mogu nabrajati korisnici.
+
+Na mobilnom je to `screens/forgot_password.dart`, dostupan sa login ekrana — jedan ekran koji vodi
+korisnika kroz email → kod → nova lozinka, uz po jedan poziv po koraku.
+
+## Testovi
+
+`Flix.Backend/Flix.Services.Tests` (xUnit, u `.slnx`) je jedini test projekat i pokriva sistem
+preporuke — `RecommendationSignalBuilder` i `HybridRecommender`, oba namjerno čista (bez baze,
+sata i slučajnosti) da bi se mogla pinovati determinističkim testovima. Deset testova, opisanih u
+[`recommender-dokumentacija.md`](recommender-dokumentacija.md#testovi):
+
+```powershell
+dotnet test Flix.Backend/Flix.Services.Tests/Flix.Services.Tests.csproj
+```
 
 ## Napomene
 
 - Svi seed podaci stoje u `HasData` u `Flix.Services/Database/FlixSeeder.cs`, pa svaka izmjena
   seed podataka zahtijeva novu migraciju.
-- Ne postoji test projekat za backend.
 - Za testiranje slanja mailova preporučuje se kreiranje administratorskog naloga sa vlastitom
   e-mail adresom, kako bi poruke stvarno stigle u inbox.
 
@@ -351,9 +437,10 @@ movie-request news.
 | Path | What it is |
 | --- | --- |
 | `Flix.Backend/` | ASP.NET Core 10 Web API on SQL Server, images in Azure Blob Storage. Four layered projects: `Flix.Model` → `Flix.CommonServices` → `Flix.Services` → `Flix.WebApi`. |
-| `Flix.Backend/Flix.Subscriber/` | A console RabbitMQ subscriber that mails out movie-request news. It sits outside the API's layering and shares only `Flix.Model` and `Flix.Services` with it. |
+| `Flix.Backend/Flix.Subscriber/` | A console RabbitMQ subscriber that mails out movie-request news and password reset codes. It sits outside the API's layering and shares only `Flix.Model` and `Flix.Services` with it. |
+| `Flix.Backend/Flix.Services.Tests/` | xUnit tests covering the recommender. |
 | `Flix.UI/flix_desktop/` | Flutter desktop admin client — movies, cast, users, reviews and clashes with full CRUD, the movie-request queue, the report queues and statistics with PDF reports. |
-| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile and account settings, diary, watchlist, lists, following and blocking, movie requests, catalog issue reports and user reports. |
+| `Flix.UI/flix_mobile/` | Flutter mobile client — home feeds, search, movie details, profile and account settings, diary, watchlist, lists, following and blocking, movie requests, catalog issue reports, user reports, the password reset flow and the SignalR-backed notification list. |
 | `Flix.Backend/docker-compose.yml` | SQL Server + RabbitMQ + the API + the subscriber; the `Dockerfile` sits next to it, the subscriber's inside `Flix.Subscriber/`. |
 
 ## Running it
@@ -400,6 +487,7 @@ no connection string and no JWT key. That file is gitignored and also kept out o
 | `DATABASE_CONNECTION` | SQL Server. |
 | `RABBITMQ_HOST` / `_USER` / `_PASS` | The broker, for both the API and the subscriber. |
 | `JWT_ISSUER`, `JWT_AUDIENCE`, `SECRET_KEY`, `JWT_DURATION` | Token signing. |
+| `CORS_ORIGINS` | Allowed origins, separated by `;`. Optional; without it, `http://localhost:5071` and `https://localhost:7140` are used. |
 | `SMTP_HOST` / `_PORT` / `_USER` / `_PASS` / `_FROM` / `_FROM_NAME` | The relay the subscriber sends mail through. |
 | `ADMIN_EMAIL`, `ADMIN_NAME` | A fallback recipient, used only when the database is unreachable. |
 | `MSSQL_SA_PASSWORD`, `MSSQL_DB` | Read by `docker-compose.yml` when it builds the containers' connection strings, not by any of the apps. |
@@ -658,9 +746,9 @@ package and `screens/report_preview.dart` shows them in the `printing` package's
 which is where they are printed or saved. A report is built from the response the screen already
 holds, so exporting does not call the API again.
 
-## Movie-request mail
+## Mail through RabbitMQ
 
-`Flix.Subscriber` is a console app listening for three messages, each of which it turns into
+`Flix.Subscriber` is a console app listening for four messages, each of which it turns into
 mail through MailKit:
 
 | Message | Published when | Who gets the mail |
@@ -668,23 +756,108 @@ mail through MailKit:
 | `MovieRequested` | a user files a request | every active admin |
 | `MovieAccepted` | an admin approves it | the user who filed it |
 | `MovieRejected` | an admin rejects it | the user who filed it |
+| `PasswordResetRequested` | a user asks for a password reset | that user, with a six-digit code |
 
-All three are published by `MovieRequestService` through the `IBus` registered as a singleton in
-`Program.cs` — EasyNetQ opens a connection per bus and returns from `PublishAsync` before the
-frame has left the socket, so a bus created and disposed around a single publish can drop the
-message.
+### The transactional outbox
+
+No service publishes to the bus directly. `IOutboxService.Enqueue(message)` only *adds* a row to
+`OutboxMessages` inside the caller's own transaction, so the event and the rows it announces
+commit together — a broker that is down can neither lose the mail nor fail a business operation
+the database has already accepted. `OutboxDispatcherService` (a hosted service in the API) sweeps
+the table every 5 seconds, publishes in `Id` order and stamps `ProcessedAt`. A publish that throws
+increments `Attempts`, records `LastError` and pushes `NextAttemptAt` out by an exponential
+backoff capped at 5 minutes; after 10 attempts the row is left unprocessed and logged at error
+level, which is the dead-letter state — nothing disappears silently. A delivered row has its
+`Payload` blanked, because `PasswordResetRequested` carries the reset code in the clear and it
+must not outlive the email.
+
+Delivery is **at-least-once** (a publish that succeeds alongside a save that does not is
+republished), so the subscriber's handlers tolerate a repeated email. `OutboxMessageRegistry` is
+the one place listing which contracts may travel this way; `Enqueue` throws on an unregistered
+type.
+
+The `IBus` is registered as a singleton in `Program.cs` — EasyNetQ opens a connection per bus and
+returns from `PublishAsync` before the frame has left the socket, so a bus created and disposed
+around a single publish can drop the message. The dispatcher is its only consumer.
+
+### The subscriber
 
 The admin list is read from the database per message rather than once at startup, so an admin
-added in the meantime is picked up without a restart; `ADMIN_EMAIL` only covers the database
-being unreachable. A failing SMTP relay or database is caught and logged, because letting it
-through EasyNetQ would requeue the message forever. Subscribing is attempted three times before
-giving up, since under Docker the subscriber comes up before RabbitMQ accepts its first
-connection.
+added in the meantime is picked up without a restart; `ADMIN_EMAIL` only covers the database being
+unreachable or holding no admin. `RetryAsync` retries five times with an exponential backoff and
+then **rethrows** — that exception is what makes EasyNetQ move the message to
+`EasyNetQ_Default_Error_Queue` (visible in the management UI), since swallowing it would ack a
+mail that was never sent. Subscribing retries five times too, because under Docker the subscriber
+comes up before RabbitMQ accepts its first connection. Everything is logged through `ILogger`.
+
+## In-app notifications
+
+RabbitMQ and the subscriber send **email**; the in-app notification list is a different thing and
+none of it goes through the bus. Notifications are a table of their own (`Notifications` — title,
+message, `CreatedAt`, a nullable `ReadAt` that *is* the read state, and `MovieRequestId` / `MovieId`
+as deep links), written inside the API by `INotificationService` and pushed to the client over
+SignalR.
+
+| Endpoint | What it does |
+| --- | --- |
+| `GET /Notification` | the paged list, always the caller's own (`GetDataSource` is scoped to them) |
+| `GET /Notification/UnreadCount` | the unread count behind the badge |
+| `PUT /Notification/MarkAsRead/{id}` | marks one read |
+| `PUT /Notification/MarkAllAsRead` | marks them all read |
+
+There is no insert — notifications are written by the services that cause them. The events are: a
+movie request submitted (to the requester *and* to every active admin), approved, rejected,
+withdrawn (to the admins), and both report queues being reviewed.
+
+The hub is at `/hubs/notifications`, carries `[Authorize]` and puts each connection in a
+`user-{id}` group, so one account signed in twice sees the same list move. It sends
+`notificationReceived` (the notification plus the new unread count) and `unreadCountChanged` (the
+count alone, also pushed on connect so the badge is right before anything is read). A WebSocket
+handshake carries no `Authorization` header, so `Program.cs` reads `access_token` off the query
+string, but **only** under the hub path.
+
+On mobile that is `NotificationProvider` (`signalr_netcore`), which owns the list, the unread count
+and the connection itself. `ContainerScreen` starts it in `initState` and stops it in `dispose`,
+because that screen *is* the session. The list refreshes itself — there is **no manual refresh
+button**; pull-to-refresh is only there for a socket that is down. A dropped connection retries
+through `AuthProvider.refreshSession()` first, since the usual cause is an expired access token.
+
+## Forgotten passwords
+
+Forgetting a password is a separate flow from changing one: `PUT /User/{id}` still demands
+`OldPassword`, which is no use to somebody locked out. The way back in is three anonymous
+endpoints over `IPasswordResetService`:
+
+| Endpoint | Input | What it does |
+| --- | --- | --- |
+| `POST /Access/ForgotPassword` | email | mails a six-digit code |
+| `POST /Access/VerifyResetToken` | email + code | 200 or 400, without consuming the code |
+| `POST /Access/ResetPassword` | email + code + new password | sets the new password |
+
+The code lives in `ResetTokens` as a PBKDF2 hash with its own salt, never in the clear, and is
+generated with `RandomNumberGenerator`. It expires after 15 minutes, dies after 5 wrong attempts,
+is single-use (`UsedAt`), and requesting a new one deletes any outstanding code for that user. The
+new password is held to the same rules as registration, gets a fresh salt, and a successful reset
+revokes every refresh token the account has. `ForgotPassword` answers identically for an address
+with no account, so it cannot be used to enumerate users.
+
+On mobile that is `screens/forgot_password.dart`, reached from the login card — one screen walking
+the user through email → code → new password, one call per step.
+
+## Tests
+
+`Flix.Backend/Flix.Services.Tests` (xUnit, in the `.slnx`) is the only test project and it covers
+the recommender — `RecommendationSignalBuilder` and `HybridRecommender`, both deliberately pure (no
+database, no clock, no randomness) so deterministic tests can pin them down. Ten tests, listed in
+[`recommender-dokumentacija.md`](recommender-dokumentacija.md#testovi):
+
+```powershell
+dotnet test Flix.Backend/Flix.Services.Tests/Flix.Services.Tests.csproj
+```
 
 ## Notes
 
 - All seed data lives in `HasData` in `Flix.Services/Database/FlixSeeder.cs`, so changing it
   requires a new migration.
-- There is no backend test project.
 - To test the mail sending, create an admin account with your own e-mail address so the
   messages actually land in your inbox.

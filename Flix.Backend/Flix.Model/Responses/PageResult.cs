@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace Flix.Model.Responses
+﻿namespace Flix.Model.Responses
 {
     public class PageResult<T>
     {
