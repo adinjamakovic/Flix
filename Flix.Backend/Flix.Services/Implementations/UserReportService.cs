@@ -19,7 +19,8 @@ namespace Flix.Services.Implementations
         IMapper mapper,
         IValidator<UserReportUpdateRequest> updateValidator,
         ICurrentUserService currentUserService,
-        IResponseImageUrlResolver imageUrlResolver) :
+        IResponseImageUrlResolver imageUrlResolver,
+        INotificationService notificationService) :
         BaseReadService<
             UserReport,
             UserReportResponse,
@@ -29,6 +30,7 @@ namespace Flix.Services.Implementations
         private readonly IValidator<UserReportUpdateRequest> _updateValidator = updateValidator;
         private readonly ICurrentUserService _currentUserService = currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver = imageUrlResolver;
+        private readonly INotificationService _notificationService = notificationService;
 
         protected override UserReportResponse MapToResponse(UserReport entity)
         {
@@ -98,6 +100,8 @@ namespace Flix.Services.Implementations
             if (request.AdminComment != null)
                 entity.AdminComment = Normalize(request.AdminComment);
 
+            var reviewed = false;
+
             if (request.Status is ReportStatus status && status != entity.Status)
             {
                 Transitions.Report.EnsureCanTransition(
@@ -108,9 +112,18 @@ namespace Flix.Services.Implementations
                 entity.Status = status;
                 entity.ReviewedByUserId = _currentUserService.GetUserId();
                 entity.ResolvedAt = DateTime.UtcNow;
+
+                reviewed = true;
             }
 
             await _context.SaveChangesAsync();
+
+            if (reviewed)
+                await _notificationService.NotifyAsync(
+                    entity.ReporterId,
+                    NotificationType.UserReportReviewed,
+                    ReportNotificationText.Title(entity.Status),
+                    ReportNotificationText.Message(entity.Header, entity.Status, entity.AdminComment));
 
             return await GetByIdAsync(id);
         }

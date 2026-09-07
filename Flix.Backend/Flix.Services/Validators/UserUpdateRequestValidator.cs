@@ -9,16 +9,20 @@ namespace Flix.Services.Validators
         public UserUpdateRequestValidator()
         {
             RuleFor(x => x.FirstName)
+                .NotEmpty()
                 .MaximumLength(50);
 
             RuleFor(x => x.LastName)
+                .NotEmpty()
                 .MaximumLength(50);
 
             RuleFor(x => x.Email)
+                .NotEmpty()
                 .EmailAddress()
                 .MaximumLength(150);
 
             RuleFor(x => x.Username)
+                .NotEmpty()
                 .MaximumLength(100);
 
             // An update may leave the password out entirely, in which case the current one

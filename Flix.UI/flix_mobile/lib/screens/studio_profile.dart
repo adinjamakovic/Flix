@@ -115,7 +115,6 @@ class _StudioProfileState extends State<StudioProfile> {
       // The rating on each row is averaged from the reviews, which the API only
       // loads when this is set.
       "includeReviews": true,
-      "isEnabled": true,
       "studioId": widget.studioId,
     };
   }

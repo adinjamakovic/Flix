@@ -36,7 +36,7 @@ namespace Flix.WebApi.Services.AccessManager
         {
             var user = await _userService.GetByUsernameAsync(request.Username);
 
-            if (user is null)
+            if (user is null || !user.IsActive)
                 throw new ClientException("Wrong credentials. Please try again!");
 
             var isPasswordValid = _cryptoService.VerifyPassword(user.PasswordHash, user.PasswordSalt, request.Password);
@@ -77,7 +77,7 @@ namespace Flix.WebApi.Services.AccessManager
             if (refreshToken.ExpiresAt < DateTime.UtcNow)
                 throw new ClientException("Refresh token has expired.");
 
-            var user = await _userService.GetByIdAsync(refreshToken.UserId);
+            var user = await _userService.GetAccountByIdAsync(refreshToken.UserId);
 
             if (user == null)
                 throw new ClientException("User not found");
@@ -108,7 +108,7 @@ namespace Flix.WebApi.Services.AccessManager
             await _refreshTokenService.DeleteAllUserRefreshTokensAsync(_currentUserService.GetUserId());
         }
 
-        private string GenerateToken(UserResponse user)
+        private string GenerateToken(UserAdminResponse user)
         {
             string secretKeyString = _configuration["JwtToken:SecretKey"] ?? string.Empty;
             string issuer = _configuration["JwtToken:Issuer"] ?? "https://flix.com";

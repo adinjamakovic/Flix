@@ -9,7 +9,6 @@ using Flix.Services.Interfaces;
 using Flix.Services.StateMachines;
 using FluentValidation;
 using MapsterMapper;
-using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using Flix.Model.Messages;
 
@@ -27,7 +26,8 @@ namespace Flix.Services.Implementations
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
         private readonly IMovieService _movieService;
-        private readonly IBus _bus;
+        private readonly INotificationService _notificationService;
+        private readonly IOutboxService _outboxService;
         protected readonly IValidator<MovieRequestInsertRequest> _insertValidator;
         protected readonly IValidator<MovieRequestUpdateRequest> _updateValidator;
         public MovieRequestService(
@@ -38,7 +38,8 @@ namespace Flix.Services.Implementations
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
             IMovieService movieService,
-            IBus bus,
+            INotificationService notificationService,
+            IOutboxService outboxService,
             IValidator<MovieRequestInsertRequest> insertValidator,
             IValidator<MovieRequestUpdateRequest> updateValidator)
             : base(context, mapper)
@@ -48,7 +49,8 @@ namespace Flix.Services.Implementations
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
             _movieService = movieService;
-            _bus = bus;
+            _notificationService = notificationService;
+            _outboxService = outboxService;
             _insertValidator = insertValidator;
             _updateValidator = updateValidator;
         }
@@ -115,22 +117,50 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            await transaction.CommitAsync();
-
             var response = MapToResponse(entity);
 
+            var title = MovieTitle(response);
+
             if (request.IsApproved)
-                await PublishAsync(new MovieAccepted
+                _outboxService.Enqueue(new MovieAccepted
                 {
                     Id = entity.Id,
                     Data = response
                 });
             else
-                await PublishAsync(new MovieRejected
+                _outboxService.Enqueue(new MovieRejected
                 {
                     Id = entity.Id,
                     Data = response
                 });
+
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+
+            if (request.IsApproved)
+            {
+                await _notificationService.NotifyAsync(
+                    entity.RequestedByUserId,
+                    NotificationType.MovieRequestApproved,
+                    "Movie request approved",
+                    $"\"{title}\" was accepted and is now part of the Flix catalogue.",
+                    entity.Id,
+                    movie.Id);
+            }
+            else
+            {
+                var reason = string.IsNullOrWhiteSpace(entity.AdminComment)
+                    ? string.Empty
+                    : $" Reason: {entity.AdminComment}";
+
+                await _notificationService.NotifyAsync(
+                    entity.RequestedByUserId,
+                    NotificationType.MovieRequestRejected,
+                    "Movie request rejected",
+                    $"\"{title}\" will not be added to the catalogue.{reason}",
+                    entity.Id);
+            }
 
             return response;
         }
@@ -157,11 +187,30 @@ namespace Flix.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            return MapToResponse(entity);
+            var response = MapToResponse(entity);
+
+            await _notificationService.NotifyAdminsAsync(
+                NotificationType.MovieRequestCancelled,
+                "Movie request withdrawn",
+                $"{DisplayName(response.RequestedByUser)} withdrew the request for \"{MovieTitle(response)}\".",
+                entity.Id,
+                exceptUserId: userId);
+
+            return response;
         }
 
-        private Task PublishAsync<TMessage>(TMessage message)
-            => _bus.PubSub.PublishAsync(message);
+        private static string MovieTitle(MovieRequestResponse response)
+            => string.IsNullOrWhiteSpace(response.Movie?.Title) ? "Untitled" : response.Movie!.Title;
+
+        private static string DisplayName(UserResponse? user)
+        {
+            var fullName = $"{user?.FirstName} {user?.LastName}".Trim();
+
+            if (!string.IsNullOrWhiteSpace(fullName))
+                return fullName;
+
+            return string.IsNullOrWhiteSpace(user?.Username) ? "A user" : user!.Username;
+        }
 
         private static bool HasDirectorEdit(MovieRequestUpdateRequest request)
             => request.DirectorFirstName is not null
@@ -310,6 +359,8 @@ namespace Flix.Services.Implementations
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
+            MovieRequestResponse response;
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -319,6 +370,24 @@ namespace Flix.Services.Implementations
                     Type = ActivityType.RequestedMovie,
                     MovieId = movieEntity.Id
                 });
+
+                movieRequestEntity.RequestedBy = await _context.Users
+                    .Include(x => x.Country)
+                    .Include(x => x.Roles)
+                    .ThenInclude(x => x.Role)
+                    .FirstAsync(x => x.Id == requestedByUserId);
+
+                response = MapToResponse(movieRequestEntity);
+
+                // Enqueued rather than published: the request is only announced if the rows it
+                // announces actually commit, and a broker that is down cannot fail the request.
+                _outboxService.Enqueue(new MovieRequested
+                {
+                    Id = movieRequestEntity.Id,
+                    Data = response
+                });
+
+                await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
             }
@@ -330,19 +399,23 @@ namespace Flix.Services.Implementations
                 throw;
             }
 
-            movieRequestEntity.RequestedBy = await _context.Users
-                .Include(x => x.Country)
-                .Include(x => x.Roles)
-                .ThenInclude(x => x.Role)
-                .FirstAsync(x => x.Id == requestedByUserId);
+            var title = MovieTitle(response);
 
-            var response = MapToResponse(movieRequestEntity);
+            await _notificationService.NotifyAsync(
+                requestedByUserId,
+                NotificationType.MovieRequestSubmitted,
+                "Request sent for review",
+                $"\"{title}\" is with our admins now. You will hear back here once it has been reviewed.",
+                movieRequestEntity.Id,
+                movieEntity.Id);
 
-            await PublishAsync(new MovieRequested
-            {
-                Id = movieRequestEntity.Id,
-                Data = response
-            });
+            await _notificationService.NotifyAdminsAsync(
+                NotificationType.MovieRequestReceived,
+                "New movie request",
+                $"{DisplayName(response.RequestedByUser)} requested \"{title}\".",
+                movieRequestEntity.Id,
+                movieEntity.Id,
+                exceptUserId: requestedByUserId);
 
             return response;
         }

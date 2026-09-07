@@ -11,6 +11,7 @@ namespace Flix.Services.Database
             ConfigureListRelationships(modelBuilder);
             ConfigureClashRelationships(modelBuilder);
             ConfigureActivityRelationships(modelBuilder);
+            ConfigureNotificationRelationships(modelBuilder);
             ConfigureReportRelationships(modelBuilder);
             ConfigureIndexes(modelBuilder);
         }
@@ -67,18 +68,6 @@ namespace Flix.Services.Database
                 .WithMany()
                 .HasForeignKey(c => c.CountryId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<MovieRecommendation>()
-                .HasOne(x => x.Movie)
-                .WithMany()
-                .HasForeignKey(x => x.MovieId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<MovieRecommendation>()
-                .HasOne(x => x.RecommendedMovie)
-                .WithMany()
-                .HasForeignKey(x => x.RecommendedMovieId)
-                .OnDelete(DeleteBehavior.NoAction);
         }
 
         private static void ConfigureUserRelationships(ModelBuilder modelBuilder)
@@ -104,6 +93,12 @@ namespace Flix.Services.Database
             modelBuilder.Entity<RefreshToken>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ResetToken>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.ResetTokens)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -237,6 +232,27 @@ namespace Flix.Services.Database
                 .OnDelete(DeleteBehavior.ClientCascade);
         }
 
+        private static void ConfigureNotificationRelationships(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.MovieRequest)
+                .WithMany()
+                .HasForeignKey(n => n.MovieRequestId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Movie)
+                .WithMany()
+                .HasForeignKey(n => n.MovieId)
+                .OnDelete(DeleteBehavior.SetNull);
+        }
+
         private static void ConfigureReportRelationships(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserReport>()
@@ -335,6 +351,12 @@ namespace Flix.Services.Database
             modelBuilder.Entity<ClashVote>()
                 .HasIndex(v => new { v.VoterId, v.ClashEntryId })
                 .IsUnique();
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => new { n.UserId, n.CreatedAt });
+
+            modelBuilder.Entity<OutboxMessage>()
+                .HasIndex(m => new { m.ProcessedAt, m.NextAttemptAt });
         }
     }
 }

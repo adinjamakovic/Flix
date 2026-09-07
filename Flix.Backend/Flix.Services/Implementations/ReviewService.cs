@@ -89,6 +89,9 @@ namespace Flix.Services.Implementations
             if(search.MovieId != null)
                 query = query.Where(x => x.MovieId == search.MovieId);
 
+            if(search.IsDiaryEntry != null)
+                query = query.Where(x => x.IsDiaryEntry == search.IsDiaryEntry);
+
             if(search.FollowedByUserId != null)
                 query = query.Where(r => r.User.Followers.Any(x=> x.Follower.Id == search.FollowedByUserId));
 

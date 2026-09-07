@@ -1,6 +1,7 @@
 import 'package:flix_mobile/screens/home/clash_list.dart';
 import 'package:flix_mobile/screens/home/movie_list.dart';
 import 'package:flix_mobile/screens/home/review_list.dart';
+import 'package:flix_mobile/widgets/notification_bell.dart';
 import 'package:flutter/material.dart';
 
 /// The "FLIX" wordmark header plus the tab bar that switches between the
@@ -17,6 +18,7 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('FLIX'),
+          actions: const [NotificationBell()],
           bottom: TabBar(
             tabs: _tabs.map((label) => Tab(text: label)).toList(),
           ),

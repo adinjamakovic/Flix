@@ -38,9 +38,10 @@ namespace Flix.WebApi.Controllers
         }
 
         [Authorization("Admin")]
-        public override Task<ActionResult<PageResult<UserResponse>>> Get([FromQuery] UserSearchObject? search)
+        [ProducesResponseType(typeof(PageResult<UserAdminResponse>), StatusCodes.Status200OK)]
+        public override async Task<ActionResult<PageResult<UserResponse>>> Get([FromQuery] UserSearchObject? search)
         {
-            return base.Get(search);
+            return Ok(await _service.GetAdminAsync(search));
         }
 
         [Authorization("Admin")]

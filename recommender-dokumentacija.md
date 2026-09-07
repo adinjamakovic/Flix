@@ -2,193 +2,219 @@
 
 Dokument opisuje sistem preporuke filmova implementiran u `Flix.Backend`. Sve što je ovdje
 opisano odgovara kodu u
-[`MovieRecommendationService.cs`](Flix.Backend/Flix.Services/Implementations/MovieRecommendationService.cs),
-[`MovieRecommendationWorkerService.cs`](Flix.Backend/Flix.Services/BackgroundServices/MovieRecommendationWorkerService.cs)
+[`Flix.Services/Recommendations/`](Flix.Backend/Flix.Services/Recommendations/),
+[`UserRecommendationService.cs`](Flix.Backend/Flix.Services/Implementations/UserRecommendationService.cs)
 i [`MovieRecommendationsController.cs`](Flix.Backend/Flix.WebApi/Controllers/MovieRecommendationsController.cs).
 
 ## Pregled
 
-Sistem se sastoji od dva sloja koja dijele isti model:
+Prijava teme opisuje **hibridni** pristup: content-based profil nad atributima filmova koje je
+korisnik pozitivno označio, spojen s **user-based** collaborative filteringom nad korisnicima
+sličnih preferencija. To je jedini model u sistemu i on je ono što aplikacija poziva.
 
-1. **Model film–film** ("slično ovome"). ML.NET one-class matrična faktorizacija nad parovima
-   filmova koje je isti korisnik pozitivno označio. Trenira se u pozadini i rezultat se sprema u
-   tabelu `MovieRecommendations`.
-2. **Lista za korisnika** ("Recommended for you"). Nema zaseban model — bira nekoliko filmova
-   koje je korisnik nedavno volio (*seed* filmovi), čita njihove spremljene preporuke, izbacuje
-   sve što je korisnik već vidio i objašnjava svaku preporuku seed filmom iz kojeg je nastala.
+Dva sloja:
 
-Ako korisnik nema nijedan pozitivan signal, ili ako filtriranje ne ostavi ništa, vraća se lista
-popularnih filmova.
+1. **Signali** ([`Recommendations/`](Flix.Backend/Flix.Services/Recommendations/)). Jedno mjesto
+   koje zna šta se broji kao interes i koliko koji signal vrijedi.
+2. **Hibrid** ([`HybridRecommender`](Flix.Backend/Flix.Services/Recommendations/HybridRecommender.cs)).
+   Content-based profil × user-based collaborative filtering, računato **pri svakom pozivu**.
+   Namjerno čist kod — bez baze, sata i slučajnosti — pa se može testirati sam za sebe;
+   `UserRecommendationService` je samo EF i mapiranje oko njega.
+
+Ako korisnik nema nijedan pozitivan signal, vraća se lista popularnih filmova.
+
+Ništa se ne precomputa, ne trenira u pozadini i ne sprema u tabelu. Ranija verzija sistema je
+imala i film–film model (ML.NET one-class matrična faktorizacija u tabelu `MovieRecommendations`,
+worker svakih 30 minuta); uklonjen je jer ga nijedan klijent nije pozivao, jer mu opaženi parovi
+nisu nosili `Label` (pa ih je trener povlačio isto kao ćelije koje niko nije dotakao), i jer
+prijava teme opisuje samo hibrid. Migracija `DropMovieRecommendations` briše tabelu, a paketi
+`Microsoft.ML` i `Microsoft.ML.Recommender` više nisu zavisnosti.
 
 ## Signali
 
-Model uči isključivo iz **pozitivnih** signala. `BuildTrainingData` skuplja dvije vrste, obje
-svedene na jedinstven par `(korisnik, film)`:
+`RecommendationSignalService` svodi tri tabele na jedan tip:
 
-| Signal | Izvor | Uslov |
-| --- | --- | --- |
-| Pozitivna recenzija | `Reviews` | `IsLiked == true` **ili** `Rating >= 3.0` |
-| Watchlist | `MovieListItems` | lista je tipa `Watchlist` |
+```csharp
+UserMovieSignal(int UserId, int MovieId, float Affinity, bool IsWatched)
+```
 
-Namjerno **nije** signal za treniranje:
+`Affinity` je jačina interesa i vodi bodovanje; `IsWatched` govori je li korisnik film već
+odgledao i vodi isključivanje. Nezavisni su: recenzija s jednom zvjezdicom je odgledana bez
+afiniteta, a film na watchlisti je afinitet bez gledanja.
 
-- ocjena ispod 3.0 — film je odgledan, ali nije indikacija da se sličan treba preporučiti;
-- aktivnost `WatchedMovie` — govori samo da je film viđen, a to se koristi za isključivanje
-  (vidi *Isključivanja*), ne za učenje.
+Jačine su one iz prijave teme
+([`RecommendationSignalWeights`](Flix.Backend/Flix.Services/Recommendations/RecommendationSignalWeights.cs)):
 
-Signali se ne sabiraju i ne teže se različito. Za model je par `(korisnik, film)` prisutan ili nije.
+| Signal | Izvor | Uslov | Jačina | `Affinity` |
+| --- | --- | --- | --- | --- |
+| Ocjena | `Reviews` | `Rating >= 3.0` | visoka | `1.0` |
+| „Sviđa mi se" | `Reviews` | `IsLiked == true` | srednja | `0.6` |
+| Watchlist | `MovieListItems` | lista je tipa `Watchlist` | srednja | `0.6` |
+| Evidentirano gledanje bez ocjene | `Activities` / `Reviews` | `WatchedMovie` ili recenzija bez ocjene | niska | `0.25` |
 
-## Model
+Dva pravila drže tabelu na okupu:
 
-### Građenje skupa za treniranje
+- **Signali se ne sabiraju.** Za par `(korisnik, film)` vrijedi najjači signal. Isti film ocijenjen,
+  lajkan i stavljen na watchlistu je i dalje `1.0`, a ne `1.85` — to su tri čitanja istog interesa,
+  ne tri glasa.
+- **Najslabiji signal vrijedi samo bez ocjene.** Čim ocjena postoji, ona je već rekla sve što bi
+  gledanje reklo, u oba smjera. Zato ocjena ispod `3.0` ostaje `Affinity = 0`, a `IsWatched = true`.
 
-Signali se grupišu po korisniku. Korisnici s manje od dva različita filma se preskaču — jedan
-film ne pravi nijedan par. Za svakog preostalog korisnika emituje se **svaki neuređeni par**
-njegovih filmova, i to u oba smjera (`A → B` i `B → A`), pa je matrica ko-pojavljivanja
-simetrična i "slično ovome" radi jednako bez obzira s koje strane se gleda.
+Kompletno pravilo je u [`RecommendationSignalBuilder`](Flix.Backend/Flix.Services/Recommendations/RecommendationSignalBuilder.cs);
+izlaz je sortiran po `(UserId, MovieId)`, pa je sve nizvodno determinističko.
 
-Korisnik s *n* filmova doprinosi `n * (n - 1)` redova, pa skup raste kvadratno po aktivnom korisniku.
-
-### Mapiranje na guste indekse
-
-Trener indeksira matricu **po poziciji**, ne po vrijednosti ključa. Zato se `Movie.Id` prije
-treniranja preslikava na gust raspon `0..n-1` (`matrixIndexByMovieId`), a obje ključne kolone se
-kroz `SchemaDefinition` deklarišu kao `KeyDataViewType` veličine jednake broju filmova u katalogu.
-Bez toga bi svaki id veći ili jednak veličini kolone bio izvan raspona, a takav ključ daje `NaN`,
-što SQL Server odbija kao nevažeću vrijednost za `real`.
-
-### Trener
-
-`Microsoft.ML.Recommender`, `MatrixFactorizationTrainer` sa sljedećim opcijama:
-
-| Opcija | Vrijednost |
-| --- | --- |
-| `MatrixColumnIndexColumnName` | `MovieId` |
-| `MatrixRowIndexColumnName` | `CoReviewMovieId` |
-| `LossFunction` | `SquareLossOneClass` |
-| `Alpha` | `0.01` |
-| `Lambda` | `0.025` |
-| `NumberOfIterations` | `100` |
-| `C` | `0.00001` |
-
-`SquareLossOneClass` je izbor za **implicitni feedback**: nema ocjena para, nego samo činjenica da
-se par pojavio. Kolona `Label` postoji jer je trener traži, ali ne nosi ocjenu — one-class varijanta
-svaki proslijeđeni par tretira kao opaženi pozitivan, a svaku neopaženu ćeliju matrice kao konstantu
-`C` s težinom `Alpha`. Otuda male vrijednosti: neopažen par nije negativan primjer, samo slabo
-kažnjen.
-
-Treniranje se prekida bez ikakve izmjene ako katalog ima manje od dva filma ili ako nema nijednog
-para (`data.Count == 0`).
-
-### Spremanje rezultata
-
-Za svaki film u katalogu model ocijeni svaki drugi film, neizračunljive rezultate
-(`!float.IsFinite`) odbacuje, sortira opadajuće i sprema **top 10** kao redove
-`MovieRecommendation { MovieId, RecommendedMovieId, Score }`.
-
-Spremaju se i onemogućeni filmovi — oni i dalje nose signal ko-pojavljivanja, a filtriranje se
-radi pri čitanju (vidi *Onemogućeni filmovi*).
-
-Svako pokretanje proizvodi kompletan set za cijeli katalog, pa se prethodni redovi prvo brišu
-(`ExecuteDeleteAsync`). Brisanje i upis dijele jednu transakciju — neuspio upis ne smije ostaviti
-tabelu praznu.
-
-### Kada se trenira
-
-- `MovieRecommendationWorkerService` — `BackgroundService` registrovan u `Program.cs`. Generiše
-  odmah pri pokretanju API-ja i zatim **svakih 30 minuta**. Svaki izuzetak se loguje i petlja se
-  nastavlja, tako da neuspjelo generisanje ne ruši host.
-- `POST /MovieRecommendations/GenerateRecommendations` — ručno, samo admin.
-- `DELETE /MovieRecommendations/DeleteRecommendations` — briše sve spremljene preporuke, samo admin.
-
-## Lista za korisnika
+## Lista za korisnika (hibrid)
 
 `GET /MovieRecommendations/GetRecommendationsForUser` (korisnik se čita iz tokena, ne iz upita).
+To je jedini endpoint sistema preporuke i jedini koji mobilna aplikacija poziva.
 
-### Isključivanja
+### Kandidati i isključivanja
 
-Prije svega ostalog gradi se skup filmova koje korisnik **već zna** — unija tri izvora:
+Kandidati su svi `IsEnabled` filmovi umanjeni za sve za koje korisnik ima signal (odgledani ili
+već stavljeni u red). Preporuka ima smisla samo ako je otkriće.
 
-- svi filmovi koje je recenzirao (bez obzira na ocjenu),
-- svi filmovi na njegovom watchlistu,
-- svi filmovi iz aktivnosti tipa `WatchedMovie`.
+Onemogućeni filmovi i dalje **grade** profil i i dalje se broje u ukusu susjeda, ali se nikad ne
+**preporučuju**.
 
-Preporuka ima smisla samo ako je otkriće, pa u skupu završe i sami seed filmovi — model povezuje
-ko-pojavljene filmove u oba smjera, pa bi se seed inače vratio kao preporuka samom sebi.
+### Content-based komponenta
 
-### Seed filmovi
+Svaki film se svodi na rijedak vektor tokena
+([`MovieFeatures`](Flix.Backend/Flix.Services/Recommendations/MovieFeatures.cs)):
 
-Uzimaju se do **3** filma koje je korisnik recenzirao s ocjenom `>= 3.0` ili označio kao voljene,
-najskorija recenzija prva. Grupiše se po filmu prije uzimanja, jer bi inače ponovno gledanje istog
-filma zauzelo dva od tri mjesta.
+| Token | Težina |
+| --- | --- |
+| `genre:{id}` | `1.0` |
+| `director:{id}` | `0.9` |
+| `actor:{id}` (prvih 8 po redoslijedu pojavljivanja) | `0.5` |
+| `studio:{id}` | `0.4` |
+| `decade:{godina/10}` | `0.3` |
+| `country:{id}` | `0.25` |
+| `language:{id}` | `0.25` |
 
-Ako nema nijednog takvog filma → *popularni filmovi*.
+Žanr i režiser razdvajaju filmove daleko bolje nego zemlja snimanja, pa vrijede više. Vektor se
+zatim normalizuje na jediničnu dužinu, čime skalarni proizvod postaje kosinusna sličnost — film s
+dugačkom glumačkom postavom ne može nadglasati oskudno opisan film samom količinom tokena.
 
-### Sastavljanje liste
+Profil korisnika je zbir `Affinity × vektor` po svim filmovima za koje ima pozitivan signal,
+ponovo normalizovan. Content-score kandidata je kosinus između profila i kandidatovog vektora.
 
-Za svaki seed se čita njegovih spremljenih 10 preporuka — sve, a ne samo šest koliko ih treba,
-jer isključivanja obično pokose većinu seta: filmovi najbliži onome što je korisnik volio su
-upravo oni koje je najvjerovatnije već gledao. Iz svakog seta se zadržava **najviše 6** filmova
-koji nisu isključeni i nisu već dodati iz nekog ranijeg seed-a (deduplikacija ide po
-`RecommendedMovieId`, jer su odgovori zasebni objekti). Maksimum liste je time 18 filmova.
+### Collaborative komponenta (user-based)
 
-Ako nakon svega lista ostane prazna → *popularni filmovi*.
+1. Svaki korisnik je vektor `film → Affinity` (samo pozitivni signali).
+2. Kosinusna sličnost između ciljnog korisnika i svakog drugog. Traži se **najmanje 2 zajednička
+   filma** — jedan zajednički film je slučajnost, ne zajednički ukus.
+3. Uzima se **30 najsličnijih** susjeda (izjednačeni po `UserId`, radi determinizma).
+4. Bodovanje kandidata je **skupljeni** (*shrunk*) ponderisani prosjek:
+
+   ```
+   collab(film) = Σ (sličnost × afinitet susjeda) / (Σ sličnost + 1.0)
+   ```
+
+   Konstanta u nazivniku spušta filmove koje podržava jedan slab susjed; rezultat ostaje u `[0, 1]`,
+   dakle u istom rasponu kao kosinus s content strane.
+
+### Miješanje
+
+```
+w = 0.6 × min(1, brojSusjeda / 5)
+score = w × collab + (1 − w) × content
+```
+
+Težina nije fiksna. Korisnik bez ijednog susjeda dobija **čisto content-based** listu, a
+collaborative polovina preuzima tek kad ih ima dovoljno da njihovo slaganje išta znači. Maksimum
+je `0.6`, pa profil nikad ne nestane iz računa.
+
+Kandidati sa `score <= 0` ispadaju. Sortira se opadajuće po score-u, izjednačeni po `MovieId`, i
+uzima se **12**.
 
 ### Objašnjenja
 
-Svaka zadržana preporuka nosi seed film iz kojeg je nastala:
+Polovina koja je više doprinijela dobija pravo da objasni preporuku:
 
-- `Movie` / `MovieId` — seed film (s razriješenim SAS URL-ovima za slike),
-- `Reason` — `"Because you liked {naslov seed filma}"`,
-- `Source` — `Similar`.
+| Slučaj | `Source` | `Reason` | `Movie` / `MovieId` |
+| --- | --- | --- | --- |
+| collaborative jači | `Similar` | `"Loved by users with taste like yours"` | prazno |
+| content jači, postoji seed film | `Similar` | `"Because you liked {naslov}"` | seed film |
+| content jači, nema seed filma | `Similar` | `"Matches what you have been watching"` | prazno |
+| dopuna / nema signala | `Popular` | `"Popular on Flix right now"` | prazno |
+
+Poređenje je `collab × MaxCollaborativeWeight` prema `content`, dakle collaborative doprinos se
+mjeri težinom kojom ulazi u blend, a ne sirovim score-om.
+
+Seed film je onaj iz korisnikovog profila s najvećim `Affinity × sličnost` prema kandidatu —
+dakle film koji kandidata najbolje objašnjava, a ne naprosto zadnji ocijenjeni. Kandidat kojeg
+content strana nije prepoznala (nema atribute u `MovieFeatures`) nema seed, pa dobija generičko
+objašnjenje iz trećeg reda tabele.
 
 Mobilna aplikacija ([`movie_list.dart`](Flix.UI/flix_mobile/lib/screens/home/movie_list.dart))
 mapira `Reason` po `recommendedMovie.id` i prosljeđuje ga `MovieSideScroll`-u kao `captionOf`, pa
 se tekst prikazuje ispod postera u redu "Recommended for you".
 
-## Popularni filmovi (fallback)
+### Popularni filmovi (fallback i dopuna)
 
-Rangira se po broju **različitih korisnika** koji su film pozitivno dotakli — jedinstveni parovi
-`(korisnik, film)` iz recenzija i watchlista, samo za filmove koji su `IsEnabled` i nisu već viđeni.
-Sortira se opadajuće po tom broju, izjednačeni po `Id`, i uzima se 10.
+Korisnik bez ijednog pozitivnog signala nema ni profil ni susjede, pa `Recommend` vraća praznu
+listu i lista se puni popularnošću. Isto se koristi kao **dopuna** kad hibrid vrati manje od 12
+filmova — poluprazan red na početnom ekranu izgleda kao greška, a ne kao kratka lista.
 
-Ako ih se skupi manje od 10, lista se dopunjuje filmovima koje niko još nije dotakao, sortiranim
-po `Views` opadajuće. Takav film nema signal po kojem bi se rangirao, ali je i dalje neviđen i
-dalje vrijedan ponude — a korisniku koji je prošao ostatak kataloga je jedino što je preostalo.
+Popularnost je skupljena, ne prosta suma ni prosjek:
 
-Ove stavke nemaju seed: `MovieId` i `Movie` su prazni, `Source` je `Popular`, a `Reason` je
-`"Popular on Flix right now"`.
+```
+popularity(film) = Σ afinitet / (brojKorisnika + 2.0)
+```
 
-## Preporuke za pojedini film
+Tako jedna petica ne može nadjačati film koji je pedeset ljudi voljelo. Izjednačeni se razdvajaju
+po `Views` opadajuće, pa po `Id` — čime film koji niko još nije dotakao i dalje ulazi u listu, što
+je korisniku koji je prošao ostatak kataloga jedino što je preostalo.
 
-`GET /MovieRecommendations/GetRecommendationsForMovies?MovieId={id}&NumberOfRecommendations={n}`
-(podrazumijevano 10) čita spremljene redove za taj film sortirane po `Score` opadajuće. Ovdje se
-ništa ne računa u trenutku poziva; jedini filter je `IsEnabled` na preporučenom filmu. Polje `Movie`
-ostaje prazno jer se učitava samo `RecommendedMovie`.
+## Performanse
+
+Lista se računa pri svakom pozivu i **ne kešira se** — ocjena upisana prije sekunde mora pomjeriti
+listu. Po pozivu idu tri upita za signale (recenzije, watchlist, aktivnosti gledanja), jedan za
+kandidate, jedan projektovani upit za atribute filmova i jedan `Include` upit za filmove koji
+zaista izlaze. Atributi se čitaju projekcijom, a ne `Include`-om, jer profilu trebaju samo id-evi.
+
+Ako katalog ili broj korisnika naraste toliko da to postane usko grlo, prvo mjesto za keš je
+susjedstvo (`FindNeighbours`), jer je jedino kvadratno po korisnicima; content profil i bodovanje
+kandidata su linearni.
 
 ## Onemogućeni filmovi
 
-Model **uči** iz onemogućenih filmova — skup za treniranje i indeks matrice se grade nad svim
-redovima u `Movies`, jer onemogućen film i dalje nosi signal ko-pojavljivanja o filmovima oko sebe.
-Ali se nijedan takav film ne **preporučuje**: `GetRecommendationsForMovieAsync` traži
-`RecommendedMovie.IsEnabled`, pa filter važi i za "slično ovome" i za korisničku listu, koja te iste
-redove čita. Fallback lista popularnih filtrira po istom polju.
+Model **uči** iz onemogućenih filmova, jer takav film i dalje nosi signal o filmovima oko sebe.
+Ali se nijedan ne **preporučuje**: hibrid ih ne uzima u kandidate, a fallback lista popularnih
+filtrira po istom polju.
 
-Filtrira se pri čitanju, a ne pri spremanju, da bi ponovno omogućen film odmah bio dostupan, bez
-čekanja na sljedeći prolaz workera.
+Endpoint zahtijeva token (`[Authorize]` na kontroleru). Sistem preporuke nema nijednu admin
+operaciju — nema šta da se generiše ni briše.
 
-Oba `GET` endpointa zahtijevaju token (`[Authorize]` na kontroleru); oba `Generate` / `Delete`
-dodatno traže rolu `Admin`.
+## Testovi
+
+`Flix.Services.Tests` (xUnit, u `.slnx`, pokreće se sa `dotnet test`). Testira se čisti dio —
+signali i hibrid:
+
+| Test | Šta tvrdi |
+| --- | --- |
+| `ContentBasedRankingPutsAMovieSharingGenreAndDirectorAboveAnUnrelatedOne` | kandidat s istim žanrom i režiserom kao voljeni film dobija viši score od nepovezanog |
+| `CollaborativeRankingPutsACloseNeighboursPickAboveADistantNeighboursPick` | bez ijednog zajedničkog atributa, film bližeg susjeda dobija viši score |
+| `AUserSharingASingleMovieIsNotANeighbour` | prag od dva zajednička filma |
+| `AUserWithNoSignalsGetsNothingFromTheHybrid` | hibrid bez profila ne izmišlja listu |
+| `PopularityRankingPrefersManyLikesOverASingleStrongOne` | skupljena popularnost |
+| `EachSignalCarriesTheStrengthTheSpecificationGivesIt` | tabela jačina iz prijave |
+| `ARatingBelowTheThresholdIsWatchedWithoutAffinity` | ocjena ispod praga → `Affinity = 0`, `IsWatched = true` |
+| `AWatchlistEntryIsAffinityWithoutHavingBeenWatched` | obrnut slučaj |
+| `SignalsForOnePairDoNotAddUp` | najjači signal pobjeđuje |
+| `APoorlyRatedMovieContributesNothingToTheProfile` | loše ocijenjen film ne ulazi u profil |
 
 ## Konstante
 
-Sve su na vrhu `MovieRecommendationService`, osim intervala workera:
-
-| Konstanta | Vrijednost | Značenje |
-| --- | --- | --- |
-| `MinimumPositiveRating` | `3.0` | prag pozitivne ocjene |
-| `RecommendationsPerMovie` | `10` | koliko se preporuka sprema po filmu |
-| `SeedMoviesPerUser` | `3` | koliko seed filmova ulazi u korisničku listu |
-| `RecommendationsPerSeed` | `6` | koliko preporuka po seed-u preživi filtriranje |
-| `PopularFallbackCount` | `10` | dužina fallback liste |
-| `Interval` (worker) | `30 min` | period ponovnog treniranja |
+| Konstanta | Vrijednost | Gdje | Značenje |
+| --- | --- | --- | --- |
+| `MinimumPositiveRating` | `3.0` | `RecommendationSignalWeights` | prag pozitivne ocjene |
+| `Rated` / `Liked` / `Watchlisted` / `Watched` | `1.0` / `0.6` / `0.6` / `0.25` | `RecommendationSignalWeights` | jačine signala |
+| `MaxCollaborativeWeight` | `0.6` | `HybridRecommender` | gornja granica collaborative polovine |
+| `NeighboursForFullWeight` | `5` | `HybridRecommender` | koliko susjeda do pune težine |
+| `MaxNeighbours` | `30` | `HybridRecommender` | veličina susjedstva |
+| `MinimumSharedMovies` | `2` | `HybridRecommender` | prag da se neko uopšte broji kao susjed |
+| `NeighbourShrinkage` | `1.0` | `HybridRecommender` | skupljanje ponderisanog prosjeka |
+| `PopularityShrinkage` | `2.0` | `HybridRecommender` | skupljanje popularnosti |
+| `RecommendationCount` | `12` | `UserRecommendationService` | dužina korisničke liste |
+| `BilledActorLimit` | `8` | `MovieFeatures` | koliko glumaca ulazi u vektor |

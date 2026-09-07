@@ -10,39 +10,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using MimeKit.Text;
 
-Console.WriteLine("Email RabbitMQ subscriber is starting");
-
 var envFile = FindEnvFile(AppContext.BaseDirectory);
 
-if (envFile is null)
-    Console.WriteLine("No .env found, reading configuration from environment variables only");
-else
-{
+if (envFile is not null)
     Env.NoClobber().Load(envFile);
-    Console.WriteLine($"Loaded configuration from {envFile}");
-}
 
 var rabbitMqHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
 var rabbitMqUser = Environment.GetEnvironmentVariable("RABBITMQ_USER") ?? "guest";
 var rabbitMqPass = Environment.GetEnvironmentVariable("RABBITMQ_PASS") ?? "guest";
 
 var connectionString = $"host={rabbitMqHost};username={rabbitMqUser};password={rabbitMqPass}";
-
-Console.WriteLine($"Connecting to RabbitMQ at {rabbitMqHost} as {rabbitMqUser}");
-
-IBus bus;
-try
-{
-    bus = RabbitHutch.CreateBus(connectionString);
-}
-catch (Exception e)
-{
-    Console.WriteLine($"Failed to create the RabbitMQ bus: {e.GetBaseException().Message}");
-    return;
-}
 
 var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST") ?? "localhost";
 var smtpPort = int.TryParse(Environment.GetEnvironmentVariable("SMTP_PORT"), out var parsedPort) ? parsedPort : 587;
@@ -69,20 +50,44 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
+var logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Flix.Subscriber");
+
+logger.LogInformation("Email RabbitMQ subscriber is starting");
+
+if (envFile is null)
+    logger.LogWarning("No .env found, reading configuration from environment variables only");
+else
+    logger.LogInformation("Loaded configuration from {EnvFile}", envFile);
+
+logger.LogInformation("Connecting to RabbitMQ at {RabbitMqHost} as {RabbitMqUser}", rabbitMqHost, rabbitMqUser);
+
+IBus bus;
+try
+{
+    bus = RabbitHutch.CreateBus(connectionString);
+}
+catch (Exception e)
+{
+    logger.LogCritical(e, "Failed to create the RabbitMQ bus");
+    return;
+}
+
 // 465 is implicit TLS, everything else negotiates over the plain port - a local dev
 // relay (MailHog, Papercut) offers no TLS at all, hence WhenAvailable rather than StartTls.
 var socketOptions = smtpPort == 465
     ? SecureSocketOptions.SslOnConnect
     : SecureSocketOptions.StartTlsWhenAvailable;
 
-Console.WriteLine($"Sending mail through {smtpHost}:{smtpPort} as {smtpFrom}");
-Console.WriteLine(string.IsNullOrWhiteSpace(databaseConnectionString)
-    ? $"No database connection configured, new movie requests will be announced to {fallbackAdminEmail ?? "nobody"}"
-    : "New movie requests will be announced to every active Admin in the database");
+logger.LogInformation("Sending mail through {SmtpHost}:{SmtpPort} as {SmtpFrom}", smtpHost, smtpPort, smtpFrom);
+
+if (string.IsNullOrWhiteSpace(databaseConnectionString))
+    logger.LogWarning("No database connection configured, new movie requests will be announced to {AdminEmail}", fallbackAdminEmail ?? "nobody");
+else
+    logger.LogInformation("New movie requests will be announced to every active Admin in the database");
 
 var subscriptions = new List<IDisposable>();
 
-var subscribed = await RetryAsync("Subscribing to messages", async () =>
+var subscribed = await TryAsync("Subscribing to messages", async () =>
 {
     foreach (var subscription in subscriptions)
         subscription.Dispose();
@@ -91,56 +96,74 @@ var subscribed = await RetryAsync("Subscribing to messages", async () =>
 
     subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRequested>("movie_requested_email_sender", async message =>
     {
-        Console.WriteLine($"Received MovieRequested #{message.Id}: {MovieTitle(message.Data)}");
+        logger.LogInformation("Received MovieRequested #{MessageId}: {Title}", message.Id, MovieTitle(message.Data));
 
         var admins = await GetAdminRecipientsAsync();
 
         if (admins.Count == 0)
         {
-            Console.WriteLine($"MovieRequested #{message.Id} has no admin recipient, skipping");
+            logger.LogWarning("MovieRequested #{MessageId} has no admin recipient, skipping", message.Id);
             return;
         }
 
         await SendAsync(
             admins,
             $"New movie request: {MovieTitle(message.Data)}",
-            BuildRequestedBody(message));
+            BuildRequestedBody(message, await TryGetUserEmailAsync(message.Data?.RequestedByUser?.Id)));
     }));
 
     subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieAccepted>("movie_accepted_email_sender", async message =>
     {
-        Console.WriteLine($"Received MovieAccepted #{message.Id}: {MovieTitle(message.Data)}");
+        logger.LogInformation("Received MovieAccepted #{MessageId}: {Title}", message.Id, MovieTitle(message.Data));
 
-        var recipient = message.Data?.RequestedByUser;
+        var recipient = await GetRequesterRecipientAsync(message.Data?.RequestedByUser);
 
-        if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
+        if (recipient is null)
         {
-            Console.WriteLine($"MovieAccepted #{message.Id} has no requester email, skipping");
+            logger.LogWarning("MovieAccepted #{MessageId} has no requester email, skipping", message.Id);
             return;
         }
 
         await SendAsync(
-            [new MailboxAddress(DisplayName(recipient), recipient.Email)],
+            [recipient],
             $"Your movie request was accepted: {MovieTitle(message.Data)}",
             BuildAcceptedBody(message));
     }));
 
     subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieRejected>("movie_rejected_email_sender", async message =>
     {
-        Console.WriteLine($"Received MovieRejected #{message.Id}: {MovieTitle(message.Data)}");
+        logger.LogInformation("Received MovieRejected #{MessageId}: {Title}", message.Id, MovieTitle(message.Data));
 
-        var recipient = message.Data?.RequestedByUser;
+        var recipient = await GetRequesterRecipientAsync(message.Data?.RequestedByUser);
 
-        if (recipient is null || string.IsNullOrWhiteSpace(recipient.Email))
+        if (recipient is null)
         {
-            Console.WriteLine($"MovieRejected #{message.Id} has no requester email, skipping");
+            logger.LogWarning("MovieRejected #{MessageId} has no requester email, skipping", message.Id);
             return;
         }
 
         await SendAsync(
-            [new MailboxAddress(DisplayName(recipient), recipient.Email)],
+            [recipient],
             $"Your movie request was rejected: {MovieTitle(message.Data)}",
             BuildRejectedBody(message));
+    }));
+
+    subscriptions.Add(await bus.PubSub.SubscribeAsync<PasswordResetRequested>("password_reset_email_sender", async message =>
+    {
+        logger.LogInformation("Received PasswordResetRequested #{MessageId} for user {UserId}", message.Id, message.Data?.UserId);
+
+        var recipient = await GetUserRecipientAsync(message.Data?.UserId);
+
+        if (recipient is null || string.IsNullOrWhiteSpace(message.Data?.Token))
+        {
+            logger.LogWarning("PasswordResetRequested #{MessageId} has no recipient or no code, skipping", message.Id);
+            return;
+        }
+
+        await SendAsync(
+            [recipient],
+            "Your Flix password reset code",
+            BuildPasswordResetBody(message, recipient.Name));
     }));
 });
 
@@ -150,39 +173,62 @@ if (!subscribed)
     return;
 }
 
-Console.WriteLine("Listening for MovieRequested, MovieAccepted and MovieRejected messages");
+logger.LogInformation("Listening for MovieRequested, MovieAccepted, MovieRejected and PasswordResetRequested messages");
 
 // RunAsync rather than a Ctrl+C wait, so the container also stops on the SIGTERM docker sends.
 await host.RunAsync();
 
-Console.WriteLine("Subscriber is shutting down");
+logger.LogInformation("Subscriber is shutting down");
 
 bus.Dispose();
 
-static async Task<bool> RetryAsync(string description, Func<Task> action, int maxAttempts = 5)
+async Task RetryAsync(string description, Func<Task> action, int maxAttempts = 5)
 {
     for (var attempt = 1; ; attempt++)
     {
         try
         {
             await action();
-            return true;
+            return;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"{description} failed: {e.GetBaseException().Message}");
-
             if (attempt == maxAttempts)
             {
-                Console.WriteLine($"{description} gave up after {attempt} attempts");
-                return false;
+                logger.LogError(e, "{Description} failed and gave up after {Attempts} attempts", description, attempt);
+                throw;
             }
 
             var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));
 
-            Console.WriteLine($"Retrying in {delay.TotalSeconds:0} seconds");
+            logger.LogWarning(e, "{Description} failed, retrying in {DelaySeconds} seconds", description, (int)delay.TotalSeconds);
             await Task.Delay(delay);
         }
+    }
+}
+
+async Task<bool> TryAsync(string description, Func<Task> action)
+{
+    try
+    {
+        await RetryAsync(description, action);
+        return true;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+async Task<string?> TryGetUserEmailAsync(int? userId)
+{
+    try
+    {
+        return await GetUserEmailAsync(userId);
+    }
+    catch
+    {
+        return null;
     }
 }
 
@@ -192,32 +238,40 @@ async Task<List<MailboxAddress>> GetAdminRecipientsAsync()
 
     if (!string.IsNullOrWhiteSpace(databaseConnectionString))
     {
-        await RetryAsync("Reading admin emails from the database", async () =>
+        try
         {
-            recipients.Clear();
-
-            await using var scope = host.Services.CreateAsyncScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
-
-            var admins = await context.Users
-                .AsNoTracking()
-                .Where(x => x.IsActive
-                    && x.Email != string.Empty
-                    && x.Roles.Any(role => role.Role.IsActive && role.Role.Name == "Admin"))
-                .OrderBy(x => x.Email)
-                .Select(x => new { x.Email, x.FirstName, x.LastName })
-                .ToListAsync();
-
-            foreach (var admin in admins)
+            await RetryAsync("Reading admin emails from the database", async () =>
             {
-                var name = $"{admin.FirstName} {admin.LastName}".Trim();
+                recipients.Clear();
 
-                recipients.Add(new MailboxAddress(
-                    string.IsNullOrWhiteSpace(name) ? fallbackAdminName : name,
-                    admin.Email));
-            }
-        });
+                await using var scope = host.Services.CreateAsyncScope();
+
+                var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+
+                var admins = await context.Users
+                    .AsNoTracking()
+                    .Where(x => x.IsActive
+                        && x.Email != string.Empty
+                        && x.Roles.Any(role => role.Role.IsActive && role.Role.Name == "Admin"))
+                    .OrderBy(x => x.Email)
+                    .Select(x => new { x.Email, x.FirstName, x.LastName })
+                    .ToListAsync();
+
+                foreach (var admin in admins)
+                {
+                    var name = $"{admin.FirstName} {admin.LastName}".Trim();
+
+                    recipients.Add(new MailboxAddress(
+                        string.IsNullOrWhiteSpace(name) ? fallbackAdminName : name,
+                        admin.Email));
+                }
+            });
+        }
+        catch (Exception e) when (!string.IsNullOrWhiteSpace(fallbackAdminEmail))
+        {
+            logger.LogWarning(e, "Falling back to {AdminEmail} after the database could not be read", fallbackAdminEmail);
+            recipients.Clear();
+        }
     }
 
     // The database is the source of truth; ADMIN_EMAIL only covers it being unreachable
@@ -226,6 +280,76 @@ async Task<List<MailboxAddress>> GetAdminRecipientsAsync()
         recipients.Add(new MailboxAddress(fallbackAdminName, fallbackAdminEmail));
 
     return recipients;
+}
+
+// MovieRequestResponse.RequestedByUser is the public profile DTO and carries no email, so the
+// requester's address is read from the database per message the same way the admins' are.
+async Task<MailboxAddress?> GetRequesterRecipientAsync(UserResponse? requester)
+{
+    if (requester is null)
+        return null;
+
+    var email = await GetUserEmailAsync(requester.Id);
+
+    return string.IsNullOrWhiteSpace(email)
+        ? null
+        : new MailboxAddress(DisplayName(requester), email);
+}
+
+
+async Task<MailboxAddress?> GetUserRecipientAsync(int? userId)
+{
+    if (userId is not int id || string.IsNullOrWhiteSpace(databaseConnectionString))
+        return null;
+
+    MailboxAddress? recipient = null;
+
+    await RetryAsync($"Reading the mailbox of user {id} from the database", async () =>
+    {
+        await using var scope = host.Services.CreateAsyncScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+
+        var user = await context.Users
+            .AsNoTracking()
+            .Where(x => x.Id == id)
+            .Select(x => new { x.Email, x.FirstName, x.LastName, x.Username })
+            .FirstOrDefaultAsync();
+
+        if (user is null || string.IsNullOrWhiteSpace(user.Email))
+            return;
+
+        var name = $"{user.FirstName} {user.LastName}".Trim();
+
+        recipient = new MailboxAddress(
+            string.IsNullOrWhiteSpace(name) ? user.Username : name,
+            user.Email);
+    });
+
+    return recipient;
+}
+
+async Task<string?> GetUserEmailAsync(int? userId)
+{
+    if (userId is not int id || string.IsNullOrWhiteSpace(databaseConnectionString))
+        return null;
+
+    string? email = null;
+
+    await RetryAsync($"Reading the email of user {id} from the database", async () =>
+    {
+        await using var scope = host.Services.CreateAsyncScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+
+        email = await context.Users
+            .AsNoTracking()
+            .Where(x => x.Id == id)
+            .Select(x => x.Email)
+            .FirstOrDefaultAsync();
+    });
+
+    return email;
 }
 
 async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subject, string body)
@@ -238,7 +362,7 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
     mail.Subject = subject;
     mail.Body = new TextPart(TextFormat.Html) { Text = body };
 
-    var sent = await RetryAsync($"Sending \"{subject}\" to {addresses}", async () =>
+    await RetryAsync($"Sending \"{subject}\" to {addresses}", async () =>
     {
         using var client = new SmtpClient();
 
@@ -251,11 +375,10 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
         await client.DisconnectAsync(true);
     });
 
-    if (sent)
-        Console.WriteLine($"Sent \"{subject}\" to {addresses}");
+    logger.LogInformation("Sent \"{Subject}\" to {Recipients}", subject, addresses);
 }
 
-string BuildRequestedBody(MovieRequested message)
+string BuildRequestedBody(MovieRequested message, string? requesterEmail)
 {
     var data = message.Data;
     var requester = data?.RequestedByUser;
@@ -263,7 +386,7 @@ string BuildRequestedBody(MovieRequested message)
     return Wrap(
         "New movie request",
         $"""
-        <p><strong>{Encode(DisplayName(requester))}</strong>{(string.IsNullOrWhiteSpace(requester?.Email) ? "" : $" ({Encode(requester!.Email)})")} requested a new movie.</p>
+        <p><strong>{Encode(DisplayName(requester))}</strong>{(string.IsNullOrWhiteSpace(requesterEmail) ? "" : $" ({Encode(requesterEmail)})")} requested a new movie.</p>
         {MovieBlock(data?.Movie)}
         <p>Request #{message.Id} was submitted on {Format(data?.CreatedAt)} and is waiting for review.</p>
         """);
@@ -300,6 +423,22 @@ string BuildRejectedBody(MovieRejected message)
         <p>Your request for <strong>{Encode(MovieTitle(message.Data))}</strong> was reviewed and will not be added to the catalog.</p>
         {reasonBlock}
         <p>You are welcome to submit another request at any time.</p>
+        """);
+}
+
+string BuildPasswordResetBody(PasswordResetRequested message, string recipientName)
+{
+    var data = message.Data!;
+    var minutes = Math.Max(1, (int)Math.Round((data.ExpiresAt - DateTime.UtcNow).TotalMinutes));
+
+    return Wrap(
+        "Password reset",
+        $"""
+        <p>Hi {Encode(recipientName)},</p>
+        <p>Use this code in the Flix app to set a new password:</p>
+        <p style="font-size:28px;font-weight:bold;letter-spacing:6px">{Encode(data.Token)}</p>
+        <p>It stops working in {minutes} minutes, at {Format(data.ExpiresAt)}, and can only be used once.</p>
+        <p>If you did not ask for this, ignore this email - your password stays as it is.</p>
         """);
 }
 

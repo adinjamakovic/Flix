@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 
 namespace Flix.CommonServices.ImageStorageService
@@ -16,5 +13,12 @@ namespace Flix.CommonServices.ImageStorageService
             IFormFile? newImage
         );
         string? ToPublicPath(ImageStorageCategory category, string? storedPath);
+
+        // The three below are driven centrally by ImageStorageFilter, not by the services doing
+        // the uploading: an upload only supersedes what it replaces once the new path has been
+        // written, and one that never got written is dropped again.
+        void MarkPersisted();
+        Task CommitAsync();
+        Task RollbackAsync();
     }
 }

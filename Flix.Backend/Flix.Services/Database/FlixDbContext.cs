@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace Flix.Services.Database
@@ -22,6 +21,7 @@ namespace Flix.Services.Database
         public DbSet<UserBlock> UserBlocks => Set<UserBlock>();
         public DbSet<Review> Reviews => Set<Review>();
         public DbSet<Activity> Activities => Set<Activity>();
+        public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<MovieList> MovieLists => Set<MovieList>();
         public DbSet<MovieListItem> MovieListItems => Set<MovieListItem>();
         public DbSet<Clash> Clashes => Set<Clash>();
@@ -31,7 +31,8 @@ namespace Flix.Services.Database
         public DbSet<MovieIssueReport> MovieIssueReports => Set<MovieIssueReport>();
         public DbSet<UserReport> UserReports => Set<UserReport>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-        public DbSet<MovieRecommendation> MovieRecommendations => Set<MovieRecommendation>();
+        public DbSet<ResetToken> ResetTokens => Set<ResetToken>();
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -1,5 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using Flix.CommonServices.ImageStorageService;
 using Flix.Model.Enums;
 using Flix.Model.Exceptions;
@@ -30,17 +28,20 @@ namespace Flix.Services.Implementations
 
         private readonly IImageStorageService _imageStorageService;
         private readonly IResponseImageUrlResolver _imageUrlResolver;
+        private readonly ICurrentUserService _currentUserService;
         public MovieService(
             FlixDbContext context,
             IMapper mapper,
             IValidator<MovieInsertRequest> insertValidator,
             IValidator<MovieUpdateRequest> updateValidator,
             IImageStorageService imageStorageService,
-            IResponseImageUrlResolver imageUrlResolver
+            IResponseImageUrlResolver imageUrlResolver,
+            ICurrentUserService currentUserService
             ) : base(context, mapper, insertValidator, updateValidator)
         {
             _imageStorageService = imageStorageService;
             _imageUrlResolver = imageUrlResolver;
+            _currentUserService = currentUserService;
         }
 
         // The poster and header sit alongside the flag of the movie's country and a photo per
@@ -101,6 +102,9 @@ namespace Flix.Services.Implementations
                     query = query.Where(x => x.ReleaseDate <= search.ReleasedBefore.Value);
             }
 
+            if(!_currentUserService.IsAdmin)
+                query = query.Where(x => x.IsEnabled);
+
             return query;
         }
 
@@ -115,14 +119,19 @@ namespace Flix.Services.Implementations
 
         public override async Task<MovieResponse> GetByIdAsync(int id)
         {
-            var entity = await GetDataSource()
+            var query = GetDataSource()
                 .Include(x => x.Credits)
                 .ThenInclude(c => c.CastMember)
                 .Include(x => x.Reviews)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .AsQueryable();
+
+            if (!_currentUserService.IsAdmin)
+                query = query.Where(x => x.IsEnabled);
+
+            var entity = await query.FirstOrDefaultAsync(x => x.Id == id);
 
             if (entity is null)
-                throw new ClientException($"{nameof(Movie)} with Id {id} not found.");
+                throw new ClientException($"Movie with Id {id} not found.");
 
             return MapToResponse(entity);
         }
@@ -215,12 +224,6 @@ namespace Flix.Services.Implementations
                 .ToListAsync();
 
             _context.Set<MovieStudio>().RemoveRange(studioLinks);
-
-            var recommendations = await _context.MovieRecommendations
-                .Where(r => r.MovieId == entity.Id || r.RecommendedMovieId == entity.Id)
-                .ToListAsync();
-
-            _context.MovieRecommendations.RemoveRange(recommendations);
 
             var listItems = await _context.MovieListItems
                 .Where(x => x.MovieId == entity.Id)

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Flix.Services.Database
@@ -62,5 +61,7 @@ namespace Flix.Services.Database
         public ICollection<ClashEntry> ClashEntries { get; set; } = new List<ClashEntry>();
         // Refresh tokens for authentication
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        // Password reset codes, issued from the login screen
+        public ICollection<ResetToken> ResetTokens { get; set; } = new List<ResetToken>();
     }
 }

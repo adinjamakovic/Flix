@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Flix.CommonServices.ImageStorageService
+﻿namespace Flix.CommonServices.ImageStorageService
 {
     public enum ImageStorageCategory
     {

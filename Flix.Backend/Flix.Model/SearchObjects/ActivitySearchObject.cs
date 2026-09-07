@@ -1,4 +1,3 @@
-using System.Dynamic;
 using Flix.Model.Enums;
 
 namespace Flix.Model.SearchObjects

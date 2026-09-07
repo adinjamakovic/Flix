@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Flix.Model.Enums;
 
 namespace Flix.Model.SearchObjects

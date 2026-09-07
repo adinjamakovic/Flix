@@ -224,6 +224,16 @@ String formatDate(DateTime? date) {
   return "$day/$month/${local.year}";
 }
 
+String formatDateTime(DateTime? date) {
+  if (date == null) return "-";
+
+  final DateTime local = date.toLocal();
+  final String hour = local.hour.toString().padLeft(2, '0');
+  final String minute = local.minute.toString().padLeft(2, '0');
+
+  return "${formatDate(date)} $hour:$minute";
+}
+
 // ---------------------------------------------------------------------------
 // API results and errors
 // ---------------------------------------------------------------------------

@@ -1,10 +1,12 @@
 import 'package:flix_mobile/layouts/profile_screen.dart';
 import 'package:flix_mobile/screens/activity.dart';
 import 'package:flix_mobile/layouts/home_screen.dart';
+import 'package:flix_mobile/providers/notification_provider.dart';
 import 'package:flix_mobile/screens/movie_requests/movie_requests.dart';
 import 'package:flix_mobile/screens/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class ContainerScreen extends StatefulWidget {
   const ContainerScreen({ super.key });
@@ -30,6 +32,24 @@ class _ContainerScreenState extends State<ContainerScreen> {
   final Set<int> _openedTabs = <int>{0};
 
   int currentPageIndex = 0;
+
+  late NotificationProvider _notificationProvider;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _notificationProvider = context.read<NotificationProvider>();
+
+    _notificationProvider.start();
+  }
+
+  @override
+  void dispose() {
+    _notificationProvider.stop();
+
+    super.dispose();
+  }
 
   void _onDestinationSelected(int index) {
     if (index == currentPageIndex) {

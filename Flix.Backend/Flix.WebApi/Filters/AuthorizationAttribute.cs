@@ -1,4 +1,3 @@
-using Flix.Services.Database;
 using Flix.WebApi.Services.AccessManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

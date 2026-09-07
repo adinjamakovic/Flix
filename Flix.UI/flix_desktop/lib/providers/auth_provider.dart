@@ -155,7 +155,6 @@ class AuthProvider extends ChangeNotifier {
       throw Exception("Unauthorized");
     }
     else{
-      debugPrint(response.body);
       throw Exception(_errorMessage(response));
     }
   }

@@ -191,6 +191,11 @@ namespace Flix.Services.Implementations
             if(entry.UserId == voterId)
                 throw new ClientException("Can't vote for your own entry");
 
+            // The unique index on (VoterId, ClashEntryId) is the real guard; this only
+            // turns the second vote into a 400 instead of a database exception.
+            if(await _context.ClashVotes.AnyAsync(x => x.ClashEntryId == entry.Id && x.VoterId == voterId))
+                throw new ClientException("You have already voted for this list");
+
             if(await CalculateUserVotesAsync(entry.ClashId, voterId) >= VotesPerClash)
                 throw new ClientException("You have no votes left in this clash");
 
@@ -231,17 +236,20 @@ namespace Flix.Services.Implementations
 
             _context.ClashVotes.Remove(vote);
 
-            await RemoveVoteActivitiesAsync(voterId, vote.ClashEntry.ClashId);
+            await RemoveVoteActivitiesAsync(voterId, vote.ClashEntry.ClashId, vote.ClashEntry.MovieListId);
 
             await _context.SaveChangesAsync();
         }
 
-        private async Task RemoveVoteActivitiesAsync(int voterId, int clashId)
+        // A VotedOnClash activity records the clash and the entry's list, so the list id
+        // is what narrows the removal to the one entry the vote was taken back from.
+        private async Task RemoveVoteActivitiesAsync(int voterId, int clashId, int movieListId)
         {
             var activities = await _context.Activities
                 .Where(x => x.Type == ActivityType.VotedOnClash
                     && x.UserId == voterId
-                    && x.ClashId == clashId)
+                    && x.ClashId == clashId
+                    && x.MovieListId == movieListId)
                 .ToListAsync();
 
             _context.Activities.RemoveRange(activities);

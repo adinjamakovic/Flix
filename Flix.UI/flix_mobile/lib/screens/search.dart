@@ -10,6 +10,7 @@ import 'package:flix_mobile/providers/genre_provider.dart';
 import 'package:flix_mobile/providers/language_provider.dart';
 import 'package:flix_mobile/providers/movie_provider.dart';
 import 'package:flix_mobile/screens/movie_details/movie_details.dart';
+import 'package:flix_mobile/utils/search_history.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,14 +33,10 @@ class _SearchState extends State<Search> {
 
   static const double _loadMoreThreshold = 300;
 
-  static const int _maxPreviousSearches = 5;
-
   static const double _posterWidth = 72;
   static const double _posterHeight = 108;
 
-  // Nothing local is persisted yet, so previous searches are kept statically —
-  // they survive a rebuild of the tab, but not a restart of the app.
-  static final List<String> _previousSearches = <String>[];
+  List<String> _previousSearches = <String>[];
 
   late MovieProvider _movieProvider;
   late GenreProvider _genreProvider;
@@ -94,7 +91,25 @@ class _SearchState extends State<Search> {
 
     _scrollController.addListener(_onScroll);
 
+    _loadHistory();
     _loadLookups();
+  }
+
+  Future<void> _loadHistory() async {
+    final List<String> stored = await SearchHistory.load();
+
+    if (!mounted || stored.isEmpty) return;
+
+    // A search made while the read was in flight has to stay ahead of the
+    // stored entries instead of being replaced by them.
+    List<String> entries = stored;
+    for (final String title in _previousSearches.reversed) {
+      entries = SearchHistory.withEntry(entries, title);
+    }
+
+    setState(() => _previousSearches = entries);
+
+    if (!identical(entries, stored)) SearchHistory.save(entries);
   }
 
   @override
@@ -155,7 +170,6 @@ class _SearchState extends State<Search> {
       "pageSize": _pageSize,
       "includeTotalCount": true,
       "includeReviews": true,
-      "isEnabled": true,
     };
 
     final String title = _titleController.text.trim();
@@ -271,24 +285,19 @@ class _SearchState extends State<Search> {
     if (remaining <= _loadMoreThreshold) _search(loadMore: true);
   }
 
-  // Keeps the most recent titles, newest first, without duplicates.
+  // Keeps the most recent titles, newest first, without duplicates. The write
+  // is not awaited: the list on screen is the source of truth for this session.
   void _rememberSearch(String value) {
-    final String title = value.trim();
-    if (title.isEmpty) return;
+    final List<String> entries = SearchHistory.withEntry(
+      _previousSearches,
+      value,
+    );
 
-    setState(() {
-      _previousSearches.removeWhere(
-        (entry) => entry.toLowerCase() == title.toLowerCase(),
-      );
-      _previousSearches.insert(0, title);
+    if (identical(entries, _previousSearches)) return;
 
-      if (_previousSearches.length > _maxPreviousSearches) {
-        _previousSearches.removeRange(
-          _maxPreviousSearches,
-          _previousSearches.length,
-        );
-      }
-    });
+    setState(() => _previousSearches = entries);
+
+    SearchHistory.save(entries);
   }
 
   void _onPreviousSearchTapped(String title) {

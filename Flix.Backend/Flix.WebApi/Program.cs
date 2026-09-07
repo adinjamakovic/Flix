@@ -1,4 +1,5 @@
 using Flix.CommonServices.CryptoService;
+using Flix.Model.Access;
 using Flix.Model.Requests;
 using DotNetEnv;
 using Flix.Services.BackgroundServices;
@@ -6,11 +7,14 @@ using Flix.Model.Responses;
 using Flix.Services.Database;
 using Flix.Services.Implementations;
 using Flix.Services.Interfaces;
+using Flix.Services.Recommendations;
 using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
 using Flix.WebApi.Filters;
+using Flix.WebApi.Hubs;
 using Flix.WebApi.Services.AccessManager;
 using Flix.WebApi.Services.CurrentUser;
+using Flix.WebApi.Services.Notifications;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,6 +59,7 @@ var databaseConnectionString = builder.Configuration.GetConnectionString("Defaul
     ?? throw new InvalidOperationException("DATABASE_CONNECTION is not configured. See .env_example.");
 
 const string CorsPolicy = "FlixCors";
+const string NotificationHubPath = "/hubs/notifications";
 
 var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://localhost:5071;https://localhost:7140")
     .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -62,8 +67,9 @@ var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://lo
 // Add services to the container.
 
 builder.Services.AddControllers(
-    options => { 
+    options => {
         options.Filters.Add<ExceptionFilter>();
+        options.Filters.Add<ImageStorageFilter>();
     }
 );
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -77,8 +83,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(CorsPolicy, policy => policy
         .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(blobStorageConnectionString));
@@ -105,6 +114,22 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtToken:SecretKey"] ?? string.Empty)),
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            if (!string.IsNullOrEmpty(accessToken)
+                && context.HttpContext.Request.Path.StartsWithSegments(NotificationHubPath))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
@@ -113,27 +138,19 @@ builder.Services.AddAuthorization();
 builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .IgnoreNullValues(true)
-    .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
-    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
-    // UserResponse.Reviews and ReviewResponse.User point straight back at each other, and EF fixup
-    // wires both ends of that pair whenever a user and any of their reviews are tracked by the same
-    // query - which every review feed and the activity feed do. Letting Mapster follow it recurses
-    // user -> reviews -> user until the stack blows, taking the process down with it. So it is never
-    // mapped automatically: UserService.GetByIdAsync fills it for the profile screen. The authors it
-    // nests carry no reviews of their own, which is what stops the cycle coming back.
     .Ignore(dest => dest.Reviews)
     .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
     .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
     .Map(dest => dest.FollowerCount, src => src.Followers.Count)
     .Map(dest => dest.FollowingCount, src => src.Following.Count);
-TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
-    .IgnoreNullValues(true)
+TypeAdapterConfig<User, UserSelfResponse>.NewConfig()
+    .Inherits<User, UserResponse>();
+TypeAdapterConfig<User, UserAdminResponse>.NewConfig()
+    .Inherits<User, UserSelfResponse>()
     .Map(dest => dest.Role, src => src.Roles.Where(r => r.Role != null).Select(r => r.Role.Name).FirstOrDefault())
-    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault())
-    .Map(dest => dest.MoviesWatched, src => src.Reviews.Select(x => x.MovieId).Distinct().Count())
-    .Map(dest => dest.ReviewsWritten, src => src.Reviews.Count(x => !string.IsNullOrWhiteSpace(x.Content)))
-    .Map(dest => dest.FollowerCount, src => src.Followers.Count)
-    .Map(dest => dest.FollowingCount, src => src.Following.Count);
+    .Map(dest => dest.RoleId, src => src.Roles.Select(r => (int?)r.RoleId).FirstOrDefault());
+TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
+    .Inherits<User, UserAdminResponse>();
 TypeAdapterConfig<Role, RoleResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CastMember, CastMemberResponse>.NewConfig()
     .Map(dest => dest.Roles, src => src.Credits.Select(c => c.Role).Distinct().ToList())
@@ -188,11 +205,8 @@ TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
     .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
     .Map(dest => dest.Movie, src => src.CreatedMovie);
 TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
-TypeAdapterConfig<MovieRecommendation, MovieRecommendationResponse>.NewConfig()
-    .IgnoreNullValues(true)
-    .Map(dest => dest.Movie, src => src.Movie)
-    .Map(dest => dest.RecommendedMovie, src => src.RecommendedMovie)
-    .Map(dest => dest.Source, src => RecommendationSource.Similar);
+TypeAdapterConfig<Notification, NotificationResponse>.NewConfig()
+    .Map(dest => dest.IsRead, src => src.ReadAt != null);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -243,6 +257,7 @@ builder.Services.AddScoped<IValidator<MovieIssueReportInsertRequest>, MovieIssue
 builder.Services.AddScoped<IValidator<MovieIssueReportUpdateRequest>, MovieIssueReportUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<UserReportInsertRequest>, UserReportInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserReportUpdateRequest>, UserReportUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
 
 //Services
 builder.Services.AddHttpContextAccessor();
@@ -250,6 +265,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserNetworkService, UserNetworkService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();
@@ -264,15 +280,19 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IStudioService, StudioService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IMovieRecommendationService, MovieRecommendationService>();
+builder.Services.AddScoped<IRecommendationSignalService, RecommendationSignalService>();
+builder.Services.AddScoped<IUserRecommendationService, UserRecommendationService>();
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
+builder.Services.AddScoped<IOutboxService, OutboxService>();
+builder.Services.AddHostedService<OutboxDispatcherService>();
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
 builder.Services.AddScoped<IUserReportService, UserReportService>();
 builder.Services.AddHostedService<ClashStateWorkerService>();
-builder.Services.AddHostedService<MovieRecommendationWorkerService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 var app = builder.Build();
@@ -300,5 +320,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>(NotificationHubPath);
 
 app.Run();

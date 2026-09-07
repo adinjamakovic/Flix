@@ -8,8 +8,6 @@ using Flix.Services.Interfaces;
 using FluentValidation;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Flix.Services.Implementations
 {

@@ -19,6 +19,7 @@ namespace Flix.Services.Implementations
         private readonly IResponseImageUrlResolver _imageUrlResolver;
         private readonly IActivityService _activityService;
         private readonly IListService _listService;
+        private readonly IReviewService _reviewService;
         private readonly IValidator<DiaryInsertRequest> _insertValidator;
 
         public DiaryService(
@@ -28,6 +29,7 @@ namespace Flix.Services.Implementations
             IResponseImageUrlResolver imageUrlResolver,
             IActivityService activityService,
             IListService listService,
+            IReviewService reviewService,
             IValidator<DiaryInsertRequest> insertValidator)
         {
             _context = context;
@@ -36,6 +38,7 @@ namespace Flix.Services.Implementations
             _imageUrlResolver = imageUrlResolver;
             _activityService = activityService;
             _listService = listService;
+            _reviewService = reviewService;
             _insertValidator = insertValidator;
         }
 
@@ -138,6 +141,17 @@ namespace Flix.Services.Implementations
             await _context.Entry(entity).Reference(x => x.User).LoadAsync();
 
             return MapToResponse(entity);
+        }
+
+        public async Task DeleteEntryAsync(int id)
+        {
+            var userId = _currentUserService.GetUserId();
+
+            var entity = await _context.Reviews
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsDiaryEntry && x.UserId == userId)
+                ?? throw new ClientException($"Diary entry with Id {id} not found.");
+
+            await _reviewService.DeleteAsync(entity.Id);
         }
 
         private Task LogAsync(int userId, Review entity, ActivityType type)

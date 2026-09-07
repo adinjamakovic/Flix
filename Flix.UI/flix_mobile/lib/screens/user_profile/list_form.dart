@@ -225,7 +225,6 @@ class _ListFormState extends State<ListForm> {
           "page": 1,
           "pageSize": _pageSize,
           "title": title,
-          "isEnabled": true,
         },
       );
 

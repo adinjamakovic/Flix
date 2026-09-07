@@ -143,6 +143,53 @@ class _DiaryState extends State<Diary> {
     );
   }
 
+  Future<void> _onEntryHeld(Review entry) async {
+    final int? id = entry.id;
+
+    if (id == null || !_isCurrentUser) return;
+
+    if (!await _confirmDelete(entry)) return;
+
+    try {
+      await _diaryProvider.delete(id);
+
+      if (!mounted) return;
+
+      showSnack(context, "Entry deleted.");
+
+      await _load();
+    } on Exception catch (e) {
+      if (!mounted) return;
+
+      showSnack(context, errorText(e));
+    }
+  }
+
+  Future<bool> _confirmDelete(Review entry) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete entry"),
+        content: Text(
+          "${_titleLabel(entry)} loses this viewing, along with the review "
+          "written with it. Your other entries for the movie stay.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Keep it"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Delete"),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -211,6 +258,7 @@ class _DiaryState extends State<Diary> {
       children: [
         InkWell(
           onTap: () => _onEntryTapped(entry),
+          onLongPress: _isCurrentUser ? () => _onEntryHeld(entry) : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(

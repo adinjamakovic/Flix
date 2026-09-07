@@ -3376,32 +3376,6 @@ namespace Flix.Services.Database.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecommendedMovieId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Score")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("RecommendedMovieId");
-
-                    b.ToTable("MovieRecommendations");
-                });
-
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -3591,6 +3565,93 @@ namespace Flix.Services.Database.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MovieRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("MovieRequestId");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Flix.Services.Database.OutboxMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedAt", "NextAttemptAt");
+
+                    b.ToTable("OutboxMessages");
+                });
+
             modelBuilder.Entity("Flix.Services.Database.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -3615,6 +3676,46 @@ namespace Flix.Services.Database.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Flix.Services.Database.ResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TokenSalt")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ResetTokens");
                 });
 
             modelBuilder.Entity("Flix.Services.Database.Review", b =>
@@ -11205,25 +11306,6 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("MovieList");
                 });
 
-            modelBuilder.Entity("Flix.Services.Database.MovieRecommendation", b =>
-                {
-                    b.HasOne("Flix.Services.Database.Movie", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Flix.Services.Database.Movie", "RecommendedMovie")
-                        .WithMany()
-                        .HasForeignKey("RecommendedMovieId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-
-                    b.Navigation("RecommendedMovie");
-                });
-
             modelBuilder.Entity("Flix.Services.Database.MovieRequest", b =>
                 {
                     b.HasOne("Flix.Services.Database.Movie", "CreatedMovie")
@@ -11267,10 +11349,45 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Studio");
                 });
 
+            modelBuilder.Entity("Flix.Services.Database.Notification", b =>
+                {
+                    b.HasOne("Flix.Services.Database.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Flix.Services.Database.MovieRequest", "MovieRequest")
+                        .WithMany()
+                        .HasForeignKey("MovieRequestId");
+
+                    b.HasOne("Flix.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("MovieRequest");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Flix.Services.Database.RefreshToken", b =>
                 {
                     b.HasOne("Flix.Services.Database.User", "User")
                         .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Flix.Services.Database.ResetToken", b =>
+                {
+                    b.HasOne("Flix.Services.Database.User", "User")
+                        .WithMany("ResetTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -11451,6 +11568,8 @@ namespace Flix.Services.Database.Migrations
                     b.Navigation("Lists");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("ResetTokens");
 
                     b.Navigation("Reviews");
 
