@@ -13,11 +13,16 @@ namespace Flix.WebApi.Controllers
     {
         private readonly IAccessManager _accessManager;
         private readonly IUserService _userService;
+        private readonly IPasswordResetService _passwordResetService;
 
-        public AccessController(IAccessManager accessManager, IUserService userService)
+        public AccessController(
+            IAccessManager accessManager,
+            IUserService userService,
+            IPasswordResetService passwordResetService)
         {
             _accessManager = accessManager;
             _userService = userService;
+            _passwordResetService = passwordResetService;
         }
 
         [AllowAnonymous]
@@ -40,6 +45,30 @@ namespace Flix.WebApi.Controllers
         {
             await _accessManager.LogoutAsync();
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            await _passwordResetService.RequestResetAsync(request);
+            return Ok("If that email belongs to an account, a reset code is on its way.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("VerifyResetToken")]
+        public async Task<ActionResult> VerifyResetToken([FromBody] VerifyResetTokenRequest request)
+        {
+            await _passwordResetService.VerifyTokenAsync(request);
+            return Ok("The reset code is valid.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            await _passwordResetService.ResetPasswordAsync(request);
+            return Ok("Your password has been changed. Sign in with the new one.");
         }
 
         // UserInsertRequest carries the profile image as an IFormFile, so registration is

@@ -150,6 +150,29 @@ class AuthProvider extends ChangeNotifier {
     isValidResponse(response);
   }
 
+  Future<void> requestPasswordReset(String email) =>
+      _postJson("ForgotPassword", {"email": email});
+
+  Future<void> verifyResetToken(String email, String token) =>
+      _postJson("VerifyResetToken", {"email": email, "token": token});
+
+  Future<void> resetPassword(String email, String token, String newPassword) =>
+      _postJson("ResetPassword", {
+        "email": email,
+        "token": token,
+        "newPassword": newPassword,
+      });
+
+  Future<void> _postJson(String action, Map<String, dynamic> body) async {
+    final http.Response response = await http.post(
+      Uri.parse("$_baseUrl/$action"),
+      headers: createHeaders(),
+      body: jsonEncode(body),
+    );
+
+    isValidResponse(response);
+  }
+
   // Reads a claim out of the JWT payload. The token is only ever validated by
   // the API, so this is purely for display.
   static String? _readClaim(String? token, String claim) {

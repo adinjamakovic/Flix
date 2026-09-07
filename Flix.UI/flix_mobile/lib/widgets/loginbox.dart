@@ -1,5 +1,6 @@
 import 'package:flix_mobile/layouts/container_screen.dart';
 import 'package:flix_mobile/providers/auth_provider.dart';
+import 'package:flix_mobile/screens/forgot_password.dart';
 import 'package:flix_mobile/screens/register.dart';
 import 'package:flix_mobile/utils/utils_widget.dart';
 import 'package:flutter/material.dart';
@@ -161,6 +162,17 @@ class _LoginBoxState extends State<LoginBox> {
                       ),
                     ),
                     const SizedBox(height: 4),
+                    TextButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ForgotPassword(),
+                              ),
+                            ),
+                      child: const Text('Forgot your password?'),
+                    ),
                     TextButton(
                       onPressed: _isLoading
                           ? null

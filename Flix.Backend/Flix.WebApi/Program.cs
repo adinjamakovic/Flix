@@ -1,4 +1,5 @@
 using Flix.CommonServices.CryptoService;
+using Flix.Model.Access;
 using Flix.Model.Requests;
 using DotNetEnv;
 using Flix.Services.BackgroundServices;
@@ -232,6 +233,7 @@ builder.Services.AddScoped<IValidator<MovieIssueReportInsertRequest>, MovieIssue
 builder.Services.AddScoped<IValidator<MovieIssueReportUpdateRequest>, MovieIssueReportUpdateRequestValidator>();
 builder.Services.AddScoped<IValidator<UserReportInsertRequest>, UserReportInsertRequestValidator>();
 builder.Services.AddScoped<IValidator<UserReportUpdateRequest>, UserReportUpdateRequestValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordRequest>, ResetPasswordRequestValidator>();
 
 //Services
 builder.Services.AddHttpContextAccessor();
@@ -239,6 +241,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 builder.Services.AddScoped<IResponseImageUrlResolver, ResponseImageUrlResolver>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserNetworkService, UserNetworkService>();
 builder.Services.AddScoped<ICastMemberService, CastMemberService>();

@@ -95,6 +95,12 @@ namespace Flix.Services.Database
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ResetToken>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.ResetTokens)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)

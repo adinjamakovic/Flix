@@ -147,6 +147,24 @@ var subscribed = await RetryAsync("Subscribing to messages", async () =>
             $"Your movie request was rejected: {MovieTitle(message.Data)}",
             BuildRejectedBody(message));
     }));
+
+    subscriptions.Add(await bus.PubSub.SubscribeAsync<PasswordResetRequested>("password_reset_email_sender", async message =>
+    {
+        logger.LogInformation("Received PasswordResetRequested #{MessageId} for user {UserId}", message.Id, message.Data?.UserId);
+
+        var recipient = await GetUserRecipientAsync(message.Data?.UserId);
+
+        if (recipient is null || string.IsNullOrWhiteSpace(message.Data?.Token))
+        {
+            logger.LogWarning("PasswordResetRequested #{MessageId} has no recipient or no code, skipping", message.Id);
+            return;
+        }
+
+        await SendAsync(
+            [recipient],
+            "Your Flix password reset code",
+            BuildPasswordResetBody(message, recipient.Name));
+    }));
 });
 
 if (!subscribed)
@@ -155,7 +173,7 @@ if (!subscribed)
     return;
 }
 
-logger.LogInformation("Listening for MovieRequested, MovieAccepted and MovieRejected messages");
+logger.LogInformation("Listening for MovieRequested, MovieAccepted, MovieRejected and PasswordResetRequested messages");
 
 // RunAsync rather than a Ctrl+C wait, so the container also stops on the SIGTERM docker sends.
 await host.RunAsync();
@@ -243,6 +261,39 @@ async Task<MailboxAddress?> GetRequesterRecipientAsync(UserResponse? requester)
     return string.IsNullOrWhiteSpace(email)
         ? null
         : new MailboxAddress(DisplayName(requester), email);
+}
+
+
+async Task<MailboxAddress?> GetUserRecipientAsync(int? userId)
+{
+    if (userId is not int id || string.IsNullOrWhiteSpace(databaseConnectionString))
+        return null;
+
+    MailboxAddress? recipient = null;
+
+    await RetryAsync($"Reading the mailbox of user {id} from the database", async () =>
+    {
+        await using var scope = host.Services.CreateAsyncScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+
+        var user = await context.Users
+            .AsNoTracking()
+            .Where(x => x.Id == id)
+            .Select(x => new { x.Email, x.FirstName, x.LastName, x.Username })
+            .FirstOrDefaultAsync();
+
+        if (user is null || string.IsNullOrWhiteSpace(user.Email))
+            return;
+
+        var name = $"{user.FirstName} {user.LastName}".Trim();
+
+        recipient = new MailboxAddress(
+            string.IsNullOrWhiteSpace(name) ? user.Username : name,
+            user.Email);
+    });
+
+    return recipient;
 }
 
 async Task<string?> GetUserEmailAsync(int? userId)
@@ -340,6 +391,22 @@ string BuildRejectedBody(MovieRejected message)
         <p>Your request for <strong>{Encode(MovieTitle(message.Data))}</strong> was reviewed and will not be added to the catalog.</p>
         {reasonBlock}
         <p>You are welcome to submit another request at any time.</p>
+        """);
+}
+
+string BuildPasswordResetBody(PasswordResetRequested message, string recipientName)
+{
+    var data = message.Data!;
+    var minutes = Math.Max(1, (int)Math.Round((data.ExpiresAt - DateTime.UtcNow).TotalMinutes));
+
+    return Wrap(
+        "Password reset",
+        $"""
+        <p>Hi {Encode(recipientName)},</p>
+        <p>Use this code in the Flix app to set a new password:</p>
+        <p style="font-size:28px;font-weight:bold;letter-spacing:6px">{Encode(data.Token)}</p>
+        <p>It stops working in {minutes} minutes, at {Format(data.ExpiresAt)}, and can only be used once.</p>
+        <p>If you did not ask for this, ignore this email - your password stays as it is.</p>
         """);
 }
 
