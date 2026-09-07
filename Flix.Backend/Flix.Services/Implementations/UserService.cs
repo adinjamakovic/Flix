@@ -245,7 +245,26 @@ namespace Flix.Services.Implementations
 
             _context.Activities.RemoveRange(mentions);
 
+            await ClearListReferencesAsync(entity.Id);
+
             await ClearModerationTrailAsync(entity.Id);
+        }
+
+        private async Task ClearListReferencesAsync(int userId)
+        {
+            var listIds = await _context.MovieLists
+                .Where(x => x.UserId == userId)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            if (listIds.Count == 0)
+                return;
+
+            var listActivities = await _context.Activities
+                .Where(x => x.MovieListId != null && listIds.Contains(x.MovieListId.Value))
+                .ToListAsync();
+
+            _context.Activities.RemoveRange(listActivities);
         }
 
         private async Task ClearModerationTrailAsync(int userId)

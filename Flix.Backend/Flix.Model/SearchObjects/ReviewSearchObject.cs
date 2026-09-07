@@ -14,6 +14,10 @@
         public int? UserId { get; set; }
         // Used to filter reviews based on a certain users follower base, usually the logged in user
         public int? FollowedByUserId { get; set; }
+        // The Reviews table holds both kinds of row: false is the standing opinion behind the
+        // stars, true a diary entry. Left null the two stay mixed, which is what a movie's
+        // review list and the admin feed both read.
+        public bool? IsDiaryEntry { get; set; }
         public bool? IncludeUser { get; set; }
         public bool? IncludeMovie { get; set; }
     }

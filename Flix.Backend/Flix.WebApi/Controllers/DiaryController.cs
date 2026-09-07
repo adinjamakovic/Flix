@@ -37,5 +37,14 @@ namespace Flix.WebApi.Controllers
         {
             return Ok(await _service.AddToDiaryAsync(request));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteEntry(int id)
+        {
+            await _service.DeleteEntryAsync(id);
+            return NoContent();
+        }
     }
 }

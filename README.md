@@ -178,9 +178,18 @@ red uvijek znači i drugo gledanje.
 **"Watchlist" uopšte nije recenzija.** Dodaje `MovieListItems` red u korisnikovu watchlistu, uz
 ostale njegove liste.
 
-Dvije vrste se i čitaju odvojeno: `GET /Diary` vraća samo `IsDiaryEntry` redove jednog
-korisnika, od najnovijeg, dok `/Review` služi trajne recenzije iza ocjena, brojača i feeda
-prijatelja.
+`GET /Diary` vraća samo `IsDiaryEntry` redove jednog korisnika, poredane po danu gledanja.
+`GET /Review` je opšti upit nad istom tabelom i vraća obje vrste, jer je recenzija sa tekstom
+uvijek zapis u dnevniku — lista recenzija filma i admin feed bi inače bili prazni. Ko treba samo
+jednu vrstu, traži je: `IsDiaryEntry=false` su trajne recenzije iza ocjena, `IsDiaryEntry=true`
+zapisi.
+
+Brisanje je podijeljeno isto tako. `DELETE /Diary/{id}` traži uz id zapisa i id pozivaoca, pa
+korisnik povlači gledanje koje je sam zabilježio, a ne tuđe; `DELETE /Review/{id}` ostaje
+admin endpoint za moderaciju. Oba brišu aktivnosti koje pokazuju na red i vraćaju filmu
+pregled. Na tu akciju upućuje i trajna recenzija: skidanje *Watch*-a sa filma koji ima zapise
+se odbija, jer je zapis zabilježeno gledanje i napisana recenzija, a ni jedno ni drugo toggle
+ne baca — prvo idu zapisi.
 
 Ta razlika pokreće i preporuke. `IRecommendationSignalService` skuplja recenzije, stavke
 watchliste i aktivnosti gledanja u jedan `UserMovieSignal` po korisniku i filmu, gdje su
@@ -514,9 +523,18 @@ not two. Only a rewatch adds another, which is what makes a second row mean a se
 **"Watchlist" is not a review at all.** It adds a `MovieListItems` row to the user's watchlist,
 alongside their other lists.
 
-The two kinds are read back separately: `GET /Diary` returns only `IsDiaryEntry` rows for one
-user, newest first, while `/Review` serves the standing reviews behind ratings, counts and the
-friends feed.
+`GET /Diary` returns only `IsDiaryEntry` rows for one user, ordered by the day of the viewing.
+`GET /Review` is the general query over the same table and returns both kinds, because a review
+with text is always a diary entry — a movie's review list and the admin feed would be empty
+otherwise. A caller that wants one kind alone asks for it: `IsDiaryEntry=false` is the standing
+reviews behind the ratings, `IsDiaryEntry=true` the entries.
+
+Deleting is split the same way. `DELETE /Diary/{id}` matches on the caller's own id as well as
+the entry's, so a user takes back a viewing they logged and nobody else's; `DELETE /Review/{id}`
+stays the admin's moderation endpoint. Either one removes the activities pointing at the row and
+gives the movie its view back. This is also the action the standing review points at: clearing
+*Watch* on a film that carries entries is refused, because an entry is a recorded viewing and a
+written review, and neither is something a toggle throws away — the entries go first.
 
 The distinction also drives recommendations. `IRecommendationSignalService` reads reviews,
 watchlist items and watch activities into a single `UserMovieSignal` per user and movie, where

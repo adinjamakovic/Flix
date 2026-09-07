@@ -11,5 +11,6 @@ namespace Flix.Services.Interfaces
     {
         Task<PageResult<ReviewResponse>> GetUserDiaryAsync(DiarySearchObject? search);
         Task<ReviewResponse> AddToDiaryAsync(DiaryInsertRequest request);
+        Task DeleteEntryAsync(int id);
     }
 }
