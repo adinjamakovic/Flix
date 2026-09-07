@@ -1,5 +1,6 @@
 import 'package:flix_mobile/screens/movie_requests/add_movie.dart';
 import 'package:flix_mobile/screens/movie_requests/movie_requests_list.dart';
+import 'package:flix_mobile/widgets/notification_bell.dart';
 import 'package:flutter/material.dart';
 
 /// The "+" tab. The form is the tab itself, and the requests already sent hang
@@ -21,6 +22,7 @@ class MovieRequests extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const MovieRequestsList()),
             ),
           ),
+          const NotificationBell(),
         ],
       ),
       body: const SafeArea(top: false, child: AddMovie()),

@@ -156,6 +156,14 @@ abstract class BaseProvider<T> with ChangeNotifier {
         body: body == null ? null : jsonEncode(body))));
   }
 
+  Future<dynamic> putJson(String action, [Map<String, dynamic>? body]) async {
+    var uri = Uri.parse("$_baseUrl$_endpoint/$action");
+
+    return _decode(await _request(() => http.put(uri,
+        headers: createHeaders(),
+        body: body == null ? null : jsonEncode(body))));
+  }
+
   Future<dynamic> deleteAction(String action) async {
     var uri = Uri.parse("$_baseUrl$_endpoint/$action");
 

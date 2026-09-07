@@ -18,7 +18,8 @@ namespace Flix.Services.Implementations
         IValidator<MovieIssueReportInsertRequest> insertValidator,
         IValidator<MovieIssueReportUpdateRequest> updateValidator,
         ICurrentUserService currentUserService,
-        IResponseImageUrlResolver imageUrlResolver) :
+        IResponseImageUrlResolver imageUrlResolver,
+        INotificationService notificationService) :
         BaseCRUDService<
             MovieIssueReport,
             MovieIssueReportResponse,
@@ -29,6 +30,7 @@ namespace Flix.Services.Implementations
     {
         private readonly ICurrentUserService _currentUserService = currentUserService;
         private readonly IResponseImageUrlResolver _imageUrlResolver = imageUrlResolver;
+        private readonly INotificationService _notificationService = notificationService;
 
         protected override MovieIssueReportResponse MapToResponse(MovieIssueReport entity)
         {
@@ -158,7 +160,23 @@ namespace Flix.Services.Implementations
 
         public override async Task<MovieIssueReportResponse> UpdateAsync(int id, MovieIssueReportUpdateRequest request)
         {
+            var statusBefore = await _context.MovieIssueReports
+                .AsNoTracking()
+                .Where(x => x.Id == id)
+                .Select(x => (ReportStatus?)x.Status)
+                .FirstOrDefaultAsync();
+
             await base.UpdateAsync(id, request);
+
+            var entity = await _context.MovieIssueReports.AsNoTracking().FirstAsync(x => x.Id == id);
+
+            if (statusBefore is ReportStatus before && before != entity.Status)
+                await _notificationService.NotifyAsync(
+                    entity.ReportedByUserId,
+                    NotificationType.MovieIssueReportReviewed,
+                    ReportNotificationText.Title(entity.Status),
+                    ReportNotificationText.Message(entity.Header, entity.Status, entity.AdminComment),
+                    movieId: entity.MovieId);
 
             return await GetByIdAsync(id);
         }

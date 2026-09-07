@@ -11,8 +11,10 @@ using Flix.Services.Recommendations;
 using Flix.Services.Validators;
 using Flix.WebApi.Extensions;
 using Flix.WebApi.Filters;
+using Flix.WebApi.Hubs;
 using Flix.WebApi.Services.AccessManager;
 using Flix.WebApi.Services.CurrentUser;
+using Flix.WebApi.Services.Notifications;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,6 +59,7 @@ var databaseConnectionString = builder.Configuration.GetConnectionString("Defaul
     ?? throw new InvalidOperationException("DATABASE_CONNECTION is not configured. See .env_example.");
 
 const string CorsPolicy = "FlixCors";
+const string NotificationHubPath = "/hubs/notifications";
 
 var allowedOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "http://localhost:5071;https://localhost:7140")
     .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -80,8 +83,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(CorsPolicy, policy => policy
         .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .AllowCredentials());
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(blobStorageConnectionString));
@@ -107,6 +113,22 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JwtToken:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtToken:SecretKey"] ?? string.Empty)),
         ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            if (!string.IsNullOrEmpty(accessToken)
+                && context.HttpContext.Request.Path.StartsWithSegments(NotificationHubPath))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -183,6 +205,8 @@ TypeAdapterConfig<MovieRequest, MovieRequestResponse>.NewConfig()
     .Map(dest => dest.RequestedByUser, src => src.RequestedBy)
     .Map(dest => dest.Movie, src => src.CreatedMovie);
 TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Notification, NotificationResponse>.NewConfig()
+    .Map(dest => dest.IsRead, src => src.ReadAt != null);
 
 // Image columns hold the blob path and are owned entirely by IImageStorageService inside the
 // services. Mapping the request's IFormFile onto them would stringify the upload on insert and
@@ -260,6 +284,10 @@ builder.Services.AddScoped<IRecommendationSignalService, RecommendationSignalSer
 builder.Services.AddScoped<IUserRecommendationService, UserRecommendationService>();
 builder.Services.AddScoped<IMovieRequestService, MovieRequestService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
+builder.Services.AddScoped<IOutboxService, OutboxService>();
+builder.Services.AddHostedService<OutboxDispatcherService>();
 builder.Services.AddScoped<IListService, ListService>();
 builder.Services.AddScoped<IDiaryService, DiaryService>();
 builder.Services.AddScoped<IMovieIssueReportService, MovieIssueReportService>();
@@ -292,5 +320,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>(NotificationHubPath);
 
 app.Run();

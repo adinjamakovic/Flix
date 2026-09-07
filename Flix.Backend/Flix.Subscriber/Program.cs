@@ -87,7 +87,7 @@ else
 
 var subscriptions = new List<IDisposable>();
 
-var subscribed = await RetryAsync("Subscribing to messages", async () =>
+var subscribed = await TryAsync("Subscribing to messages", async () =>
 {
     foreach (var subscription in subscriptions)
         subscription.Dispose();
@@ -109,7 +109,7 @@ var subscribed = await RetryAsync("Subscribing to messages", async () =>
         await SendAsync(
             admins,
             $"New movie request: {MovieTitle(message.Data)}",
-            BuildRequestedBody(message, await GetUserEmailAsync(message.Data?.RequestedByUser?.Id)));
+            BuildRequestedBody(message, await TryGetUserEmailAsync(message.Data?.RequestedByUser?.Id)));
     }));
 
     subscriptions.Add(await bus.PubSub.SubscribeAsync<MovieAccepted>("movie_accepted_email_sender", async message =>
@@ -182,21 +182,21 @@ logger.LogInformation("Subscriber is shutting down");
 
 bus.Dispose();
 
-async Task<bool> RetryAsync(string description, Func<Task> action, int maxAttempts = 5)
+async Task RetryAsync(string description, Func<Task> action, int maxAttempts = 5)
 {
     for (var attempt = 1; ; attempt++)
     {
         try
         {
             await action();
-            return true;
+            return;
         }
         catch (Exception e)
         {
             if (attempt == maxAttempts)
             {
                 logger.LogError(e, "{Description} failed and gave up after {Attempts} attempts", description, attempt);
-                return false;
+                throw;
             }
 
             var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt - 1));
@@ -207,38 +207,71 @@ async Task<bool> RetryAsync(string description, Func<Task> action, int maxAttemp
     }
 }
 
+async Task<bool> TryAsync(string description, Func<Task> action)
+{
+    try
+    {
+        await RetryAsync(description, action);
+        return true;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+async Task<string?> TryGetUserEmailAsync(int? userId)
+{
+    try
+    {
+        return await GetUserEmailAsync(userId);
+    }
+    catch
+    {
+        return null;
+    }
+}
+
 async Task<List<MailboxAddress>> GetAdminRecipientsAsync()
 {
     var recipients = new List<MailboxAddress>();
 
     if (!string.IsNullOrWhiteSpace(databaseConnectionString))
     {
-        await RetryAsync("Reading admin emails from the database", async () =>
+        try
         {
-            recipients.Clear();
-
-            await using var scope = host.Services.CreateAsyncScope();
-
-            var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
-
-            var admins = await context.Users
-                .AsNoTracking()
-                .Where(x => x.IsActive
-                    && x.Email != string.Empty
-                    && x.Roles.Any(role => role.Role.IsActive && role.Role.Name == "Admin"))
-                .OrderBy(x => x.Email)
-                .Select(x => new { x.Email, x.FirstName, x.LastName })
-                .ToListAsync();
-
-            foreach (var admin in admins)
+            await RetryAsync("Reading admin emails from the database", async () =>
             {
-                var name = $"{admin.FirstName} {admin.LastName}".Trim();
+                recipients.Clear();
 
-                recipients.Add(new MailboxAddress(
-                    string.IsNullOrWhiteSpace(name) ? fallbackAdminName : name,
-                    admin.Email));
-            }
-        });
+                await using var scope = host.Services.CreateAsyncScope();
+
+                var context = scope.ServiceProvider.GetRequiredService<FlixDbContext>();
+
+                var admins = await context.Users
+                    .AsNoTracking()
+                    .Where(x => x.IsActive
+                        && x.Email != string.Empty
+                        && x.Roles.Any(role => role.Role.IsActive && role.Role.Name == "Admin"))
+                    .OrderBy(x => x.Email)
+                    .Select(x => new { x.Email, x.FirstName, x.LastName })
+                    .ToListAsync();
+
+                foreach (var admin in admins)
+                {
+                    var name = $"{admin.FirstName} {admin.LastName}".Trim();
+
+                    recipients.Add(new MailboxAddress(
+                        string.IsNullOrWhiteSpace(name) ? fallbackAdminName : name,
+                        admin.Email));
+                }
+            });
+        }
+        catch (Exception e) when (!string.IsNullOrWhiteSpace(fallbackAdminEmail))
+        {
+            logger.LogWarning(e, "Falling back to {AdminEmail} after the database could not be read", fallbackAdminEmail);
+            recipients.Clear();
+        }
     }
 
     // The database is the source of truth; ADMIN_EMAIL only covers it being unreachable
@@ -329,7 +362,7 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
     mail.Subject = subject;
     mail.Body = new TextPart(TextFormat.Html) { Text = body };
 
-    var sent = await RetryAsync($"Sending \"{subject}\" to {addresses}", async () =>
+    await RetryAsync($"Sending \"{subject}\" to {addresses}", async () =>
     {
         using var client = new SmtpClient();
 
@@ -342,8 +375,7 @@ async Task SendAsync(IReadOnlyCollection<MailboxAddress> recipients, string subj
         await client.DisconnectAsync(true);
     });
 
-    if (sent)
-        logger.LogInformation("Sent \"{Subject}\" to {Recipients}", subject, addresses);
+    logger.LogInformation("Sent \"{Subject}\" to {Recipients}", subject, addresses);
 }
 
 string BuildRequestedBody(MovieRequested message, string? requesterEmail)

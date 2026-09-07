@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using EasyNetQ;
 using Flix.CommonServices.CryptoService;
 using Flix.Model.Access;
 using Flix.Model.Exceptions;
@@ -18,20 +17,20 @@ namespace Flix.Services.Implementations
         private readonly FlixDbContext _context;
         private readonly ICryptoService _cryptoService;
         private readonly IRefreshTokenService _refreshTokenService;
-        private readonly IBus _bus;
+        private readonly IOutboxService _outboxService;
         private readonly IValidator<ResetPasswordRequest> _resetValidator;
 
         public PasswordResetService(
             FlixDbContext context,
             ICryptoService cryptoService,
             IRefreshTokenService refreshTokenService,
-            IBus bus,
+            IOutboxService outboxService,
             IValidator<ResetPasswordRequest> resetValidator)
         {
             _context = context;
             _cryptoService = cryptoService;
             _refreshTokenService = refreshTokenService;
-            _bus = bus;
+            _outboxService = outboxService;
             _resetValidator = resetValidator;
         }
 
@@ -64,9 +63,11 @@ namespace Flix.Services.Implementations
 
             _context.ResetTokens.Add(entity);
 
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
             await _context.SaveChangesAsync();
 
-            await _bus.PubSub.PublishAsync(new PasswordResetRequested
+            _outboxService.Enqueue(new PasswordResetRequested
             {
                 Id = entity.Id,
                 Data = new PasswordResetData
@@ -76,6 +77,10 @@ namespace Flix.Services.Implementations
                     ExpiresAt = entity.ExpiresAt
                 }
             });
+
+            await _context.SaveChangesAsync();
+
+            await transaction.CommitAsync();
         }
 
         public async Task VerifyTokenAsync(VerifyResetTokenRequest request)
